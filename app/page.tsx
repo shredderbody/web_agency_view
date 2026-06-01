@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowRight, ArrowUpRight, CalendarCheck, Check, Compass,
+  ArrowRight, ArrowUpRight, Check, Clock, Compass,
   PenTool, Rocket, Sparkles, Star, Store, Wrench,
 } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
@@ -10,17 +10,20 @@ import Reveal from "@/components/Reveal";
 import Faq from "@/components/Faq";
 import { DEMOS } from "@/lib/demos";
 
-const TRADES = [
-  "Barbiers", "Ongleries", "Charcutiers", "Traiteurs", "Restaurants",
-  "Coiffeurs", "Fleuristes", "Cavistes", "Pâtissiers", "Instituts", "Cafés", "Boulangers",
-];
+// Ce que le site apporte concrètement, par corps de métier (affiché sur la card).
+const METIER_HIGHLIGHT: Record<string, string> = {
+  barbershop: "Prise de rendez-vous en ligne",
+  onglerie: "Réservation de soins 24h/24",
+  traiteur: "Commande de plateaux en ligne",
+  restaurant: "Réservation de table + menu",
+};
 
 export default function Home() {
   return (
     <>
       <SiteNav />
       <main>
-        {/* ─── HERO ─────────────────────────────────────────── */}
+        {/* ─── HERO — créateur de sites web ─────────────────── */}
         <section className="grain" style={{ position: "relative", paddingTop: "7.5rem", paddingBottom: "clamp(3rem, 6vw, 5rem)", overflow: "hidden" }}>
           <div
             aria-hidden
@@ -34,30 +37,30 @@ export default function Home() {
               <div>
                 <Reveal>
                   <span className="chip chip-accent" style={{ marginBottom: "1.5rem" }}>
-                    <Sparkles size={15} /> Studio web pour commerces de quartier
+                    <Sparkles size={15} /> Créateur de sites web pour commerces
                   </span>
                 </Reveal>
                 <Reveal delay={70}>
                   <h1 className="d-hero" style={{ margin: "0 0 1.3rem" }}>
-                    Une vitrine
+                    Je crée le site
                     <br />
-                    qui donne envie
+                    web de votre
                     <br />
-                    de <span className="serif-accent" style={{ color: "var(--vermilion-deep)" }}>pousser la porte.</span>
+                    <span className="serif-accent" style={{ color: "var(--vermilion-deep)" }}>commerce.</span>
                   </h1>
                 </Reveal>
                 <Reveal delay={140}>
-                  <p style={{ fontSize: "clamp(1.05rem, 1.5vw, 1.25rem)", color: "var(--ink-dim)", maxWidth: "46ch", margin: "0 0 2rem" }}>
-                    On dessine le site web de votre commerce, puis on vous le montre en ligne avant que vous décidiez. Vous voyez votre future vitrine pour de vrai, pas une promesse sur un devis.
+                  <p style={{ fontSize: "clamp(1.05rem, 1.5vw, 1.25rem)", color: "var(--ink-dim)", maxWidth: "47ch", margin: "0 0 2rem" }}>
+                    Conception, design et mise en ligne de vitrines web sur-mesure pour les artisans et commerces de proximité. Choisissez votre métier ci-dessous : vous verrez un site complet, déjà pensé pour vous.
                   </p>
                 </Reveal>
                 <Reveal delay={210}>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem" }}>
-                    <a href="#demos" className="btn btn-primary btn-lg">
-                      Voir les vitrines de démo <ArrowRight size={18} />
+                    <a href="#metiers" className="btn btn-primary btn-lg">
+                      Choisir mon métier <ArrowRight size={18} />
                     </a>
                     <a href="#contact" className="btn btn-ghost btn-lg">
-                      Parler de mon projet
+                      Demander un devis
                     </a>
                   </div>
                 </Reveal>
@@ -71,27 +74,25 @@ export default function Home() {
                 </Reveal>
               </div>
 
-              {/* Hero visual: browser frame + floating portrait */}
+              {/* Hero visual: le studio au travail (neutre, pas de métier précis) */}
               <Reveal delay={180}>
                 <div style={{ position: "relative" }}>
-                  <div className="frame" style={{ transform: "rotate(0.6deg)" }}>
-                    <div className="frame-bar">
-                      <span className="frame-dot" /><span className="frame-dot" /><span className="frame-dot" />
-                      <span className="frame-url">maison-brutus.fr</span>
-                    </div>
-                    <div style={{ position: "relative", aspectRatio: "16 / 11" }}>
-                      <Image src="/characters/barber-scene.webp" alt="Aperçu de la vitrine d'un barbier dans son salon" fill priority sizes="(max-width: 880px) 90vw, 520px" style={{ objectFit: "cover" }} />
-                    </div>
+                  <div style={{ position: "relative", aspectRatio: "16 / 12", borderRadius: "1.4rem", overflow: "hidden", border: "1px solid var(--border-strong)", boxShadow: "var(--shadow-lg)" }}>
+                    <Image src="/studio/hero-desk.webp" alt="Atelier de création web : un site de commerce en cours de design sur un ordinateur portable" fill priority sizes="(max-width: 880px) 90vw, 520px" style={{ objectFit: "cover" }} />
                   </div>
                   <div
+                    className="card"
                     style={{
-                      position: "absolute", bottom: "-1.6rem", left: "-1.4rem", width: "8.5rem",
-                      borderRadius: "1rem", overflow: "hidden", border: "4px solid var(--paper)", boxShadow: "var(--shadow)",
-                      transform: "rotate(-3deg)",
+                      position: "absolute", bottom: "-1.4rem", left: "-1.2rem", padding: "0.75rem 1.05rem",
+                      display: "flex", alignItems: "center", gap: "0.6rem", boxShadow: "var(--shadow)",
                     }}
                   >
-                    <div style={{ position: "relative", aspectRatio: "3 / 4" }}>
-                      <Image src="/characters/barbershop-portrait.webp" alt="Portrait du barbier, généré sur-mesure" fill sizes="140px" style={{ objectFit: "cover" }} />
+                    <span style={{ width: "2.1rem", height: "2.1rem", borderRadius: "0.6rem", display: "grid", placeItems: "center", background: "var(--vermilion-soft)", color: "var(--vermilion-deep)" }}>
+                      <Clock size={17} />
+                    </span>
+                    <div style={{ lineHeight: 1.15 }}>
+                      <strong style={{ fontSize: "0.95rem" }}>Démo en 7 jours</strong>
+                      <div style={{ fontSize: "0.76rem", color: "var(--ink-muted)" }}>à votre nom, gratuite</div>
                     </div>
                   </div>
                   <div
@@ -101,12 +102,12 @@ export default function Home() {
                       display: "flex", alignItems: "center", gap: "0.6rem", boxShadow: "var(--shadow)",
                     }}
                   >
-                    <span style={{ width: "2.1rem", height: "2.1rem", borderRadius: "0.6rem", display: "grid", placeItems: "center", background: "var(--vermilion-soft)", color: "var(--vermilion-deep)" }}>
-                      <CalendarCheck size={17} />
+                    <span style={{ width: "2.1rem", height: "2.1rem", borderRadius: "0.6rem", display: "grid", placeItems: "center", background: "var(--ink)", color: "var(--paper)" }}>
+                      <PenTool size={16} />
                     </span>
                     <div style={{ lineHeight: 1.15 }}>
-                      <strong style={{ fontSize: "0.95rem" }}>+38 rendez-vous</strong>
-                      <div style={{ fontSize: "0.76rem", color: "var(--ink-muted)" }}>ce mois, en ligne</div>
+                      <strong style={{ fontSize: "0.95rem" }}>100% sur-mesure</strong>
+                      <div style={{ fontSize: "0.76rem", color: "var(--ink-muted)" }}>jamais un thème recyclé</div>
                     </div>
                   </div>
                 </div>
@@ -115,33 +116,19 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ─── MARQUEE TRADES ───────────────────────────────── */}
-        <section style={{ paddingBlock: "1.4rem", borderBlock: "1px solid var(--border)", background: "var(--paper-2)" }}>
-          <div className="marquee">
-            <div className="marquee-track">
-              {[...TRADES, ...TRADES].map((t, i) => (
-                <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: "0.7rem", fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "1.25rem", color: "var(--ink-dim)", whiteSpace: "nowrap" }}>
-                  {t}
-                  <span style={{ color: "var(--vermilion)", fontSize: "0.7rem" }}>✦</span>
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ─── PITCH ────────────────────────────────────────── */}
-        <section style={{ paddingBlock: "clamp(4rem, 8vw, 7rem)" }}>
+        {/* ─── VALEUR (générique : ce que je fais) ──────────── */}
+        <section style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)" }}>
           <div className="wrap">
             <div className="pitch-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(2rem, 5vw, 5rem)", alignItems: "end" }}>
               <Reveal>
-                <span className="kicker" style={{ marginBottom: "1.2rem" }}>Le constat</span>
+                <span className="kicker" style={{ marginBottom: "1.2rem" }}>Ce que je fais</span>
                 <h2 className="d-xl" style={{ margin: 0 }}>
-                  Vos clients vous cherchent en ligne. Ils tombent sur trois photos floues.
+                  Un seul interlocuteur, du design à la mise en ligne.
                 </h2>
               </Reveal>
               <Reveal delay={120}>
                 <p style={{ fontSize: "1.12rem", color: "var(--ink-dim)", margin: 0 }}>
-                  Une fiche Google ne raconte pas votre savoir-faire. Une vraie vitrine, si : elle montre votre univers, met en avant vos prestations et transforme un curieux en client qui réserve. C'est exactement ce qu'on construit, métier par métier.
+                  Je dessine, j'écris, je développe et j'héberge votre vitrine. Pas d'agence à étages ni de jargon : vous parlez à la personne qui fabrique votre site, et vous le voyez en ligne avant de vous engager.
                 </p>
               </Reveal>
             </div>
@@ -163,95 +150,54 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ─── DEMOS (alternating editorial rows) ───────────── */}
-        <section id="demos" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--paper-2)", borderBlock: "1px solid var(--border)" }}>
+        {/* ─── CARDS PAR MÉTIER (pièce centrale) ─────────────── */}
+        <section id="metiers" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--paper-2)", borderBlock: "1px solid var(--border)" }}>
           <div className="wrap">
             <Reveal>
-              <div style={{ maxWidth: "60ch", marginBottom: "clamp(2.5rem, 5vw, 4rem)" }}>
-                <span className="kicker" style={{ marginBottom: "1.1rem" }}>Vitrines de démonstration</span>
-                <h2 className="d-xl" style={{ margin: "0 0 1rem" }}>Poussez la porte. Chaque démo est un site complet.</h2>
+              <div style={{ maxWidth: "62ch", marginBottom: "clamp(2.5rem, 5vw, 3.5rem)" }}>
+                <span className="kicker" style={{ marginBottom: "1.1rem" }}>Choisissez votre métier</span>
+                <h2 className="d-xl" style={{ margin: "0 0 1rem" }}>Votre métier a son propre site. Cliquez pour le voir en entier.</h2>
                 <p style={{ fontSize: "1.1rem", color: "var(--ink-dim)", margin: 0 }}>
-                  Quatre univers, quatre métiers, le même soin. Cliquez : vous visitez une vitrine réelle, navigable, exactement comme celle qu'on vous prépare.
+                  Chaque métier a ses codes, ses photos, ses moments forts. Voici un site complet et navigable conçu pour chacun. Trouvez le vôtre et projetez-vous.
                 </p>
               </div>
             </Reveal>
 
-            <div style={{ display: "grid", gap: "clamp(1.5rem, 3vw, 2.5rem)" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: "clamp(1.2rem, 2.5vw, 1.8rem)" }}>
               {DEMOS.map((d, i) => (
                 <Reveal key={d.slug} delay={(i % 2) * 80}>
-                  <Link href={`/demo/${d.slug}`} className="demo-row card card-hover" style={{ display: "grid", gridTemplateColumns: i % 2 === 0 ? "1.15fr 1fr" : "1fr 1.15fr", overflow: "hidden", minHeight: "20rem" }}>
-                    <div style={{ position: "relative", minHeight: "16rem", order: i % 2 === 0 ? 0 : 1 }}>
-                      <Image src={d.cover} alt={`Vitrine ${d.business}, ${d.trade.toLowerCase()} à ${d.city}`} fill sizes="(max-width: 820px) 100vw, 600px" style={{ objectFit: "cover" }} />
-                      <span style={{ position: "absolute", top: "1rem", left: "1rem" }} className="chip">{d.trade}</span>
-                    </div>
-                    <div style={{ padding: "clamp(1.6rem, 3vw, 2.6rem)", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                      <div style={{ display: "flex", gap: "0.4rem", marginBottom: "1rem" }}>
-                        {d.swatches.map((s) => (
-                          <span key={s} style={{ width: "1.5rem", height: "1.5rem", borderRadius: "0.45rem", background: s, border: "1px solid var(--border)" }} />
-                        ))}
-                        <span style={{ fontSize: "0.78rem", color: "var(--ink-muted)", alignSelf: "center", marginLeft: "0.3rem" }}>{d.accentLabel}</span>
-                      </div>
-                      <h3 className="d-lg" style={{ margin: "0 0 0.2rem" }}>{d.business}</h3>
-                      <p style={{ color: "var(--ink-muted)", margin: "0 0 0.9rem", fontWeight: 500 }}>{d.city}</p>
-                      <p style={{ color: "var(--ink-dim)", margin: "0 0 1.6rem", maxWidth: "44ch" }}>{d.tagline}</p>
-                      <span className="link-arrow" style={{ fontSize: "1.02rem" }}>
-                        Visiter la vitrine <ArrowUpRight size={19} />
+                  <Link href={`/demo/${d.slug}`} className="card card-hover metier-card" style={{ display: "flex", flexDirection: "column", overflow: "hidden", height: "100%" }}>
+                    <div style={{ position: "relative", aspectRatio: "16 / 11" }}>
+                      <Image src={d.cover} alt={`Site web pour ${d.trade.toLowerCase()} (exemple : ${d.business})`} fill sizes="(max-width: 700px) 100vw, 420px" style={{ objectFit: "cover" }} />
+                      <span className="chip" style={{ position: "absolute", top: "0.9rem", left: "0.9rem", display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
+                        <Check size={13} strokeWidth={3} style={{ color: "var(--vermilion-deep)" }} /> {METIER_HIGHLIGHT[d.slug]}
                       </span>
+                    </div>
+                    <div style={{ padding: "1.5rem 1.6rem 1.7rem", display: "flex", flexDirection: "column", flex: 1 }}>
+                      <h3 className="d-lg" style={{ margin: "0 0 0.5rem" }}>{d.trade}</h3>
+                      <p style={{ color: "var(--ink-dim)", margin: "0 0 1.4rem", flex: 1 }}>{d.tagline}</p>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", borderTop: "1px solid var(--border)", paddingTop: "1.1rem" }}>
+                        <span style={{ fontSize: "0.85rem", color: "var(--ink-muted)" }}>Exemple : {d.business} · {d.city}</span>
+                        <span className="link-arrow" style={{ fontSize: "0.98rem" }}>
+                          Voir la page <ArrowUpRight size={18} />
+                        </span>
+                      </div>
                     </div>
                   </Link>
                 </Reveal>
               ))}
             </div>
+
+            <Reveal delay={120}>
+              <p style={{ textAlign: "center", marginTop: "2.5rem", color: "var(--ink-muted)" }}>
+                Votre métier n'est pas listé ? <a href="#contact" className="link-arrow" style={{ display: "inline-flex" }}>Parlons-en <ArrowRight size={15} /></a>
+              </p>
+            </Reveal>
           </div>
         </section>
 
-        {/* ─── MÉTIERS ──────────────────────────────────────── */}
-        <section id="metiers" style={{ paddingBlock: "clamp(4rem, 8vw, 7rem)" }}>
-          <div className="wrap">
-            <div className="metiers-grid" style={{ display: "grid", gridTemplateColumns: "0.9fr 1.1fr", gap: "clamp(2rem, 5vw, 4.5rem)", alignItems: "center" }}>
-              <Reveal>
-                <span className="kicker" style={{ marginBottom: "1.1rem" }}>Pour qui</span>
-                <h2 className="d-xl" style={{ margin: "0 0 1.2rem" }}>On parle la langue des commerces de proximité.</h2>
-                <p style={{ fontSize: "1.1rem", color: "var(--ink-dim)", marginBottom: "1.8rem" }}>
-                  Chaque métier a ses codes, ses photos, ses moments forts. On les connaît. Votre vitrine n'a pas l'air d'un modèle : elle a l'air de chez vous.
-                </p>
-                <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "0.85rem" }}>
-                  {[
-                    "Une identité visuelle propre à votre métier",
-                    "Réservation, click & collect ou devis selon vos besoins",
-                    "Pensé mobile d'abord, là où vos clients vous trouvent",
-                    "Trouvable sur Google dans votre quartier",
-                  ].map((t) => (
-                    <li key={t} style={{ display: "flex", gap: "0.7rem", alignItems: "flex-start" }}>
-                      <span style={{ flexShrink: 0, marginTop: "0.15rem", width: "1.45rem", height: "1.45rem", borderRadius: "99px", display: "grid", placeItems: "center", background: "var(--vermilion-soft)", color: "var(--vermilion-deep)" }}>
-                        <Check size={14} strokeWidth={3} />
-                      </span>
-                      <span style={{ color: "var(--ink)" }}>{t}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Reveal>
-
-              <Reveal delay={120}>
-                <div className="metiers-collage" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.9rem" }}>
-                  {[
-                    { src: "/characters/barber-detail.webp", alt: "Tondeuse et outils de barbier sur le cuir", tall: true },
-                    { src: "/characters/onglerie-detail.webp", alt: "Mains manucurées, pose de gel" },
-                    { src: "/characters/traiteur-detail.webp", alt: "Planche de charcuterie et terrines maison" },
-                    { src: "/characters/restaurant-detail.webp", alt: "Assiette de bistrot dressée", tall: true },
-                  ].map((im, i) => (
-                    <div key={i} style={{ position: "relative", borderRadius: "1rem", overflow: "hidden", aspectRatio: im.tall ? "3 / 4" : "1 / 1", border: "1px solid var(--border)", marginTop: i === 1 ? "1.8rem" : 0 }}>
-                      <Image src={im.src} alt={im.alt} fill sizes="(max-width: 820px) 45vw, 240px" style={{ objectFit: "cover" }} />
-                    </div>
-                  ))}
-                </div>
-              </Reveal>
-            </div>
-          </div>
-        </section>
-
-        {/* ─── INCLUS / SERVICES ────────────────────────────── */}
-        <section style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--ink)", color: "var(--paper)" }}>
+        {/* ─── INCLUS / SERVICES (générique) ────────────────── */}
+        <section style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)", background: "var(--ink)", color: "var(--paper)" }}>
           <div className="wrap">
             <Reveal>
               <span className="kicker" style={{ marginBottom: "1.1rem", color: "var(--clay)" }}>Ce qui est inclus</span>
@@ -261,9 +207,9 @@ export default function Home() {
               {[
                 { icon: PenTool, t: "Design sur-mesure", d: "Un univers dessiné pour votre métier : couleurs, typographies, photos. Pas de thème recyclé." },
                 { icon: Store, t: "Vitrine complète", d: "Accueil, prestations, galerie, avis, accès et contact. Tout ce qu'un client veut savoir avant de venir." },
-                { icon: CalendarCheck, t: "Réservation intégrée", d: "Rendez-vous, click & collect ou formulaire de devis, branchés sur l'outil adapté à votre activité." },
+                { icon: Clock, t: "Réservation intégrée", d: "Rendez-vous, click & collect ou formulaire de devis, branchés sur l'outil adapté à votre activité." },
                 { icon: Compass, t: "Visibilité locale", d: "Optimisation pour la recherche de quartier et synchronisation avec votre fiche Google." },
-                { icon: Wrench, t: "Suivi et retouches", d: "Horaires, prix, photos : on ajuste avec vous. Une retouche incluse chaque mois." },
+                { icon: Wrench, t: "Suivi et retouches", d: "Horaires, prix, photos : on ajuste ensemble. Une retouche incluse chaque mois." },
                 { icon: Rocket, t: "Mise en ligne rapide", d: "Hébergement, nom de domaine, sécurité et performance gérés de bout en bout." },
               ].map((s, i) => (
                 <Reveal key={i} delay={(i % 3) * 80}>
@@ -280,8 +226,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ─── MÉTHODE ──────────────────────────────────────── */}
-        <section id="methode" style={{ paddingBlock: "clamp(4rem, 8vw, 7rem)" }}>
+        {/* ─── MÉTHODE (générique) ──────────────────────────── */}
+        <section id="methode" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)" }}>
           <div className="wrap">
             <Reveal>
               <div style={{ maxWidth: "56ch", marginBottom: "clamp(2.5rem, 5vw, 3.5rem)" }}>
@@ -291,10 +237,10 @@ export default function Home() {
             </Reveal>
             <div className="steps-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0" }}>
               {[
-                { n: "01", t: "On vous écoute", d: "Un appel de 20 minutes pour comprendre votre métier, vos clients et vos envies." },
-                { n: "02", t: "On dessine la démo", d: "On crée votre vitrine à votre nom, photos et textes compris, et on vous l'envoie en ligne." },
-                { n: "03", t: "Vous ajustez", d: "Vous visitez, vous commentez. On retouche jusqu'à ce que ce soit vraiment vous." },
-                { n: "04", t: "On met en ligne", d: "Domaine, hébergement, Google : on s'occupe de tout. Vous ouvrez votre vitrine." },
+                { n: "01", t: "On échange", d: "Un appel de 20 minutes pour comprendre votre métier, vos clients et vos envies." },
+                { n: "02", t: "Je dessine la démo", d: "Je crée votre vitrine à votre nom, photos et textes compris, et je vous l'envoie en ligne." },
+                { n: "03", t: "Vous ajustez", d: "Vous visitez, vous commentez. Je retouche jusqu'à ce que ce soit vraiment vous." },
+                { n: "04", t: "Mise en ligne", d: "Domaine, hébergement, Google : je m'occupe de tout. Vous ouvrez votre vitrine." },
               ].map((s, i) => (
                 <Reveal key={i} delay={i * 90}>
                   <div style={{ padding: "0 1.4rem", borderLeft: i === 0 ? "none" : "1px solid var(--border)", height: "100%" }}>
@@ -308,35 +254,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ─── PREUVE / TÉMOIGNAGE ──────────────────────────── */}
-        <section style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--paper-2)", borderBlock: "1px solid var(--border)" }}>
-          <div className="wrap">
-            <div className="proof-grid" style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr", gap: "clamp(2rem, 5vw, 4rem)", alignItems: "center" }}>
-              <Reveal>
-                <div style={{ position: "relative", borderRadius: "var(--r-lg)", overflow: "hidden", aspectRatio: "4 / 5", border: "1px solid var(--border)", boxShadow: "var(--shadow)" }}>
-                  <Image src="/characters/traiteur-portrait.webp" alt="Bernard, charcutier-traiteur, devant son comptoir" fill sizes="(max-width: 820px) 80vw, 360px" style={{ objectFit: "cover" }} />
-                </div>
-              </Reveal>
-              <Reveal delay={120}>
-                <div style={{ display: "flex", gap: "2px", color: "var(--clay-deep)", marginBottom: "1.3rem" }}>
-                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={20} fill="currentColor" stroke="none" />)}
-                </div>
-                <blockquote className="d-lg" style={{ margin: "0 0 1.6rem", fontWeight: 500, letterSpacing: "-0.015em" }}>
-                  « Les gens arrivent en boutique le sourire aux lèvres : ils ont vu nos terrines sur le site et savent déjà quoi commander. En trois semaines, les commandes de plateaux ont doublé. »
-                </blockquote>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.9rem" }}>
-                  <div>
-                    <strong style={{ display: "block", fontSize: "1.05rem" }}>Bernard Ferrand</strong>
-                    <span style={{ color: "var(--ink-muted)" }}>Maison Ferrand, charcutier-traiteur à Annecy</span>
-                  </div>
-                </div>
-              </Reveal>
-            </div>
-          </div>
-        </section>
-
-        {/* ─── TARIFS ───────────────────────────────────────── */}
-        <section id="tarifs" style={{ paddingBlock: "clamp(4rem, 8vw, 7rem)" }}>
+        {/* ─── TARIFS (générique) ───────────────────────────── */}
+        <section id="tarifs" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--paper-2)", borderBlock: "1px solid var(--border)" }}>
           <div className="wrap">
             <Reveal>
               <div style={{ maxWidth: "56ch", marginBottom: "clamp(2.5rem, 5vw, 3.5rem)" }}>
@@ -389,12 +308,12 @@ export default function Home() {
         </section>
 
         {/* ─── FAQ ──────────────────────────────────────────── */}
-        <section id="faq" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--paper-2)", borderBlock: "1px solid var(--border)" }}>
+        <section id="faq" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)" }}>
           <div className="wrap wrap-tight">
             <Reveal>
               <div style={{ marginBottom: "clamp(2rem, 4vw, 3rem)" }}>
                 <span className="kicker" style={{ marginBottom: "1.1rem" }}>Questions fréquentes</span>
-                <h2 className="d-xl" style={{ margin: 0 }}>Ce qu'on nous demande souvent.</h2>
+                <h2 className="d-xl" style={{ margin: 0 }}>Ce qu'on me demande souvent.</h2>
               </div>
             </Reveal>
             <Reveal delay={100}>
@@ -404,7 +323,7 @@ export default function Home() {
         </section>
 
         {/* ─── CTA FINAL ────────────────────────────────────── */}
-        <section id="contact" style={{ paddingBlock: "clamp(4rem, 8vw, 7rem)" }}>
+        <section id="contact" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)" }}>
           <div className="wrap">
             <Reveal>
               <div
@@ -416,19 +335,19 @@ export default function Home() {
                 }}
               >
                 <div aria-hidden style={{ position: "absolute", top: "-30%", right: "-10%", width: "30rem", height: "30rem", borderRadius: "50%", background: "radial-gradient(circle, oklch(0.74 0.11 66 / 0.4), transparent 60%)" }} />
-                <div style={{ position: "relative", maxWidth: "40ch" }}>
+                <div style={{ position: "relative", maxWidth: "42ch" }}>
                   <h2 className="d-xl" style={{ margin: "0 0 1.1rem", color: "var(--surface)" }}>
-                    On vous prépare une démo. Gratuite, à votre nom.
+                    Je vous prépare une démo. Gratuite, à votre nom.
                   </h2>
                   <p style={{ fontSize: "1.15rem", color: "oklch(0.96 0.02 40)", margin: "0 0 2rem" }}>
-                    Dites-nous votre métier et votre ville. Sous 7 jours, vous recevez le lien d'une vitrine pensée pour vous. Vous décidez ensuite, en connaissance de cause.
+                    Dites-moi votre métier et votre ville. Sous 7 jours, vous recevez le lien d'une vitrine pensée pour vous. Vous décidez ensuite, en connaissance de cause.
                   </p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem" }}>
                     <a href="mailto:bonjour@atelier-vitrine.fr" className="btn btn-lg" style={{ background: "var(--surface)", color: "var(--ink)" }}>
                       Demander ma démo gratuite <ArrowRight size={18} />
                     </a>
                     <a href="tel:+33400000000" className="btn btn-lg btn-ghost" style={{ color: "var(--surface)", borderColor: "oklch(1 0 0 / 0.4)" }}>
-                      Nous appeler
+                      M'appeler
                     </a>
                   </div>
                 </div>
@@ -441,11 +360,9 @@ export default function Home() {
 
       <style>{`
         @media (max-width: 880px) {
-          .hero-grid, .pitch-grid, .metiers-grid, .proof-grid { grid-template-columns: 1fr !important; }
+          .hero-grid, .pitch-grid { grid-template-columns: 1fr !important; }
           .figures, .incl-grid, .steps-grid, .price-grid { grid-template-columns: 1fr !important; }
           .figures > div, .steps-grid > div > div { border-left: none !important; }
-          .demo-row { grid-template-columns: 1fr !important; }
-          .demo-row > div:first-child { order: 0 !important; }
         }
         @media (min-width: 881px) and (max-width: 1100px) {
           .incl-grid { grid-template-columns: 1fr 1fr !important; }

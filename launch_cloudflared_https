@@ -1,4 +1,47 @@
-current_time=$(date "+%Y%m%d_%H%M%S")
-cd /home/contact/web_agency_view/
-cloudflared tunnel --url http://127.0.0.1:3010 > /home/contact/web_agency_view/log_tmp/"$current_time"_cmd_run.txt 2> /home/contact/web_agency_view/log_tmp/"$current_time"_cmd_err_run.txt &
+#!/usr/bin/env bash
+# Lance un tunnel cloudflared (quick tunnel, URL trycloudflare éphémère) vers le
+# port 3010, capture l'URL publique et l'écrit dans NEXT_PUBLIC_APP_URL du .env.
+# L'URL change à chaque lancement : ce script garde le .env synchronisé.
+set -euo pipefail
 
+PORT="${1:-3010}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+mkdir -p log_tmp
+
+current_time="$(date "+%Y%m%d_%H%M%S")"
+LOG="log_tmp/${current_time}_cloudflared.txt"
+
+echo "→ Démarrage du tunnel cloudflared vers http://127.0.0.1:${PORT} ..."
+cloudflared tunnel --url "http://127.0.0.1:${PORT}" > "$LOG" 2>&1 &
+TUNNEL_PID=$!
+echo "  PID cloudflared : ${TUNNEL_PID}  (log : ${LOG})"
+
+# Attendre l'apparition de l'URL publique (max ~30s)
+URL=""
+for _ in $(seq 1 30); do
+  URL="$(grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' "$LOG" | head -1 || true)"
+  [ -n "$URL" ] && break
+  sleep 1
+done
+
+if [ -z "$URL" ]; then
+  echo "✗ URL du tunnel introuvable. Voir ${LOG}" >&2
+  exit 1
+fi
+
+echo "✓ Tunnel en ligne : ${URL}"
+
+# Mettre à jour NEXT_PUBLIC_APP_URL dans .env (ligne ancrée, sans toucher au reste)
+if [ -f .env ]; then
+  if grep -qE '^NEXT_PUBLIC_APP_URL=' .env; then
+    sed -i "s|^NEXT_PUBLIC_APP_URL=.*|NEXT_PUBLIC_APP_URL=${URL}|" .env
+  else
+    printf '\nNEXT_PUBLIC_APP_URL=%s\n' "$URL" >> .env
+  fi
+  echo "✓ .env mis à jour : NEXT_PUBLIC_APP_URL=${URL}"
+  echo "  (relancez le serveur Next pour prendre en compte la nouvelle valeur)"
+fi
+
+echo "  Ctrl+C pour arrêter le tunnel."
+wait "$TUNNEL_PID"

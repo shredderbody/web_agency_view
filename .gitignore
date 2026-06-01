@@ -42,3 +42,6 @@ Thumbs.db
 
 # Playwright
 /test-results/
+
+# Cloudflared logs
+/log_tmp/
