@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Hanken_Grotesk, Anton, Marcellus } from "next/font/google";
 import "./globals.css";
+import "flag-icons/css/flag-icons.min.css";
+import { LangProvider } from "@/lib/lang-context";
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -52,7 +54,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${bricolage.variable} ${hanken.variable} ${anton.variable} ${marcellus.variable}`}>
-      <body>{children}</body>
+      <body>
+        <LangProvider>{children}</LangProvider>
+      </body>
     </html>
   );
 }

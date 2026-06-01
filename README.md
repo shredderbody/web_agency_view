@@ -32,6 +32,18 @@ scripts/
   shoot.mjs             # Captures de vérification (Playwright)
 ```
 
+## Internationalisation (FR / EN)
+Bilingue via un contexte client léger. Toutes les chaînes vivent dans `lib/i18n.ts`
+(UI) et `lib/vitrineContent.ts` / `lib/demos.ts` (contenu des vitrines), keyées par langue.
+- `lib/lang-context.tsx` : `LangProvider`, `useT()`, `useLang()` (persistance cookie + localStorage, FR par défaut).
+- `components/LangSelector.tsx` : sélecteur à drapeaux 🇫🇷 / 🇺🇸 (`flag-icons`), présent sur toutes les pages.
+- Ajouter une langue : étendre `Lang`, `LANGS`, `ui`, et les maps `DEMO_TEXT` / `TEXT`.
+
+## Responsive
+Mobile-first, breakpoints desktop / tablette / mobile. Menu hamburger sous 1000px
+(nav agence) et sous 860px (pages métier). Images en WebP, jamais croppées pour les
+planches-contact (affichées en entier).
+
 ## Imagerie sur-mesure
 Les visuels de chaque métier (portrait d'artisan, planche-contact, scène de boutique,
 détail produit) sont générés via l'API KIE (`gpt-image-2-text-to-image`) puis convertis en WebP.

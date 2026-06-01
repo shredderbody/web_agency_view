@@ -1,0 +1,376 @@
+export type Lang = "fr" | "en";
+
+export const LANGS: { id: Lang; flag: string; label: string }[] = [
+  { id: "fr", flag: "fr", label: "Français" },
+  { id: "en", flag: "us", label: "English" },
+];
+
+export const DEFAULT_LANG: Lang = "fr";
+export const LANG_COOKIE = "av_lang";
+export const isLang = (v: unknown): v is Lang => v === "fr" || v === "en";
+
+type UI = {
+  htmlLang: string;
+  nav: { metiers: string; methode: string; tarifs: string; faq: string; devis: string; home: string };
+  hero: {
+    badge: string;
+    titleLead: string;
+    titleAccent: string;
+    lead: string;
+    ctaPrimary: string;
+    ctaSecondary: string;
+    rating: string;
+    chipDemoTitle: string;
+    chipDemoSub: string;
+    chipCraftTitle: string;
+    chipCraftSub: string;
+    heroAlt: string;
+  };
+  value: { kicker: string; title: string; body: string; figures: { n: string; l: string }[] };
+  metiers: {
+    kicker: string;
+    title: string;
+    body: string;
+    highlight: Record<string, string>;
+    example: string;
+    seePage: string;
+    notListed: string;
+    talk: string;
+    cardAlt: (trade: string, business: string) => string;
+  };
+  included: { kicker: string; title: string; items: { t: string; d: string }[] };
+  method: { kicker: string; title: string; steps: { n: string; t: string; d: string }[] };
+  pricing: {
+    kicker: string;
+    title: string;
+    body: string;
+    mostChosen: string;
+    plans: { name: string; price: string; sub: string; featured: boolean; feats: string[]; cta: string }[];
+  };
+  faq: { kicker: string; title: string; items: { q: string; a: string }[] };
+  cta: { title: string; body: string; primary: string; secondary: string };
+  footer: {
+    tagline: string;
+    bookCall: string;
+    demosLabel: string;
+    studioLabel: string;
+    method: string;
+    pricing: string;
+    faq: string;
+    rights: string;
+    legal: string;
+    privacy: string;
+  };
+  notFound: { code: string; titleLead: string; titleAccent: string; body: string; home: string; demos: string };
+  demoIndex: { back: string; devis: string; kicker: string; title: string; body: string; visit: string };
+  demoCommon: {
+    allDemos: string;
+    wantMine: string;
+    isDemoBanner: string;
+    navCard: string;
+    navPlace: string;
+    navArtisan: string;
+    addressLabel: string;
+    hoursLabel: string;
+    phoneLabel: string;
+    openToday: string;
+    servicesIntro: string;
+    placeKicker: string;
+    artisanKicker: string;
+    sheetCaption: string;
+    reviewsTitle: string;
+    footerNote: string;
+    createCta: string;
+    metaSuffix: string;
+  };
+};
+
+export const ui: Record<Lang, UI> = {
+  fr: {
+    htmlLang: "fr",
+    nav: { metiers: "Métiers", methode: "Méthode", tarifs: "Tarifs", faq: "Questions", devis: "Devis gratuit", home: "accueil" },
+    hero: {
+      badge: "Créateur de sites web pour commerces",
+      titleLead: "Je crée le site web de votre",
+      titleAccent: "commerce.",
+      lead: "Conception, design et mise en ligne de vitrines web sur-mesure pour les artisans et commerces de proximité. Choisissez votre métier ci-dessous : vous verrez un site complet, déjà pensé pour vous.",
+      ctaPrimary: "Choisir mon métier",
+      ctaSecondary: "Demander un devis",
+      rating: "Noté 4,9/5 par 60+ commerçants accompagnés",
+      chipDemoTitle: "Démo en 7 jours",
+      chipDemoSub: "à votre nom, gratuite",
+      chipCraftTitle: "100% sur-mesure",
+      chipCraftSub: "jamais un thème recyclé",
+      heroAlt: "Atelier de création web : un site de commerce en cours de design sur un ordinateur portable",
+    },
+    value: {
+      kicker: "Ce que je fais",
+      title: "Un seul interlocuteur, du design à la mise en ligne.",
+      body: "Je dessine, j'écris, je développe et j'héberge votre vitrine. Pas d'agence à étages ni de jargon : vous parlez à la personne qui fabrique votre site, et vous le voyez en ligne avant de vous engager.",
+      figures: [
+        { n: "75%", l: "des clients jugent un commerce crédible d'abord sur son site." },
+        { n: "2,6×", l: "plus de prises de contact avec une vitrine soignée qu'une simple fiche." },
+        { n: "7 j", l: "en moyenne pour voir votre démo en ligne, à votre nom." },
+      ],
+    },
+    metiers: {
+      kicker: "Choisissez votre métier",
+      title: "Votre métier a son propre site. Cliquez pour le voir en entier.",
+      body: "Chaque métier a ses codes, ses photos, ses moments forts. Voici un site complet et navigable conçu pour chacun. Trouvez le vôtre et projetez-vous.",
+      highlight: {
+        barbershop: "Prise de rendez-vous en ligne",
+        onglerie: "Réservation de soins 24h/24",
+        traiteur: "Commande de plateaux en ligne",
+        restaurant: "Réservation de table + menu",
+      },
+      example: "Exemple :",
+      seePage: "Voir la page",
+      notListed: "Votre métier n'est pas listé ?",
+      talk: "Parlons-en",
+      cardAlt: (trade, business) => `Site web pour ${trade.toLowerCase()} (exemple : ${business})`,
+    },
+    included: {
+      kicker: "Ce qui est inclus",
+      title: "Tout pour ouvrir, rien à gérer seul.",
+      items: [
+        { t: "Design sur-mesure", d: "Un univers dessiné pour votre métier : couleurs, typographies, photos. Pas de thème recyclé." },
+        { t: "Vitrine complète", d: "Accueil, prestations, galerie, avis, accès et contact. Tout ce qu'un client veut savoir avant de venir." },
+        { t: "Réservation intégrée", d: "Rendez-vous, click & collect ou formulaire de devis, branchés sur l'outil adapté à votre activité." },
+        { t: "Visibilité locale", d: "Optimisation pour la recherche de quartier et synchronisation avec votre fiche Google." },
+        { t: "Suivi et retouches", d: "Horaires, prix, photos : on ajuste ensemble. Une retouche incluse chaque mois." },
+        { t: "Mise en ligne rapide", d: "Hébergement, nom de domaine, sécurité et performance gérés de bout en bout." },
+      ],
+    },
+    method: {
+      kicker: "La méthode",
+      title: "Quatre étapes, zéro jargon.",
+      steps: [
+        { n: "01", t: "On échange", d: "Un appel de 20 minutes pour comprendre votre métier, vos clients et vos envies." },
+        { n: "02", t: "Je dessine la démo", d: "Je crée votre vitrine à votre nom, photos et textes compris, et je vous l'envoie en ligne." },
+        { n: "03", t: "Vous ajustez", d: "Vous visitez, vous commentez. Je retouche jusqu'à ce que ce soit vraiment vous." },
+        { n: "04", t: "Mise en ligne", d: "Domaine, hébergement, Google : je m'occupe de tout. Vous ouvrez votre vitrine." },
+      ],
+    },
+    pricing: {
+      kicker: "Tarifs",
+      title: "Un prix clair, annoncé avant de commencer.",
+      body: "Création unique, puis un abonnement simple pour l'hébergement et le suivi. Sans engagement piège.",
+      mostChosen: "Le plus choisi",
+      plans: [
+        { name: "Essentielle", price: "690 €", sub: "+ 19 €/mois", featured: false, feats: ["Vitrine une page soignée", "Photos et textes inclus", "Mobile et Google ready", "Mise en ligne en 7 jours"], cta: "Démarrer" },
+        { name: "Atelier", price: "1 290 €", sub: "+ 39 €/mois", featured: true, feats: ["Vitrine multi-pages complète", "Réservation ou click & collect", "Univers visuel sur-mesure", "1 retouche incluse / mois", "Suivi des performances"], cta: "Choisir Atelier" },
+        { name: "Signature", price: "Sur devis", sub: "projet dédié", featured: false, feats: ["Conception 100% sur-mesure", "Fonctions avancées (boutique, espace membre)", "Séance photo de votre commerce", "Accompagnement prioritaire"], cta: "En parler" },
+      ],
+    },
+    faq: {
+      kicker: "Questions fréquentes",
+      title: "Ce qu'on me demande souvent.",
+      items: [
+        { q: "Combien de temps pour mettre ma vitrine en ligne ?", a: "Entre 7 et 15 jours pour une vitrine complète. On commence par une démo à votre nom : vous la validez, on la met en ligne. Vous n'attendez jamais des mois sans rien voir." },
+        { q: "Je n'ai ni logo, ni photos, ni textes. C'est bloquant ?", a: "Non. On génère un univers visuel sur-mesure (comme les démos de ce site), on rédige vos textes et on cadre vos photos. Si vous avez déjà des éléments, on les intègre." },
+        { q: "Est-ce que je pourrai modifier le site moi-même ?", a: "Oui. Vous recevez un accès simple pour changer horaires, prix, photos et actualités. Pour le reste, une retouche est incluse chaque mois dans la formule Atelier." },
+        { q: "Les clients pourront-ils réserver ou commander en ligne ?", a: "Oui. Prise de rendez-vous, click & collect, formulaire de devis, carte commandable : on branche l'outil adapté à votre métier, sans commission cachée." },
+        { q: "Et le référencement sur Google ?", a: "Chaque vitrine est optimisée pour la recherche locale (fiche, mots-clés de quartier, vitesse, mobile). L'objectif : qu'on vous trouve quand on cherche votre métier près de chez vous." },
+        { q: "Combien ça coûte vraiment ?", a: "À partir de 690 € pour la vitrine essentielle, puis un abonnement clair pour l'hébergement et le suivi. Pas de devis surprise : le prix est annoncé avant de commencer." },
+      ],
+    },
+    cta: {
+      title: "Je vous prépare une démo. Gratuite, à votre nom.",
+      body: "Dites-moi votre métier et votre ville. Sous 7 jours, vous recevez le lien d'une vitrine pensée pour vous. Vous décidez ensuite, en connaissance de cause.",
+      primary: "Demander ma démo gratuite",
+      secondary: "M'appeler",
+    },
+    footer: {
+      tagline: "L'atelier qui dessine la vitrine en ligne des commerces de quartier. Une démo à votre nom, puis un site qui travaille pour vous.",
+      bookCall: "Réserver un appel",
+      demosLabel: "Vitrines de démo",
+      studioLabel: "Atelier",
+      method: "Notre méthode",
+      pricing: "Tarifs",
+      faq: "Questions fréquentes",
+      rights: "Atelier Vitrine. Conçu à la main, à Paris.",
+      legal: "Mentions légales",
+      privacy: "Confidentialité",
+    },
+    notFound: {
+      code: "Erreur 404",
+      titleLead: "Cette porte ne mène",
+      titleAccent: "nulle part.",
+      body: "La page que vous cherchez a peut-être déménagé. Revenez à l'accueil ou visitez nos vitrines de démonstration.",
+      home: "Retour à l'accueil",
+      demos: "Voir les démos",
+    },
+    demoIndex: {
+      back: "Atelier Vitrine",
+      devis: "Devis gratuit",
+      kicker: "Vitrines de démonstration",
+      title: "Quatre portes à pousser.",
+      body: "Chaque démo est un site complet, navigable, avec son propre univers. Choisissez le métier le plus proche du vôtre et projetez-vous.",
+      visit: "Visiter la vitrine",
+    },
+    demoCommon: {
+      allDemos: "Toutes les démos",
+      wantMine: "Je veux la mienne",
+      isDemoBanner: "Démonstration : votre vitrine pourrait ressembler à ça",
+      navCard: "La carte",
+      navPlace: "Le lieu",
+      navArtisan: "L'artisan",
+      addressLabel: "Adresse",
+      hoursLabel: "Horaires",
+      phoneLabel: "Téléphone",
+      openToday: "Ouvert aujourd'hui",
+      servicesIntro: "Ce qu'on vous propose",
+      placeKicker: "Le lieu",
+      artisanKicker: "L'artisan",
+      sheetCaption: "Le même accueil, quel que soit l'angle. Imagerie réalisée sur-mesure pour la vitrine.",
+      reviewsTitle: "Ils en parlent mieux que nous",
+      footerNote: "Vitrine de démonstration. Le commerce est fictif, le savoir-faire ne l'est pas.",
+      createCta: "Créer ma vitrine avec Atelier Vitrine",
+      metaSuffix: "Vitrine de démonstration réalisée par Atelier Vitrine.",
+    },
+  },
+
+  en: {
+    htmlLang: "en",
+    nav: { metiers: "Trades", methode: "Method", tarifs: "Pricing", faq: "FAQ", devis: "Free quote", home: "home" },
+    hero: {
+      badge: "Website maker for local businesses",
+      titleLead: "I build the website for your",
+      titleAccent: "business.",
+      lead: "Design, build and launch of bespoke showcase websites for local artisans and shops. Pick your trade below: you'll see a complete site already designed for you.",
+      ctaPrimary: "Pick my trade",
+      ctaSecondary: "Request a quote",
+      rating: "Rated 4.9/5 by 60+ local business owners",
+      chipDemoTitle: "Demo in 7 days",
+      chipDemoSub: "in your name, free",
+      chipCraftTitle: "100% bespoke",
+      chipCraftSub: "never a recycled theme",
+      heroAlt: "Web design studio: a small-business website being designed on a laptop",
+    },
+    value: {
+      kicker: "What I do",
+      title: "One person, from design to launch.",
+      body: "I design, write, build and host your website. No layered agency, no jargon: you talk to the person who actually makes your site, and you see it live before you commit.",
+      figures: [
+        { n: "75%", l: "of customers judge a business's credibility first by its website." },
+        { n: "2.6×", l: "more enquiries with a polished site than with a plain listing." },
+        { n: "7 d", l: "on average to see your demo live, in your own name." },
+      ],
+    },
+    metiers: {
+      kicker: "Pick your trade",
+      title: "Your trade has its own site. Click to see the whole thing.",
+      body: "Every trade has its own codes, photos and key moments. Here is a complete, navigable site designed for each one. Find yours and picture it.",
+      highlight: {
+        barbershop: "Online booking",
+        onglerie: "24/7 appointment booking",
+        traiteur: "Order platters online",
+        restaurant: "Table booking + menu",
+      },
+      example: "Example:",
+      seePage: "See the page",
+      notListed: "Your trade isn't listed?",
+      talk: "Let's talk",
+      cardAlt: (trade, business) => `Website for ${trade.toLowerCase()} (example: ${business})`,
+    },
+    included: {
+      kicker: "What's included",
+      title: "Everything to open, nothing to manage alone.",
+      items: [
+        { t: "Bespoke design", d: "A look crafted for your trade: colours, typography, photography. Never a recycled theme." },
+        { t: "Complete showcase", d: "Home, services, gallery, reviews, directions and contact. Everything a customer wants before visiting." },
+        { t: "Built-in booking", d: "Appointments, click & collect or a quote form, wired to the tool that fits your activity." },
+        { t: "Local visibility", d: "Optimised for neighbourhood search and synced with your Google Business profile." },
+        { t: "Care and edits", d: "Hours, prices, photos: we adjust together. One edit included every month." },
+        { t: "Fast launch", d: "Hosting, domain name, security and performance handled end to end." },
+      ],
+    },
+    method: {
+      kicker: "The method",
+      title: "Four steps, zero jargon.",
+      steps: [
+        { n: "01", t: "We talk", d: "A 20-minute call to understand your trade, your customers and what you want." },
+        { n: "02", t: "I design the demo", d: "I create your site in your name, photos and copy included, and send it to you live." },
+        { n: "03", t: "You adjust", d: "You visit, you comment. I refine it until it truly feels like you." },
+        { n: "04", t: "Go live", d: "Domain, hosting, Google: I handle it all. You open your showcase." },
+      ],
+    },
+    pricing: {
+      kicker: "Pricing",
+      title: "A clear price, stated before we start.",
+      body: "A one-off build, then a simple subscription for hosting and care. No hidden lock-in.",
+      mostChosen: "Most chosen",
+      plans: [
+        { name: "Essential", price: "€690", sub: "+ €19/mo", featured: false, feats: ["Polished one-page showcase", "Photos and copy included", "Mobile and Google ready", "Live in 7 days"], cta: "Get started" },
+        { name: "Studio", price: "€1,290", sub: "+ €39/mo", featured: true, feats: ["Complete multi-page showcase", "Booking or click & collect", "Bespoke visual identity", "1 edit included / month", "Performance tracking"], cta: "Choose Studio" },
+        { name: "Signature", price: "On request", sub: "dedicated project", featured: false, feats: ["Fully bespoke build", "Advanced features (shop, member area)", "Photo shoot of your business", "Priority support"], cta: "Talk to me" },
+      ],
+    },
+    faq: {
+      kicker: "FAQ",
+      title: "What people often ask me.",
+      items: [
+        { q: "How long until my site is live?", a: "Between 7 and 15 days for a complete showcase. We start with a demo in your name: you approve it, we launch it. You never wait months with nothing to see." },
+        { q: "I have no logo, photos or copy. Is that a problem?", a: "No. We generate a bespoke visual world (like the demos on this site), write your copy and frame your photos. If you already have assets, we use them." },
+        { q: "Will I be able to edit the site myself?", a: "Yes. You get a simple login to change hours, prices, photos and news. For the rest, one edit is included every month in the Studio plan." },
+        { q: "Can customers book or order online?", a: "Yes. Appointments, click & collect, quote forms, an orderable menu: we plug in the tool that fits your trade, with no hidden commission." },
+        { q: "What about Google ranking?", a: "Every site is optimised for local search (listing, neighbourhood keywords, speed, mobile). The goal: that people find you when they search your trade nearby." },
+        { q: "What does it really cost?", a: "From €690 for the essential showcase, then a clear subscription for hosting and care. No surprise quote: the price is stated before we start." },
+      ],
+    },
+    cta: {
+      title: "I'll prepare a demo for you. Free, in your name.",
+      body: "Tell me your trade and your city. Within 7 days you receive the link to a showcase designed for you. Then you decide, with all the facts.",
+      primary: "Request my free demo",
+      secondary: "Call me",
+    },
+    footer: {
+      tagline: "The studio that designs the online showcase of neighbourhood businesses. A demo in your name, then a site that works for you.",
+      bookCall: "Book a call",
+      demosLabel: "Demo sites",
+      studioLabel: "Studio",
+      method: "My method",
+      pricing: "Pricing",
+      faq: "FAQ",
+      rights: "Atelier Vitrine. Handcrafted in Paris.",
+      legal: "Legal notice",
+      privacy: "Privacy",
+    },
+    notFound: {
+      code: "Error 404",
+      titleLead: "This door leads",
+      titleAccent: "nowhere.",
+      body: "The page you're looking for may have moved. Head back home or visit our demo showcases.",
+      home: "Back home",
+      demos: "See the demos",
+    },
+    demoIndex: {
+      back: "Atelier Vitrine",
+      devis: "Free quote",
+      kicker: "Demo showcases",
+      title: "Four doors to open.",
+      body: "Each demo is a complete, navigable site with its own visual world. Pick the trade closest to yours and picture it.",
+      visit: "Visit the showcase",
+    },
+    demoCommon: {
+      allDemos: "All demos",
+      wantMine: "I want mine",
+      isDemoBanner: "Demo: your site could look like this",
+      navCard: "Menu",
+      navPlace: "The place",
+      navArtisan: "The artisan",
+      addressLabel: "Address",
+      hoursLabel: "Hours",
+      phoneLabel: "Phone",
+      openToday: "Open today",
+      servicesIntro: "What we offer",
+      placeKicker: "The place",
+      artisanKicker: "The artisan",
+      sheetCaption: "The same welcome, from every angle. Imagery crafted bespoke for the showcase.",
+      reviewsTitle: "They say it better than we do",
+      footerNote: "Demo showcase. The business is fictional, the craft is not.",
+      createCta: "Build my showcase with Atelier Vitrine",
+      metaSuffix: "Demo showcase made by Atelier Vitrine.",
+    },
+  },
+};

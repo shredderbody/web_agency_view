@@ -1,17 +1,15 @@
+"use client";
 import Link from "next/link";
-import { DEMOS } from "@/lib/demos";
+import { getDemos } from "@/lib/demos";
+import { useLang } from "@/lib/lang-context";
 
 export default function SiteFooter() {
+  const { lang, t } = useLang();
+  const demos = getDemos(lang);
   return (
     <footer style={{ background: "var(--ink)", color: "var(--paper)", paddingBlock: "clamp(3rem, 6vw, 5rem)" }}>
       <div className="wrap">
-        <div
-          style={{
-            display: "grid", gap: "2.5rem",
-            gridTemplateColumns: "minmax(0, 1.4fr) repeat(2, minmax(0, 1fr))",
-          }}
-          className="footer-grid"
-        >
+        <div className="footer-grid" style={{ display: "grid", gap: "2.5rem", gridTemplateColumns: "minmax(0, 1.4fr) repeat(2, minmax(0, 1fr))" }}>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "1rem" }}>
               <span style={{ width: "2rem", height: "2rem", borderRadius: "0.6rem", display: "grid", placeItems: "center", background: "var(--paper)", color: "var(--ink)" }}>
@@ -22,20 +20,14 @@ export default function SiteFooter() {
               </span>
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.2rem" }}>Atelier Vitrine</span>
             </div>
-            <p style={{ color: "oklch(0.85 0.01 80)", maxWidth: "38ch", lineHeight: 1.6 }}>
-              L'atelier qui dessine la vitrine en ligne des commerces de quartier. Une démo à votre nom, puis un site qui travaille pour vous.
-            </p>
-            <a href="/#contact" className="btn btn-accent" style={{ marginTop: "1.4rem" }}>
-              Réserver un appel
-            </a>
+            <p style={{ color: "oklch(0.85 0.01 80)", maxWidth: "40ch", lineHeight: 1.6 }}>{t.footer.tagline}</p>
+            <a href="/#contact" className="btn btn-accent" style={{ marginTop: "1.4rem" }}>{t.footer.bookCall}</a>
           </div>
 
           <div>
-            <p style={{ fontSize: "0.78rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "oklch(0.72 0.01 80)", marginBottom: "0.9rem" }}>
-              Vitrines de démo
-            </p>
+            <p style={{ fontSize: "0.78rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "oklch(0.72 0.01 80)", marginBottom: "0.9rem" }}>{t.footer.demosLabel}</p>
             <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "0.55rem" }}>
-              {DEMOS.map((d) => (
+              {demos.map((d) => (
                 <li key={d.slug}>
                   <Link href={`/demo/${d.slug}`} className="foot-link">
                     {d.business} <span style={{ opacity: 0.6 }}>· {d.trade}</span>
@@ -46,29 +38,21 @@ export default function SiteFooter() {
           </div>
 
           <div>
-            <p style={{ fontSize: "0.78rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "oklch(0.72 0.01 80)", marginBottom: "0.9rem" }}>
-              Atelier
-            </p>
+            <p style={{ fontSize: "0.78rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "oklch(0.72 0.01 80)", marginBottom: "0.9rem" }}>{t.footer.studioLabel}</p>
             <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "0.55rem" }}>
-              <li><a href="/#methode" className="foot-link">Notre méthode</a></li>
-              <li><a href="/#tarifs" className="foot-link">Tarifs</a></li>
-              <li><a href="/#faq" className="foot-link">Questions fréquentes</a></li>
+              <li><a href="/#methode" className="foot-link">{t.footer.method}</a></li>
+              <li><a href="/#tarifs" className="foot-link">{t.footer.pricing}</a></li>
+              <li><a href="/#faq" className="foot-link">{t.footer.faq}</a></li>
               <li><a href="mailto:bonjour@atelier-vitrine.fr" className="foot-link">bonjour@atelier-vitrine.fr</a></li>
             </ul>
           </div>
         </div>
 
-        <div
-          style={{
-            marginTop: "3rem", paddingTop: "1.4rem", borderTop: "1px solid oklch(0.97 0.01 80 / 0.14)",
-            display: "flex", flexWrap: "wrap", gap: "0.6rem 1.5rem", alignItems: "center", justifyContent: "space-between",
-            color: "oklch(0.72 0.01 80)", fontSize: "0.85rem",
-          }}
-        >
-          <span>© {new Date().getFullYear()} Atelier Vitrine. Conçu à la main, à Lyon.</span>
+        <div style={{ marginTop: "3rem", paddingTop: "1.4rem", borderTop: "1px solid oklch(0.97 0.01 80 / 0.14)", display: "flex", flexWrap: "wrap", gap: "0.6rem 1.5rem", alignItems: "center", justifyContent: "space-between", color: "oklch(0.72 0.01 80)", fontSize: "0.85rem" }}>
+          <span>© {new Date().getFullYear()} {t.footer.rights}</span>
           <span style={{ display: "inline-flex", gap: "1.2rem" }}>
-            <a href="#" className="foot-link">Mentions légales</a>
-            <a href="#" className="foot-link">Confidentialité</a>
+            <a href="#" className="foot-link">{t.footer.legal}</a>
+            <a href="#" className="foot-link">{t.footer.privacy}</a>
           </span>
         </div>
       </div>
