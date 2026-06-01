@@ -1,0 +1,4 @@
+current_time=$(date "+%Y%m%d_%H%M%S")
+cd /home/contact/web_agency_view/
+cloudflared tunnel --url http://127.0.0.1:3010 > /home/contact/web_agency_view/log_tmp/"$current_time"_cmd_run.txt 2> /home/contact/web_agency_view/log_tmp/"$current_time"_cmd_err_run.txt &
+

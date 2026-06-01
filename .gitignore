@@ -36,3 +36,9 @@ Thumbs.db
 # Misc
 *.local
 .cache/
+
+# TS build info
+*.tsbuildinfo
+
+# Playwright
+/test-results/

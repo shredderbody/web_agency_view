@@ -1,0 +1,43 @@
+# Atelier Vitrine
+
+Site marketing d'un studio web qui crée des vitrines en ligne sur-mesure pour les commerces de quartier (barbiers, ongleries, charcutiers-traiteurs, restaurants). Le site présente l'offre **et** fait visiter des vitrines de démonstration complètes, chacune dans son propre univers visuel.
+
+## Stack
+- Next.js 15 (App Router) · React 19 · TypeScript
+- Tailwind CSS v4 (CSS-first `@theme`) + design system maison dans `app/globals.css`
+- Polices : Bricolage Grotesque, Hanken Grotesk, Anton, Marcellus (`next/font/google`)
+- Icônes : `lucide-react`
+
+## Démarrer
+```bash
+npm install
+npm run dev      # http://localhost:3000
+npm run build && npm run start
+```
+
+## Structure
+```
+app/
+  page.tsx              # Accueil (agence)
+  demo/page.tsx         # Galerie des vitrines de démo
+  demo/[slug]/page.tsx  # Une vitrine de démo (univers scopé via [data-vit])
+  not-found.tsx · icon.svg · globals.css · layout.tsx
+components/             # SiteNav, SiteFooter, Faq, Reveal
+lib/
+  demos.ts              # Métadonnées des démos (galerie)
+  vitrineContent.ts     # Contenu complet de chaque vitrine
+public/characters/      # Imagerie générée (portraits, planches-contact, scènes)
+scripts/
+  gen_characters.py     # Génération d'images via KIE AI (text-to-image)
+  shoot.mjs             # Captures de vérification (Playwright)
+```
+
+## Imagerie sur-mesure
+Les visuels de chaque métier (portrait d'artisan, planche-contact, scène de boutique,
+détail produit) sont générés via l'API KIE (`gpt-image-2-text-to-image`) puis convertis en WebP.
+
+```bash
+KIE_API_KEY=... python3 scripts/gen_characters.py   # -> public/characters/*.webp (PNG puis cwebp)
+```
+
+Voir `PRODUCT.md` et `DESIGN.md` pour la direction de marque et les tokens.
