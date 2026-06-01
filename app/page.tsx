@@ -53,8 +53,8 @@ export default function Home() {
 
               <Reveal delay={180}>
                 <div className="hero-visual" style={{ position: "relative", maxWidth: "560px", marginInline: "auto", width: "100%" }}>
-                  <div style={{ position: "relative", aspectRatio: "16 / 12", borderRadius: "1.4rem", overflow: "hidden", border: "1px solid var(--border-strong)", boxShadow: "var(--shadow-lg)" }}>
-                    <Image src="/studio/hero-desk.webp" alt={t.hero.heroAlt} fill priority sizes="(max-width: 1000px) 92vw, 520px" style={{ objectFit: "cover" }} />
+                  <div style={{ position: "relative", aspectRatio: "16 / 9", borderRadius: "1.4rem", overflow: "hidden", border: "1px solid var(--border-strong)", boxShadow: "var(--shadow-lg)" }}>
+                    <Image src="/studio/hero-desk.webp" alt={t.hero.heroAlt} fill priority sizes="(max-width: 1000px) 92vw, 520px" style={{ objectFit: "cover", objectPosition: "center" }} />
                   </div>
                   <div className="hero-chip hero-chip-bl card" style={{ position: "absolute", bottom: "-1.2rem", left: "-0.9rem", padding: "0.7rem 1rem", display: "flex", alignItems: "center", gap: "0.6rem", boxShadow: "var(--shadow)" }}>
                     <span style={{ width: "2rem", height: "2rem", borderRadius: "0.6rem", display: "grid", placeItems: "center", background: "var(--vermilion-soft)", color: "var(--vermilion-deep)", flexShrink: 0 }}><Clock size={16} /></span>
@@ -104,8 +104,8 @@ export default function Home() {
               {demos.map((d, i) => (
                 <Reveal key={d.slug} delay={(i % 2) * 80}>
                   <Link href={`/demo/${d.slug}`} className="card card-hover" style={{ display: "flex", flexDirection: "column", overflow: "hidden", height: "100%" }}>
-                    <div style={{ position: "relative", aspectRatio: "16 / 11" }}>
-                      <Image src={d.cover} alt={t.metiers.cardAlt(d.trade, d.business)} fill sizes="(max-width: 700px) 100vw, 380px" style={{ objectFit: "cover" }} />
+                    <div style={{ position: "relative", aspectRatio: "16 / 9" }}>
+                      <Image src={d.cover} alt={t.metiers.cardAlt(d.trade, d.business)} fill sizes="(max-width: 700px) 100vw, 380px" style={{ objectFit: "cover", objectPosition: "center" }} />
                       <span className="chip" style={{ position: "absolute", top: "0.85rem", left: "0.85rem", display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
                         <Check size={13} strokeWidth={3} style={{ color: "var(--vermilion-deep)" }} /> {t.metiers.highlight[d.slug]}
                       </span>

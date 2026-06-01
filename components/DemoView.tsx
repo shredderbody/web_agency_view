@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Clock, MapPin, Phone, Star } from "lucide-react";
@@ -11,6 +11,10 @@ import { getVitrine } from "@/lib/vitrineContent";
 export default function DemoView({ slug }: { slug: string }) {
   const { lang, t } = useLang();
   const [menu, setMenu] = useState(false);
+  useEffect(() => {
+    document.body.style.overflow = menu ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menu]);
   const v = getVitrine(lang, slug);
   if (!v) return null;
   const c = t.demoCommon;
@@ -44,7 +48,7 @@ export default function DemoView({ slug }: { slug: string }) {
             <a href="#reserver" className="vit-btn" style={{ padding: "0.55rem 1.1rem" }}>{v.primaryCta}</a>
           </nav>
           <button
-            className="vit-burger" aria-label="Menu" aria-expanded={menu} onClick={() => setMenu((x) => !x)}
+            className="vit-burger" aria-label={t.nav.menu} aria-expanded={menu} onClick={() => setMenu((x) => !x)}
             style={{ display: "inline-flex", background: "transparent", border: "1px solid var(--line)", borderRadius: "0.6rem", width: "2.6rem", height: "2.6rem", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "var(--fg)", flexShrink: 0 }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -52,19 +56,48 @@ export default function DemoView({ slug }: { slug: string }) {
             </svg>
           </button>
         </div>
-        {/* Mobile drawer */}
-        <div className="vit-drawer" style={{ overflow: "hidden", maxHeight: menu ? "24rem" : 0, transition: "max-height 0.34s var(--ease)", borderTop: menu ? "1px solid var(--line)" : "none", background: "var(--bg-2)" }}>
-          <div className="wrap" style={{ display: "flex", flexDirection: "column", gap: "0.1rem", padding: menu ? "0.6rem 0 1.2rem" : 0 }}>
-            {navLinks.map((l) => (
-              <a key={l.href} href={l.href} onClick={() => setMenu(false)} className="vit-display" style={{ padding: "0.8rem 0.3rem", fontSize: "1.15rem", borderBottom: "1px solid var(--line)" }}>{l.label}</a>
-            ))}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", marginTop: "1rem", flexWrap: "wrap" }}>
-              <LangSelector tone={dark ? "dark" : "light"} />
-              <a href="#reserver" onClick={() => setMenu(false)} className="vit-btn">{v.primaryCta}</a>
-            </div>
-          </div>
-        </div>
       </header>
+
+      {/* Backdrop */}
+      <div
+        className="vit-overlay" aria-hidden onClick={() => setMenu(false)}
+        style={{
+          position: "fixed", inset: 0, zIndex: 55, background: "oklch(0 0 0 / 0.5)", backdropFilter: "blur(2px)",
+          opacity: menu ? 1 : 0, pointerEvents: menu ? "auto" : "none", transition: "opacity 0.32s var(--ease)",
+        }}
+      />
+
+      {/* Retractable sidebar */}
+      <aside
+        className="vit-sidebar" data-open={menu} aria-hidden={!menu}
+        style={{
+          position: "fixed", top: 0, right: 0, bottom: 0, zIndex: 60,
+          width: "min(86vw, 360px)", background: "var(--bg-2)", color: "var(--fg)",
+          borderLeft: "1px solid var(--line)", boxShadow: "0 0 60px oklch(0 0 0 / 0.4)",
+          transform: menu ? "translateX(0)" : "translateX(101%)", transition: "transform 0.4s var(--ease)",
+          display: "flex", flexDirection: "column",
+          padding: "1.3rem 1.4rem calc(1.6rem + env(safe-area-inset-bottom))", overflowY: "auto",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.8rem" }}>
+          <span className="vit-display" style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: ls, textTransform: isBarber ? "uppercase" : "none" }}>{v.business}</span>
+          <button
+            aria-label={t.nav.close} onClick={() => setMenu(false)}
+            style={{ display: "inline-flex", background: "transparent", border: "1px solid var(--line)", borderRadius: "0.6rem", width: "2.4rem", height: "2.4rem", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "var(--fg)", flexShrink: 0 }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12" /><path d="M18 6 6 18" /></svg>
+          </button>
+        </div>
+        <nav style={{ display: "flex", flexDirection: "column" }}>
+          {navLinks.map((l) => (
+            <a key={l.href} href={l.href} onClick={() => setMenu(false)} className="vit-display" style={{ padding: "0.95rem 0.2rem", fontSize: "1.2rem", borderBottom: "1px solid var(--line)" }}>{l.label}</a>
+          ))}
+        </nav>
+        <div style={{ marginTop: "auto", paddingTop: "1.8rem", display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+          <LangSelector tone={dark ? "dark" : "light"} />
+          <a href="#reserver" onClick={() => setMenu(false)} className="vit-btn" style={{ width: "100%" }}>{v.primaryCta}</a>
+        </div>
+      </aside>
 
       {/* HERO */}
       <section style={{ paddingBlock: "clamp(2.4rem, 5vw, 4.5rem)" }}>
@@ -85,8 +118,8 @@ export default function DemoView({ slug }: { slug: string }) {
             </Reveal>
             <Reveal delay={120} style={{ order: v.vit === "onglerie" ? 1 : 2 }}>
               <div style={{ position: "relative" }}>
-                <div style={{ position: "relative", aspectRatio: "4 / 5", borderRadius: "1.4rem", overflow: "hidden", border: "1px solid var(--line)", boxShadow: "0 30px 70px oklch(0 0 0 / 0.25)" }}>
-                  <Image src={v.cover} alt={`${v.business}, ${v.trade}`} fill priority sizes="(max-width: 860px) 92vw, 540px" style={{ objectFit: "cover" }} />
+                <div style={{ position: "relative", aspectRatio: "16 / 9", borderRadius: "1.4rem", overflow: "hidden", border: "1px solid var(--line)", boxShadow: "0 30px 70px oklch(0 0 0 / 0.25)" }}>
+                  <Image src={v.cover} alt={`${v.business}, ${v.trade}`} fill priority sizes="(max-width: 860px) 92vw, 560px" style={{ objectFit: "cover", objectPosition: "center" }} />
                 </div>
                 <div className="vit-card hero-badge" style={{ position: "absolute", bottom: "-1.1rem", left: v.vit === "onglerie" ? "auto" : "-1rem", right: v.vit === "onglerie" ? "-1rem" : "auto", padding: "0.75rem 1rem", display: "flex", alignItems: "center", gap: "0.6rem" }}>
                   <Clock size={18} style={{ color: "var(--accent)", flexShrink: 0 }} />
@@ -131,8 +164,8 @@ export default function DemoView({ slug }: { slug: string }) {
               ))}
             </div>
             <Reveal delay={120}>
-              <div style={{ position: "relative", aspectRatio: "3 / 4", borderRadius: "1.3rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                <Image src={v.detail} alt={`${v.business}`} fill sizes="(max-width: 860px) 92vw, 420px" style={{ objectFit: "cover" }} />
+              <div style={{ position: "relative", aspectRatio: "4 / 3", borderRadius: "1.3rem", overflow: "hidden", border: "1px solid var(--line)" }}>
+                <Image src={v.detail} alt={`${v.business}`} fill sizes="(max-width: 860px) 92vw, 460px" style={{ objectFit: "cover", objectPosition: "center" }} />
               </div>
             </Reveal>
           </div>
@@ -149,21 +182,21 @@ export default function DemoView({ slug }: { slug: string }) {
               <p style={{ color: "var(--fg-dim)", fontSize: "1.04rem", margin: 0 }}>{v.galleryLead}</p>
             </div>
           </Reveal>
-          <div className="gallery-grid" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "1rem" }}>
-            <Reveal className="g-main">
-              <div style={{ position: "relative", height: "100%", minHeight: "16rem", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                <Image src={v.scene} alt={`${v.business}`} fill sizes="(max-width: 860px) 92vw, 620px" style={{ objectFit: "cover" }} />
+          <div className="gallery-stack" style={{ display: "grid", gap: "1rem" }}>
+            <Reveal>
+              <div style={{ position: "relative", aspectRatio: "16 / 9", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
+                <Image src={v.scene} alt={`${v.business}`} fill sizes="(max-width: 860px) 92vw, 1180px" style={{ objectFit: "cover", objectPosition: "center" }} />
               </div>
             </Reveal>
-            <div style={{ display: "grid", gap: "1rem" }}>
+            <div className="gallery-pair" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", alignItems: "start" }}>
               <Reveal delay={80}>
-                <div style={{ position: "relative", aspectRatio: "5 / 4", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                  <Image src={v.detail} alt={`${v.business}`} fill sizes="(max-width: 860px) 92vw, 360px" style={{ objectFit: "cover" }} />
+                <div style={{ position: "relative", aspectRatio: "4 / 3", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
+                  <Image src={v.detail} alt={`${v.business}`} fill sizes="(max-width: 860px) 46vw, 560px" style={{ objectFit: "cover", objectPosition: "center" }} />
                 </div>
               </Reveal>
               <Reveal delay={140}>
-                <div style={{ position: "relative", aspectRatio: "5 / 4", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                  <Image src={v.portrait} alt={`${v.artisanName} · ${v.business}`} fill sizes="(max-width: 860px) 92vw, 360px" style={{ objectFit: "cover" }} />
+                <div style={{ position: "relative", aspectRatio: "3 / 4", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
+                  <Image src={v.portrait} alt={`${v.artisanName} · ${v.business}`} fill sizes="(max-width: 860px) 46vw, 420px" style={{ objectFit: "cover", objectPosition: "center top" }} />
                 </div>
               </Reveal>
             </div>
@@ -254,14 +287,14 @@ export default function DemoView({ slug }: { slug: string }) {
       <style>{`
         .vit-navlink { color: var(--fg-dim); transition: color 0.18s var(--ease); }
         .vit-navlink:hover { color: var(--accent); }
-        @media (min-width: 860px) { .vit-burger { display: none !important; } .vit-drawer { display: none !important; } }
+        @media (min-width: 860px) { .vit-burger { display: none !important; } .vit-sidebar, .vit-overlay { display: none !important; } }
         @media (max-width: 859px) { .vit-nav-desktop { display: none !important; } }
         @media (max-width: 860px) {
           .demo-hero, .menu-grid, .artisan-grid { grid-template-columns: 1fr !important; }
           .demo-hero > * { order: 0 !important; }
-          .gallery-grid { grid-template-columns: 1fr !important; }
           .reviews-grid { grid-template-columns: 1fr !important; }
         }
+        @media (max-width: 480px) { .gallery-pair { grid-template-columns: 1fr !important; } }
         @media (min-width: 561px) and (max-width: 860px) { .reviews-grid { grid-template-columns: 1fr 1fr !important; } }
         @media (max-width: 620px) {
           .info-strip { grid-template-columns: 1fr !important; }

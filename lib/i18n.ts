@@ -11,7 +11,7 @@ export const isLang = (v: unknown): v is Lang => v === "fr" || v === "en";
 
 type UI = {
   htmlLang: string;
-  nav: { metiers: string; methode: string; tarifs: string; faq: string; devis: string; home: string };
+  nav: { metiers: string; methode: string; tarifs: string; faq: string; devis: string; home: string; menu: string; close: string };
   hero: {
     badge: string;
     titleLead: string;
@@ -88,7 +88,7 @@ type UI = {
 export const ui: Record<Lang, UI> = {
   fr: {
     htmlLang: "fr",
-    nav: { metiers: "Métiers", methode: "Méthode", tarifs: "Tarifs", faq: "Questions", devis: "Devis gratuit", home: "accueil" },
+    nav: { metiers: "Métiers", methode: "Méthode", tarifs: "Tarifs", faq: "Questions", devis: "Devis gratuit", home: "accueil", menu: "Ouvrir le menu", close: "Fermer le menu" },
     hero: {
       badge: "Créateur de sites web pour commerces",
       titleLead: "Je crée le site web de votre",
@@ -232,7 +232,7 @@ export const ui: Record<Lang, UI> = {
 
   en: {
     htmlLang: "en",
-    nav: { metiers: "Trades", methode: "Method", tarifs: "Pricing", faq: "FAQ", devis: "Free quote", home: "home" },
+    nav: { metiers: "Trades", methode: "Method", tarifs: "Pricing", faq: "FAQ", devis: "Free quote", home: "home", menu: "Open menu", close: "Close menu" },
     hero: {
       badge: "Website maker for local businesses",
       titleLead: "I build the website for your",

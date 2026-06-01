@@ -30,6 +30,7 @@ export default function SiteNav() {
   }, [open]);
 
   return (
+    <>
     <header
       style={{
         position: "fixed", insetInline: 0, top: 0, zIndex: 50,
@@ -59,38 +60,81 @@ export default function SiteNav() {
           <span className="nav-lang-desktop" style={{ display: "none" }}><LangSelector /></span>
           <a href="/#contact" className="btn btn-accent nav-cta" style={{ padding: "0.6rem 1.15rem" }}>{t.nav.devis}</a>
           <button
-            aria-label="Menu" aria-expanded={open} onClick={() => setOpen((v) => !v)} className="nav-burger"
+            aria-label={t.nav.menu} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="nav-burger"
             style={{ display: "inline-flex", background: "none", border: "1px solid var(--border-strong)", borderRadius: "0.6rem", width: "2.6rem", height: "2.6rem", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}
           >
             <Burger open={open} />
           </button>
         </div>
       </nav>
+    </header>
 
-      {/* Mobile / tablet drawer */}
-      <div className="nav-drawer" data-open={open} style={{ overflow: "hidden", transition: "max-height 0.34s var(--ease)", maxHeight: open ? "26rem" : 0 }}>
-        <div className="wrap" style={{ display: "flex", flexDirection: "column", gap: "0.1rem", paddingBottom: "1.2rem" }}>
+      {/* Backdrop */}
+      <div
+        className="nav-overlay" aria-hidden onClick={() => setOpen(false)}
+        style={{
+          position: "fixed", inset: 0, zIndex: 55,
+          background: "oklch(0.235 0.018 55 / 0.42)", backdropFilter: "blur(2px)",
+          opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none",
+          transition: "opacity 0.32s var(--ease)",
+        }}
+      />
+
+      {/* Retractable sidebar */}
+      <aside
+        className="nav-sidebar" data-open={open} aria-hidden={!open}
+        style={{
+          position: "fixed", top: 0, right: 0, bottom: 0, zIndex: 60,
+          width: "min(86vw, 360px)", background: "var(--surface)",
+          borderLeft: "1px solid var(--border)", boxShadow: "var(--shadow-lg)",
+          transform: open ? "translateX(0)" : "translateX(101%)",
+          transition: "transform 0.4s var(--ease)",
+          display: "flex", flexDirection: "column",
+          padding: "1.3rem 1.4rem calc(1.6rem + env(safe-area-inset-bottom))",
+          overflowY: "auto",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.8rem" }}>
+          <Link href="/" onClick={() => setOpen(false)} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <Mark />
+            <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.05rem", letterSpacing: "-0.02em" }}>
+              Atelier <span style={{ color: "var(--vermilion-deep)" }}>Vitrine</span>
+            </span>
+          </Link>
+          <button
+            aria-label={t.nav.close} onClick={() => setOpen(false)}
+            style={{ display: "inline-flex", background: "none", border: "1px solid var(--border-strong)", borderRadius: "0.6rem", width: "2.4rem", height: "2.4rem", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12" /><path d="M18 6 6 18" /></svg>
+          </button>
+        </div>
+
+        <nav style={{ display: "flex", flexDirection: "column" }}>
           {LINKS.map((l) => (
-            <a key={l.href} href={l.href} onClick={() => setOpen(false)} style={{ padding: "0.85rem 0.3rem", fontSize: "1.1rem", fontWeight: 600, fontFamily: "var(--font-display)", borderBottom: "1px solid var(--border)" }}>
+            <a key={l.href} href={l.href} onClick={() => setOpen(false)} style={{ padding: "0.95rem 0.2rem", fontSize: "1.18rem", fontWeight: 600, fontFamily: "var(--font-display)", borderBottom: "1px solid var(--border)" }}>
               {l.label}
             </a>
           ))}
-          <div style={{ marginTop: "1rem" }}><LangSelector /></div>
+        </nav>
+
+        <div style={{ marginTop: "auto", paddingTop: "1.8rem", display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+          <LangSelector />
+          <a href="/#contact" onClick={() => setOpen(false)} className="btn btn-accent" style={{ width: "100%" }}>{t.nav.devis}</a>
         </div>
-      </div>
+      </aside>
 
       <style>{`
         @media (min-width: 1000px) {
           .nav-desktop { display: flex !important; }
           .nav-lang-desktop { display: inline-flex !important; }
           .nav-burger { display: none !important; }
-          .nav-drawer { display: none !important; }
+          .nav-sidebar, .nav-overlay { display: none !important; }
         }
         .nav-link { transition: color 0.18s var(--ease); }
         .nav-link:hover { color: var(--vermilion-deep); }
         @media (max-width: 380px) { .nav-cta { display: none !important; } }
       `}</style>
-    </header>
+    </>
   );
 }
 

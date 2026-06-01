@@ -37,8 +37,8 @@ export default function DemoIndex() {
           {demos.map((d, i) => (
             <Reveal key={d.slug} delay={(i % 2) * 80}>
               <Link href={`/demo/${d.slug}`} className="card card-hover" style={{ display: "block", overflow: "hidden", height: "100%" }}>
-                <div style={{ position: "relative", aspectRatio: "4 / 3" }}>
-                  <Image src={d.cover} alt={`${d.business}, ${d.trade}`} fill sizes="(max-width: 700px) 100vw, 400px" style={{ objectFit: "cover" }} />
+                <div style={{ position: "relative", aspectRatio: "16 / 9" }}>
+                  <Image src={d.cover} alt={`${d.business}, ${d.trade}`} fill sizes="(max-width: 700px) 100vw, 400px" style={{ objectFit: "cover", objectPosition: "center" }} />
                   <span className="chip" style={{ position: "absolute", top: "0.9rem", left: "0.9rem" }}>{d.trade}</span>
                 </div>
                 <div style={{ padding: "1.3rem 1.5rem 1.5rem" }}>
