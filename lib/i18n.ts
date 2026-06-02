@@ -147,6 +147,7 @@ export const ui: Record<Lang, UI> = {
         onglerie: "Réservation de soins 24h/24",
         traiteur: "Commande de plateaux en ligne",
         restaurant: "Réservation de table + menu",
+        plombier: "Demande de devis en ligne",
       },
       example: "Exemple :",
       seePage: "Voir la page",
@@ -170,10 +171,10 @@ export const ui: Record<Lang, UI> = {
       kicker: "La méthode",
       title: "Quatre étapes, zéro jargon.",
       steps: [
-        { n: "01", t: "On échange", d: "Un appel de 20 minutes pour comprendre votre métier, vos clients et vos envies." },
-        { n: "02", t: "Je dessine la démo", d: "Je crée votre vitrine à votre nom, photos et textes compris, et je vous l'envoie en ligne." },
-        { n: "03", t: "Vous ajustez", d: "Vous visitez, vous commentez. Je retouche jusqu'à ce que ce soit vraiment vous." },
-        { n: "04", t: "Mise en ligne", d: "Domaine, hébergement, Google : je m'occupe de tout. Vous ouvrez votre vitrine." },
+        { n: "1", t: "On échange", d: "Un appel de 20 minutes pour comprendre votre métier, vos clients et vos envies." },
+        { n: "2", t: "Je dessine la démo", d: "Je crée votre vitrine à votre nom, photos et textes compris, et je vous l'envoie en ligne." },
+        { n: "3", t: "Vous ajustez", d: "Vous visitez, vous commentez. Je retouche jusqu'à ce que ce soit vraiment vous." },
+        { n: "4", t: "Mise en ligne", d: "Domaine, hébergement, Google : je m'occupe de tout. Vous ouvrez votre vitrine." },
       ],
     },
     pricing: {
@@ -182,9 +183,9 @@ export const ui: Record<Lang, UI> = {
       body: "Création unique, puis un abonnement simple pour l'hébergement et le suivi. Sans engagement piège.",
       mostChosen: "Le plus choisi",
       plans: [
-        { name: "Essentielle", price: "499 €", sub: "+ 29 €/mois", featured: false, feats: ["Audit express de votre présence en ligne", "Vitrine une page soignée", "Photos et textes rédigés pour vous", "SEO local de base + fiche Google", "1 round de révisions", "Mobile et performance optimisés", "Livraison en 7 jours"], cta: "Démarrer" },
-        { name: "Atelier", price: "999 €", sub: "+ 49 €/mois", featured: true, feats: ["Audit complet de votre activité", "Vitrine multi-pages (jusqu'à 5 pages)", "Maquette design sur-mesure", "Réservation ou click & collect intégré", "SEO local avancé + suivi des performances", "3 rounds de révisions", "1 retouche incluse / mois", "Livraison en 7 jours"], cta: "Choisir Atelier" },
-        { name: "Signature", price: "Sur devis", sub: "projet dédié", featured: false, feats: ["Tout l'Atelier inclus", "Conception 100% sur-mesure, sans limite de pages", "Fonctions avancées (boutique, espace membre)", "Séance photo de votre commerce", "Rounds de révisions illimités", "Accompagnement prioritaire dédié", "Livraison en 7 jours"], cta: "En parler" },
+        { name: "Essentielle", price: "490 €", sub: "+ 29 €/mois", featured: false, feats: ["Audit express de votre présence en ligne", "Vitrine une page soignée", "Photos et textes rédigés pour vous", "SEO local de base + fiche Google", "1 round de révisions", "Mobile et performance optimisés", "Livraison en 7 jours"], cta: "Démarrer" },
+        { name: "Atelier", price: "990 €", sub: "+ 49 €/mois", featured: true, feats: ["Audit complet de votre activité", "Vitrine multi-pages (jusqu'à 5 pages)", "Maquette design sur-mesure", "Réservation ou click & collect intégré", "SEO local avancé + suivi des performances", "3 rounds de révisions", "1 retouche incluse / mois", "Livraison en 7 jours"], cta: "Choisir Atelier" },
+        { name: "Signature", price: "Sur devis", sub: "projet dédié", featured: false, feats: ["Tout l'Atelier inclus", "Conception 100% sur-mesure, sans limite de pages", "Fonctions avancées (boutique, espace membre)", "Rounds de révisions illimités", "Accompagnement prioritaire dédié", "Livraison en 7 jours"], cta: "En parler" },
       ],
     },
     addons: {
@@ -332,6 +333,7 @@ export const ui: Record<Lang, UI> = {
         onglerie: "24/7 appointment booking",
         traiteur: "Order platters online",
         restaurant: "Table booking + menu",
+        plombier: "Online quote requests",
       },
       example: "Example:",
       seePage: "See the page",
@@ -355,10 +357,10 @@ export const ui: Record<Lang, UI> = {
       kicker: "The method",
       title: "Four steps, zero jargon.",
       steps: [
-        { n: "01", t: "We talk", d: "A 20-minute call to understand your trade, your customers and what you want." },
-        { n: "02", t: "I design the demo", d: "I create your site in your name, photos and copy included, and send it to you live." },
-        { n: "03", t: "You adjust", d: "You visit, you comment. I refine it until it truly feels like you." },
-        { n: "04", t: "Go live", d: "Domain, hosting, Google: I handle it all. You open your showcase." },
+        { n: "1", t: "We talk", d: "A 20-minute call to understand your trade, your customers and what you want." },
+        { n: "2", t: "I design the demo", d: "I create your site in your name, photos and copy included, and send it to you live." },
+        { n: "3", t: "You adjust", d: "You visit, you comment. I refine it until it truly feels like you." },
+        { n: "4", t: "Go live", d: "Domain, hosting, Google: I handle it all. You open your showcase." },
       ],
     },
     pricing: {
@@ -367,9 +369,9 @@ export const ui: Record<Lang, UI> = {
       body: "A one-off build, then a simple subscription for hosting and care. No hidden lock-in.",
       mostChosen: "Most chosen",
       plans: [
-        { name: "Essential", price: "€499", sub: "+ €29/mo", featured: false, feats: ["Express audit of your online presence", "Polished one-page showcase", "Photos and copy written for you", "Basic local SEO + Google listing", "1 round of revisions", "Mobile and performance optimised", "Delivered in 7 days"], cta: "Get started" },
-        { name: "Studio", price: "€999", sub: "+ €49/mo", featured: true, feats: ["Full audit of your business", "Multi-page showcase (up to 5 pages)", "Bespoke design mockup", "Built-in booking or click & collect", "Advanced local SEO + performance tracking", "3 rounds of revisions", "1 edit included / month", "Delivered in 7 days"], cta: "Choose Studio" },
-        { name: "Signature", price: "On request", sub: "dedicated project", featured: false, feats: ["Everything in Studio included", "Fully bespoke build, no page limit", "Advanced features (shop, member area)", "Photo shoot of your business", "Unlimited rounds of revisions", "Dedicated priority support", "Delivered in 7 days"], cta: "Talk to me" },
+        { name: "Essential", price: "€490", sub: "+ €29/mo", featured: false, feats: ["Express audit of your online presence", "Polished one-page showcase", "Photos and copy written for you", "Basic local SEO + Google listing", "1 round of revisions", "Mobile and performance optimised", "Delivered in 7 days"], cta: "Get started" },
+        { name: "Studio", price: "€990", sub: "+ €49/mo", featured: true, feats: ["Full audit of your business", "Multi-page showcase (up to 5 pages)", "Bespoke design mockup", "Built-in booking or click & collect", "Advanced local SEO + performance tracking", "3 rounds of revisions", "1 edit included / month", "Delivered in 7 days"], cta: "Choose Studio" },
+        { name: "Signature", price: "On request", sub: "dedicated project", featured: false, feats: ["Everything in Studio included", "Fully bespoke build, no page limit", "Advanced features (shop, member area)", "Unlimited rounds of revisions", "Dedicated priority support", "Delivered in 7 days"], cta: "Talk to me" },
       ],
     },
     addons: {

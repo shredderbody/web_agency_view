@@ -5,7 +5,7 @@ export type Review = { text: string; author: string; meta: string; image: string
 
 export type VitBase = {
   slug: string;
-  vit: "barber" | "onglerie" | "traiteur" | "resto";
+  vit: "barber" | "onglerie" | "traiteur" | "resto" | "plombier";
   business: string;
   city: string;
   cover: string;
@@ -65,6 +65,12 @@ export const VIT_BASE: Record<string, VitBase> = {
     cover: "/characters/restaurant-scene.webp", portrait: "/characters/restaurant-portrait.webp",
     sheet: "/characters/restaurant-sheet.webp", detail: "/characters/restaurant-detail.webp", scene: "/characters/restaurant-scene.webp",
     address: "12 rue Saint-Maur, 75011 Paris", phone: "01 43 00 00 12", artisanName: "Camille",
+  },
+  plombier: {
+    slug: "plombier", vit: "plombier", business: "Plomberie Mercier", city: "Nantes",
+    cover: "/characters/plombier-scene.webp", portrait: "/characters/plombier-portrait.webp",
+    sheet: "/characters/plombier-sheet.webp", detail: "/characters/plombier-detail.webp", scene: "/characters/plombier-scene.webp",
+    address: "5 rue des Olivettes, 44000 Nantes", phone: "02 40 00 00 14", artisanName: "Julien Mercier",
   },
 };
 
@@ -198,6 +204,38 @@ const TEXT: Record<Lang, Record<string, VitText>> = {
       closingTitle: "Gardez-nous une place ce soir.",
       closingLead: "Réservez votre table en ligne en quelques secondes, ou commandez à emporter pour ce soir.",
     },
+    plombier: {
+      trade: "Plombier · Chauffagiste", kicker: "Artisan plombier depuis 2009 · Nantes",
+      heroTitle: "Une fuite, une panne, une salle de bain à refaire ? On s'en occupe.",
+      heroLead: "Dépannage rapide, rénovation de salle de bain clé en main et installation sanitaire soignée. Décrivez votre besoin en ligne, recevez un devis clair sous 48 h.",
+      primaryCta: "Demander un devis", secondaryCta: "Voir les prestations",
+      rating: "4,9", ratingMeta: "204 avis Google", hours: "Lun – Ven · 8h à 19h · Urgences 7j/7",
+      servicesTitle: "Nos prestations",
+      services: [
+        { name: "Dépannage & recherche de fuite", desc: "Intervention rapide, diagnostic et réparation sans casse.", price: "dès 79 €" },
+        { name: "Rénovation de salle de bain", desc: "De la dépose à la pose : carrelage, douche, vasque, robinetterie.", price: "sur devis" },
+        { name: "Installation sanitaire", desc: "WC, lavabo, douche à l'italienne, raccordements aux normes.", price: "sur devis" },
+        { name: "Chauffe-eau & chauffage", desc: "Pose et remplacement de chauffe-eau, ballon thermodynamique.", price: "dès 290 €" },
+        { name: "Contrat d'entretien", desc: "Visite annuelle, détartrage et contrôle des installations.", price: "dès 129 € / an" },
+      ],
+      galleryTitle: "Du chantier au résultat",
+      galleryLead: "Salles de bain rénovées, soudures propres et finitions au cordeau. Le travail bien fait se voit dans le détail.",
+      artisanRole: "Plombier-chauffagiste, fondateur",
+      artisanBio: [
+        "Quinze ans sur les chantiers nantais, Julien a monté son entreprise pour offrir ce qui manque souvent : des rendez-vous tenus, des devis clairs et des chantiers laissés propres.",
+        "Pas de mauvaise surprise sur la facture : chaque intervention est chiffrée avant de commencer, et garantie une fois terminée.",
+      ],
+      reviews: [
+        { text: "Fuite réparée le jour même, devis annoncé respecté à l'euro près. Parfait.", author: "Olivier M.", meta: "Client depuis 2 ans", image: "https://randomuser.me/api/portraits/men/29.jpg" },
+        { text: "Salle de bain refaite en une semaine, chantier nickel chaque soir. Bluffant.", author: "Sandrine T.", meta: "Avis Google", image: "https://randomuser.me/api/portraits/women/41.jpg" },
+        { text: "Devis reçu en ligne sous 24h, ultra détaillé. On sait exactement ce qu'on paie.", author: "Franck D.", meta: "Avis vérifié", image: "https://randomuser.me/api/portraits/men/53.jpg" },
+        { text: "Ponctuel, propre, de bon conseil. Enfin un plombier sur qui on peut compter.", author: "Nathalie B.", meta: "Avis Google", image: "https://randomuser.me/api/portraits/women/68.jpg" },
+        { text: "Remplacement du chauffe-eau un dimanche en urgence. Sauvé le week-end.", author: "Karim L.", meta: "Client fidèle", image: "https://randomuser.me/api/portraits/men/64.jpg" },
+        { text: "Prise de contact en ligne hyper simple, rappel dans la foulée. Au top.", author: "Émilie R.", meta: "Avis vérifié", image: "https://randomuser.me/api/portraits/women/12.jpg" },
+      ],
+      closingTitle: "Décrivez votre projet, recevez votre devis.",
+      closingLead: "Remplissez le formulaire en ligne en deux minutes : photos, besoin, créneau. Vous recevez un devis clair sous 48 h, sans engagement.",
+    },
   },
 
   en: {
@@ -328,6 +366,38 @@ const TEXT: Record<Lang, Record<string, VitText>> = {
       ],
       closingTitle: "Save us a seat tonight.",
       closingLead: "Book your table online in seconds, or order takeaway for tonight.",
+    },
+    plombier: {
+      trade: "Plumber · Heating engineer", kicker: "Master plumber since 2009 · Nantes",
+      heroTitle: "A leak, a breakdown, a bathroom to redo? We've got it.",
+      heroLead: "Fast repairs, turnkey bathroom renovation and tidy sanitary installation. Describe your need online and get a clear quote within 48 hours.",
+      primaryCta: "Request a quote", secondaryCta: "See the services",
+      rating: "4.9", ratingMeta: "204 Google reviews", hours: "Mon – Fri · 8am to 7pm · Emergencies 7/7",
+      servicesTitle: "Our services",
+      services: [
+        { name: "Repairs & leak detection", desc: "Fast call-out, diagnosis and damage-free repair.", price: "from €79" },
+        { name: "Bathroom renovation", desc: "From strip-out to fit-out: tiling, shower, basin, taps.", price: "on quote" },
+        { name: "Sanitary installation", desc: "WC, basin, walk-in shower, connections to standard.", price: "on quote" },
+        { name: "Water heater & heating", desc: "Fitting and replacement of water heaters and heat-pump tanks.", price: "from €290" },
+        { name: "Maintenance contract", desc: "Annual visit, descaling and full system check.", price: "from €129 / yr" },
+      ],
+      galleryTitle: "From the site to the result",
+      galleryLead: "Renovated bathrooms, clean joints and crisp finishes. Work done right shows in the detail.",
+      artisanRole: "Plumber-heating engineer, founder",
+      artisanBio: [
+        "Fifteen years on Nantes building sites, Julien started his firm to offer what's often missing: appointments kept, clear quotes and sites left clean.",
+        "No nasty surprises on the bill: every job is priced before it starts, and guaranteed once it's done.",
+      ],
+      reviews: [
+        { text: "Leak fixed the same day, quote honoured to the euro. Perfect.", author: "Olivier M.", meta: "Client for 2 years", image: "https://randomuser.me/api/portraits/men/29.jpg" },
+        { text: "Bathroom redone in a week, site spotless every evening. Stunning.", author: "Sandrine T.", meta: "Google review", image: "https://randomuser.me/api/portraits/women/41.jpg" },
+        { text: "Quote online within 24h, super detailed. You know exactly what you pay.", author: "Franck D.", meta: "Verified review", image: "https://randomuser.me/api/portraits/men/53.jpg" },
+        { text: "Punctual, clean, great advice. Finally a plumber you can count on.", author: "Nathalie B.", meta: "Google review", image: "https://randomuser.me/api/portraits/women/68.jpg" },
+        { text: "Water heater replaced on an emergency Sunday. Saved the weekend.", author: "Karim L.", meta: "Loyal client", image: "https://randomuser.me/api/portraits/men/64.jpg" },
+        { text: "Getting in touch online was so easy, called back right away. Top.", author: "Émilie R.", meta: "Verified review", image: "https://randomuser.me/api/portraits/women/12.jpg" },
+      ],
+      closingTitle: "Describe your project, get your quote.",
+      closingLead: "Fill in the online form in two minutes: photos, need, time slot. You'll get a clear, no-obligation quote within 48 hours.",
     },
   },
 };

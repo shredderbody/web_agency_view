@@ -345,6 +345,20 @@ button { font-family: inherit; }
   --vit-body: var(--font-body);
   background: var(--bg); color: var(--fg);
 }
+/* Plombier — clean, trustworthy, steel-blue + copper on cool white */
+[data-vit="plombier"] {
+  --bg: oklch(0.975 0.008 232);
+  --bg-2: oklch(0.945 0.014 234);
+  --surf: oklch(0.99 0.005 230);
+  --fg: oklch(0.26 0.03 250);
+  --fg-dim: oklch(0.46 0.035 250);
+  --accent: oklch(0.52 0.13 245);    /* steel blue */
+  --accent-2: oklch(0.66 0.11 50);   /* copper pipe */
+  --line: oklch(0.26 0.03 250 / 0.13);
+  --vit-display: var(--font-display);
+  --vit-body: var(--font-body);
+  background: var(--bg); color: var(--fg);
+}
 
 .vit-display { font-family: var(--vit-display); }
 .vit-kicker {

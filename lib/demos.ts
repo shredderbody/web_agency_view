@@ -4,7 +4,7 @@ export type DemoBase = {
   slug: string;
   business: string;
   city: string;
-  vit: "barber" | "onglerie" | "traiteur" | "resto";
+  vit: "barber" | "onglerie" | "traiteur" | "resto" | "plombier";
   cover: string;
   portrait: string;
   swatches: string[];
@@ -47,6 +47,15 @@ export const DEMO_BASE: DemoBase[] = [
     portrait: "/characters/restaurant-portrait.webp",
     swatches: ["oklch(0.22 0.02 150)", "oklch(0.78 0.13 85)", "oklch(0.7 0.1 150)"],
   },
+  {
+    slug: "plombier",
+    business: "Plomberie Mercier",
+    city: "Nantes",
+    vit: "plombier",
+    cover: "/characters/plombier-scene.webp",
+    portrait: "/characters/plombier-portrait.webp",
+    swatches: ["oklch(0.97 0.008 230)", "oklch(0.52 0.13 245)", "oklch(0.66 0.11 50)"],
+  },
 ];
 
 type DemoText = { trade: string; tagline: string };
@@ -57,12 +66,14 @@ const DEMO_TEXT: Record<Lang, Record<string, DemoText>> = {
     onglerie: { trade: "Onglerie", tagline: "Pose gel, nail art et beauté des mains dans un écrin tout en douceur. Réservation en ligne 24h/24." },
     traiteur: { trade: "Charcutier-Traiteur", tagline: "Terrines maison, plateaux et commandes de fêtes. La carte se commande directement depuis le site." },
     restaurant: { trade: "Restaurant · Bistrot", tagline: "Cuisine de saison dans un bistrot de quartier. Menu, ambiance et réservation réunis au même endroit." },
+    plombier: { trade: "Plombier · Chauffagiste", tagline: "Dépannage, rénovation de salle de bain et installation sanitaire. La demande de devis se fait directement depuis le site." },
   },
   en: {
     barbershop: { trade: "Barbershop", tagline: "Cuts, beard trims and old-school shaves. Booking is sorted in two taps." },
     onglerie: { trade: "Nail salon", tagline: "Gel, nail art and hand care in a soft, calming setting. Online booking, around the clock." },
     traiteur: { trade: "Deli · Caterer", tagline: "House terrines, platters and party orders. The menu is orderable straight from the site." },
     restaurant: { trade: "Restaurant · Bistro", tagline: "Seasonal cooking in a neighbourhood bistro. Menu, mood and booking in one place." },
+    plombier: { trade: "Plumber · Heating engineer", tagline: "Repairs, bathroom renovation and sanitary installation. Quote requests go straight through the site." },
   },
 };
 

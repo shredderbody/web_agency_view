@@ -34,6 +34,10 @@ PEOPLE = {
         "who": "a poised French female chef-restaurateur in her early thirties, dark wavy hair tied back, warm light-brown skin, calm confident smile, deep brown eyes, wearing a clean white chef jacket with sleeves rolled",
         "scene": "inside a cozy neighborhood bistro with warm wood, brass and candlelight, blurred dining room behind, cinematic evening glow",
     },
+    "plombier": {
+        "who": "a trustworthy French male plumber in his early forties, short brown hair, light stubble, fair weathered skin, friendly confident eyes, wearing dark navy work overalls over a fitted slate-blue t-shirt, a leather tool belt with chrome tools",
+        "scene": "inside a freshly renovated modern bathroom with large-format stone tiles, a sleek floating vanity and chrome fixtures, bright natural daylight, soft cinematic bokeh",
+    },
 }
 
 # Scènes & détails métier (environnement + produit), pour une imagerie sur-mesure.
@@ -53,6 +57,10 @@ SCENES = {
     "restaurant": [
         ("restaurant-scene", "16:9", "Interior of a cozy neighborhood French bistro at dusk: warm wood tables with white linen, bentwood chairs, brass pendant lights and candles, a zinc bar in the background, intimate evening glow, no people, editorial wide shot."),
         ("restaurant-detail", "4:3", "Overhead close-up of an elegant plated bistro dish: seared duck breast with seasonal vegetables and a glossy reduction, on a ceramic plate, a glass of red wine beside it, warm candlelight, fine-dining food photography."),
+    ],
+    "plombier": [
+        ("plombier-scene", "16:9", "Interior of a freshly renovated modern bathroom: a walk-in glass shower with chrome fittings, a floating wood vanity with a white basin, large-format stone-look tiles, a wall-hung WC, soft natural daylight from a window, spotless and bright, no people, editorial wide shot."),
+        ("plombier-detail", "4:3", "Extreme close-up of a plumber's hands tightening a chrome adjustable wrench on a polished chrome pipe fitting under a basin, copper and chrome pipes, a few professional tools laid out nearby, shallow depth of field, cool daylight, premium trade product photography."),
     ],
 }
 
@@ -106,8 +114,12 @@ def submit(prompt, ratio):
 
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
+    # Optional CLI args: limit generation to the given slug(s), e.g. `... plombier`.
+    only = set(sys.argv[1:])
     jobs = {}  # taskId -> (filename)
     for slug, p in PEOPLE.items():
+        if only and slug not in only:
+            continue
         portrait_prompt = f"Photorealistic portrait of {p['who']}, {p['scene']}. {PORTRAIT_SUFFIX}"
         sheet_prompt = f"{p['who']}. {SHEET_SUFFIX}"
         tid_p = submit(portrait_prompt, "3:4")
