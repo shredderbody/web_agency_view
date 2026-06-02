@@ -1,36 +1,53 @@
 "use client";
-import { useState } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useT } from "@/lib/lang-context";
+import { CalendarCheck, Clock, ImageIcon, Search, Sparkles, Wallet } from "lucide-react";
+
+// One icon per FAQ topic (timing · assets · self-edit · booking · SEO · cost).
+const ICONS = [Clock, ImageIcon, Sparkles, CalendarCheck, Search, Wallet];
 
 export default function Faq() {
   const t = useT();
-  const [open, setOpen] = useState<number | null>(0);
   return (
-    <div style={{ display: "grid", gap: "0.75rem" }}>
+    <Accordion type="single" collapsible defaultValue="faq-0" className="w-full">
       {t.faq.items.map((it, i) => {
-        const isOpen = open === i;
+        const Icon = ICONS[i % ICONS.length];
         return (
-          <div key={i} className="card" style={{ overflow: "hidden" }}>
-            <button
-              onClick={() => setOpen(isOpen ? null : i)}
-              aria-expanded={isOpen}
-              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", padding: "1.15rem 1.3rem", background: "transparent", border: "none", cursor: "pointer", textAlign: "left" }}
-            >
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "1.05rem", letterSpacing: "-0.01em" }}>{it.q}</span>
-              <span
-                style={{ flexShrink: 0, width: "1.9rem", height: "1.9rem", borderRadius: "99px", display: "grid", placeItems: "center", background: isOpen ? "var(--vermilion)" : "var(--paper-2)", color: isOpen ? "var(--surface)" : "var(--ink)", transition: "background 0.25s var(--ease), transform 0.25s var(--ease)", transform: isOpen ? "rotate(45deg)" : "none" }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+          <AccordionItem value={`faq-${i}`} key={i} className="py-2">
+            <AccordionTrigger className="py-3 hover:no-underline">
+              <span className="flex items-center gap-3">
+                <Icon
+                  size={18}
+                  strokeWidth={2}
+                  className="shrink-0 text-[color:var(--vermilion)]"
+                  aria-hidden="true"
+                />
+                <span
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 600,
+                    fontSize: "1.05rem",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  {it.q}
+                </span>
               </span>
-            </button>
-            <div className={`faq-body ${isOpen ? "open" : ""}`}>
-              <div>
-                <p style={{ margin: 0, padding: "0 1.3rem 1.3rem", color: "var(--ink-dim)", maxWidth: "62ch" }}>{it.a}</p>
-              </div>
-            </div>
-          </div>
+            </AccordionTrigger>
+            <AccordionContent
+              className="ps-9 pb-3 text-muted-foreground"
+              style={{ fontSize: "0.98rem", maxWidth: "62ch" }}
+            >
+              {it.a}
+            </AccordionContent>
+          </AccordionItem>
         );
       })}
-    </div>
+    </Accordion>
   );
 }

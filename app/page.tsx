@@ -9,6 +9,7 @@ import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 import Reveal from "@/components/Reveal";
 import Faq from "@/components/Faq";
+import Testimonials from "@/components/Testimonials";
 import { getDemos } from "@/lib/demos";
 import { useLang } from "@/lib/lang-context";
 
@@ -83,6 +84,30 @@ export default function Home() {
                   <div className="figure-item" style={{ padding: "1.6rem 1.3rem 0.4rem", borderLeft: i === 0 ? "none" : "1px solid var(--border)" }}>
                     <div className="d-xl" style={{ color: "var(--vermilion-deep)", lineHeight: 1 }}>{f.n}</div>
                     <p style={{ color: "var(--ink-dim)", margin: "0.7rem 0 0", maxWidth: "32ch" }}>{f.l}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ─── POUR QUI ──────────────────────────────────────── */}
+        <section id="pour-qui" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)" }}>
+          <div className="wrap">
+            <Reveal>
+              <div style={{ maxWidth: "62ch", marginBottom: "clamp(2.2rem, 5vw, 3.5rem)" }}>
+                <span className="kicker" style={{ marginBottom: "1rem" }}>{t.audience.kicker}</span>
+                <h2 className="d-xl" style={{ margin: "0 0 1rem" }}>{t.audience.title}</h2>
+                <p style={{ fontSize: "1.08rem", color: "var(--ink-dim)", margin: 0 }}>{t.audience.body}</p>
+              </div>
+            </Reveal>
+            <div className="audience-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "clamp(1.1rem, 2.5vw, 1.6rem)" }}>
+              {t.audience.items.map((a, i) => (
+                <Reveal key={a.n} delay={(i % 4) * 80}>
+                  <div className="card" style={{ height: "100%", display: "flex", flexDirection: "column", padding: "1.6rem 1.5rem 1.7rem" }}>
+                    <div className="d-lg" style={{ color: "var(--vermilion)", fontFamily: "var(--font-display)", margin: "0 0 1rem", letterSpacing: "0.02em" }}>{a.n}</div>
+                    <h3 className="d-md" style={{ margin: "0 0 0.55rem" }}>{a.t}</h3>
+                    <p style={{ color: "var(--ink-dim)", margin: 0 }}>{a.d}</p>
                   </div>
                 </Reveal>
               ))}
@@ -169,6 +194,9 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ─── TÉMOIGNAGES ───────────────────────────────────── */}
+        <Testimonials />
+
         {/* ─── PRICING ───────────────────────────────────────── */}
         <section id="tarifs" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--paper-2)", borderBlock: "1px solid var(--border)" }}>
           <div className="wrap">
@@ -209,6 +237,32 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ─── OPTIONS / ADD-ONS ─────────────────────────────── */}
+        <section id="options" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)" }}>
+          <div className="wrap">
+            <Reveal>
+              <div style={{ maxWidth: "56ch", marginBottom: "clamp(2rem, 5vw, 3.2rem)" }}>
+                <span className="kicker" style={{ marginBottom: "1rem" }}>{t.addons.kicker}</span>
+                <h2 className="d-xl" style={{ margin: "0 0 1rem" }}>{t.addons.title}</h2>
+                <p style={{ fontSize: "1.08rem", color: "var(--ink-dim)", margin: 0 }}>{t.addons.body}</p>
+              </div>
+            </Reveal>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: "0.9rem" }}>
+              {t.addons.items.map((a, i) => (
+                <Reveal key={a.name} delay={(i % 3) * 70}>
+                  <div className="card" style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "1rem", padding: "1.1rem 1.35rem", height: "100%" }}>
+                    <span style={{ fontWeight: 500 }}>{a.name}</span>
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--vermilion-deep)", whiteSpace: "nowrap" }}>{a.price}</span>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+            <Reveal delay={120}>
+              <p style={{ marginTop: "1.6rem", color: "var(--ink-muted)", fontSize: "0.85rem" }}>{t.addons.note}</p>
+            </Reveal>
+          </div>
+        </section>
+
         {/* ─── FAQ ───────────────────────────────────────────── */}
         <section id="faq" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)" }}>
           <div className="wrap wrap-tight">
@@ -242,6 +296,8 @@ export default function Home() {
         @media (max-width: 980px) { .hero-grid { grid-template-columns: 1fr !important; } }
         @media (max-width: 820px) { .pitch-grid { grid-template-columns: 1fr !important; } }
         @media (min-width: 700px) and (max-width: 1024px) { .incl-grid { grid-template-columns: 1fr 1fr !important; } .steps-grid { grid-template-columns: 1fr 1fr !important; } }
+        @media (max-width: 1000px) { .audience-grid { grid-template-columns: 1fr 1fr !important; } }
+        @media (max-width: 560px) { .audience-grid { grid-template-columns: 1fr !important; } }
         @media (max-width: 760px) {
           .figures { grid-template-columns: 1fr !important; }
           .figure-item { border-left: none !important; border-top: 1px solid var(--border); }

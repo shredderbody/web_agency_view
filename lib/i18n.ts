@@ -27,6 +27,7 @@ type UI = {
     heroAlt: string;
   };
   value: { kicker: string; title: string; body: string; figures: { n: string; l: string }[] };
+  audience: { kicker: string; title: string; body: string; items: { n: string; t: string; d: string }[] };
   metiers: {
     kicker: string;
     title: string;
@@ -46,6 +47,19 @@ type UI = {
     body: string;
     mostChosen: string;
     plans: { name: string; price: string; sub: string; featured: boolean; feats: string[]; cta: string }[];
+  };
+  addons: {
+    kicker: string;
+    title: string;
+    body: string;
+    note: string;
+    items: { name: string; price: string }[];
+  };
+  testimonials: {
+    kicker: string;
+    title: string;
+    body: string;
+    items: { text: string; image: string; name: string; role: string }[];
   };
   faq: { kicker: string; title: string; items: { q: string; a: string }[] };
   cta: { title: string; body: string; primary: string; secondary: string };
@@ -113,6 +127,17 @@ export const ui: Record<Lang, UI> = {
         { n: "7 j", l: "en moyenne pour voir votre démo en ligne, à votre nom." },
       ],
     },
+    audience: {
+      kicker: "Pour qui ?",
+      title: "Conçu pour celles et ceux qui veulent passer un cap.",
+      body: "Vous reconnaissez votre situation ? On est faits pour travailler ensemble. Site vieillissant, pas de site, ou refonte complète : on s'occupe de tout.",
+      items: [
+        { n: "001", t: "PME & TPE", d: "Vous avez une activité qui tourne, mais votre site ne reflète pas votre niveau actuel." },
+        { n: "002", t: "Artisans", d: "Bouche-à-oreille au top, mais vous perdez des clients qui ne vous trouvent pas en ligne." },
+        { n: "003", t: "Agences", d: "Beaucoup d'expertise, peu de demandes entrantes ? Un site qui met vos services en avant et attire les bons clients." },
+        { n: "004", t: "Indépendants", d: "Vous lancez votre activité ou repartez sur de nouvelles bases avec un site qui vend." },
+      ],
+    },
     metiers: {
       kicker: "Choisissez votre métier",
       title: "Votre métier a son propre site. Cliquez pour le voir en entier.",
@@ -157,9 +182,39 @@ export const ui: Record<Lang, UI> = {
       body: "Création unique, puis un abonnement simple pour l'hébergement et le suivi. Sans engagement piège.",
       mostChosen: "Le plus choisi",
       plans: [
-        { name: "Essentielle", price: "690 €", sub: "+ 19 €/mois", featured: false, feats: ["Vitrine une page soignée", "Photos et textes inclus", "Mobile et Google ready", "Mise en ligne en 7 jours"], cta: "Démarrer" },
-        { name: "Atelier", price: "1 290 €", sub: "+ 39 €/mois", featured: true, feats: ["Vitrine multi-pages complète", "Réservation ou click & collect", "Univers visuel sur-mesure", "1 retouche incluse / mois", "Suivi des performances"], cta: "Choisir Atelier" },
-        { name: "Signature", price: "Sur devis", sub: "projet dédié", featured: false, feats: ["Conception 100% sur-mesure", "Fonctions avancées (boutique, espace membre)", "Séance photo de votre commerce", "Accompagnement prioritaire"], cta: "En parler" },
+        { name: "Essentielle", price: "499 €", sub: "+ 29 €/mois", featured: false, feats: ["Audit express de votre présence en ligne", "Vitrine une page soignée", "Photos et textes rédigés pour vous", "SEO local de base + fiche Google", "1 round de révisions", "Mobile et performance optimisés", "Livraison en 7 jours"], cta: "Démarrer" },
+        { name: "Atelier", price: "999 €", sub: "+ 49 €/mois", featured: true, feats: ["Audit complet de votre activité", "Vitrine multi-pages (jusqu'à 5 pages)", "Maquette design sur-mesure", "Réservation ou click & collect intégré", "SEO local avancé + suivi des performances", "3 rounds de révisions", "1 retouche incluse / mois", "Livraison en 7 jours"], cta: "Choisir Atelier" },
+        { name: "Signature", price: "Sur devis", sub: "projet dédié", featured: false, feats: ["Tout l'Atelier inclus", "Conception 100% sur-mesure, sans limite de pages", "Fonctions avancées (boutique, espace membre)", "Séance photo de votre commerce", "Rounds de révisions illimités", "Accompagnement prioritaire dédié", "Livraison en 7 jours"], cta: "En parler" },
+      ],
+    },
+    addons: {
+      kicker: "Options à rajouter au forfait",
+      title: "Personnalisez votre offre",
+      body: "Ajoutez ce dont vous avez besoin, rien d'autre. (Ne peut être vendu seul — vient compléter un forfait.)",
+      note: "* Pack Sérénité : maintenance, sauvegardes et support prioritaire pendant 6 mois.",
+      items: [
+        { name: "Page supplémentaire", price: "450 € / page" },
+        { name: "Logo sur mesure", price: "350 €" },
+        { name: "Identité visuelle complète", price: "890 €" },
+        { name: "Copywriting (rédaction des textes)", price: "350 €" },
+        { name: "Blog intégré + 3 articles", price: "490 €" },
+        { name: "Vidéos tutoriels Webflow", price: "190 €" },
+        { name: "Visuel 3D", price: "Prix sur devis" },
+        { name: "Animation 3D", price: "Prix sur devis" },
+        { name: "Pack Sérénité 6 mois*", price: "490 €" },
+      ],
+    },
+    testimonials: {
+      kicker: "Ils m'ont fait confiance",
+      title: "Des commerçants qui ont enfin un site à leur image.",
+      body: "Coiffeurs, restaurateurs, artisans : voici ce qu'ils disent de leur vitrine et de notre collaboration.",
+      items: [
+        { text: "En une semaine j'avais une démo à mon nom. Les clients réservent désormais en ligne, je passe moins de temps au téléphone.", image: "https://randomuser.me/api/portraits/men/32.jpg", name: "Karim Benali", role: "Barbier · Lyon" },
+        { text: "Mon salon a enfin un site qui lui ressemble. Élégant, rapide, et les photos sont magnifiques. J'ai gagné en crédibilité.", image: "https://randomuser.me/api/portraits/women/44.jpg", name: "Léa Moreau", role: "Onglerie · Bordeaux" },
+        { text: "Le click & collect a changé mon quotidien. Les commandes tombent le matin, tout est prêt à midi. Un vrai gain de temps.", image: "https://randomuser.me/api/portraits/men/52.jpg", name: "Julien Pasquier", role: "Traiteur · Nantes" },
+        { text: "Un seul interlocuteur du début à la fin, zéro jargon. Je voyais le site avancer et j'ai validé en confiance.", image: "https://randomuser.me/api/portraits/women/68.jpg", name: "Nadia Séverin", role: "Restaurant · Paris" },
+        { text: "Le résultat dépasse ce que j'imaginais. Mon référencement local a décollé, j'ai plus d'appels qu'avant.", image: "https://randomuser.me/api/portraits/men/76.jpg", name: "Thomas Lefèvre", role: "Garage · Toulouse" },
+        { text: "Tout est clair : un prix annoncé, une démo gratuite, puis la mise en ligne. Je recommande à tous les commerçants.", image: "https://randomuser.me/api/portraits/women/90.jpg", name: "Margaux Tessier", role: "Fleuriste · Lille" },
       ],
     },
     faq: {
@@ -171,7 +226,7 @@ export const ui: Record<Lang, UI> = {
         { q: "Est-ce que je pourrai modifier le site moi-même ?", a: "Oui. Vous recevez un accès simple pour changer horaires, prix, photos et actualités. Pour le reste, une retouche est incluse chaque mois dans la formule Atelier." },
         { q: "Les clients pourront-ils réserver ou commander en ligne ?", a: "Oui. Prise de rendez-vous, click & collect, formulaire de devis, carte commandable : on branche l'outil adapté à votre métier, sans commission cachée." },
         { q: "Et le référencement sur Google ?", a: "Chaque vitrine est optimisée pour la recherche locale (fiche, mots-clés de quartier, vitesse, mobile). L'objectif : qu'on vous trouve quand on cherche votre métier près de chez vous." },
-        { q: "Combien ça coûte vraiment ?", a: "À partir de 690 € pour la vitrine essentielle, puis un abonnement clair pour l'hébergement et le suivi. Pas de devis surprise : le prix est annoncé avant de commencer." },
+        { q: "Combien ça coûte vraiment ?", a: "À partir de 499 € pour la vitrine essentielle, puis un abonnement clair pour l'hébergement et le suivi. Pas de devis surprise : le prix est annoncé avant de commencer." },
       ],
     },
     cta: {
@@ -257,6 +312,17 @@ export const ui: Record<Lang, UI> = {
         { n: "7 d", l: "on average to see your demo live, in your own name." },
       ],
     },
+    audience: {
+      kicker: "Who's it for?",
+      title: "Built for those ready to step up.",
+      body: "Recognise your situation? We're made to work together. Ageing site, no site, or a full redesign: we handle everything.",
+      items: [
+        { n: "001", t: "SMEs & small businesses", d: "Your business is doing well, but your site no longer reflects where you are today." },
+        { n: "002", t: "Artisans", d: "Word of mouth is great, but you lose customers who can't find you online." },
+        { n: "003", t: "Agencies", d: "Plenty of expertise, few inbound leads? A site that showcases your services and attracts the right clients." },
+        { n: "004", t: "Freelancers", d: "You're launching or starting fresh with a site that sells." },
+      ],
+    },
     metiers: {
       kicker: "Pick your trade",
       title: "Your trade has its own site. Click to see the whole thing.",
@@ -301,9 +367,39 @@ export const ui: Record<Lang, UI> = {
       body: "A one-off build, then a simple subscription for hosting and care. No hidden lock-in.",
       mostChosen: "Most chosen",
       plans: [
-        { name: "Essential", price: "€690", sub: "+ €19/mo", featured: false, feats: ["Polished one-page showcase", "Photos and copy included", "Mobile and Google ready", "Live in 7 days"], cta: "Get started" },
-        { name: "Studio", price: "€1,290", sub: "+ €39/mo", featured: true, feats: ["Complete multi-page showcase", "Booking or click & collect", "Bespoke visual identity", "1 edit included / month", "Performance tracking"], cta: "Choose Studio" },
-        { name: "Signature", price: "On request", sub: "dedicated project", featured: false, feats: ["Fully bespoke build", "Advanced features (shop, member area)", "Photo shoot of your business", "Priority support"], cta: "Talk to me" },
+        { name: "Essential", price: "€499", sub: "+ €29/mo", featured: false, feats: ["Express audit of your online presence", "Polished one-page showcase", "Photos and copy written for you", "Basic local SEO + Google listing", "1 round of revisions", "Mobile and performance optimised", "Delivered in 7 days"], cta: "Get started" },
+        { name: "Studio", price: "€999", sub: "+ €49/mo", featured: true, feats: ["Full audit of your business", "Multi-page showcase (up to 5 pages)", "Bespoke design mockup", "Built-in booking or click & collect", "Advanced local SEO + performance tracking", "3 rounds of revisions", "1 edit included / month", "Delivered in 7 days"], cta: "Choose Studio" },
+        { name: "Signature", price: "On request", sub: "dedicated project", featured: false, feats: ["Everything in Studio included", "Fully bespoke build, no page limit", "Advanced features (shop, member area)", "Photo shoot of your business", "Unlimited rounds of revisions", "Dedicated priority support", "Delivered in 7 days"], cta: "Talk to me" },
+      ],
+    },
+    addons: {
+      kicker: "Add-ons for your package",
+      title: "Tailor your offer",
+      body: "Add only what you need, nothing else. (Cannot be sold on its own — it complements a package.)",
+      note: "* Serenity Pack: maintenance, backups and priority support for 6 months.",
+      items: [
+        { name: "Extra page", price: "€450 / page" },
+        { name: "Custom logo", price: "€350" },
+        { name: "Full visual identity", price: "€890" },
+        { name: "Copywriting", price: "€350" },
+        { name: "Built-in blog + 3 articles", price: "€490" },
+        { name: "Webflow tutorial videos", price: "€190" },
+        { name: "3D visual", price: "On request" },
+        { name: "3D animation", price: "On request" },
+        { name: "Serenity Pack 6 months*", price: "€490" },
+      ],
+    },
+    testimonials: {
+      kicker: "They trusted me",
+      title: "Local businesses that finally have a site that looks like them.",
+      body: "Barbers, restaurateurs, makers: here's what they say about their showcase and working together.",
+      items: [
+        { text: "Within a week I had a demo in my name. Clients now book online and I spend far less time on the phone.", image: "https://randomuser.me/api/portraits/men/32.jpg", name: "Karim Benali", role: "Barber · Lyon" },
+        { text: "My salon finally has a site that looks like it. Elegant, fast, and the photos are gorgeous. I gained credibility.", image: "https://randomuser.me/api/portraits/women/44.jpg", name: "Léa Moreau", role: "Nail salon · Bordeaux" },
+        { text: "Click & collect changed my days. Orders come in the morning, everything's ready by noon. A real time-saver.", image: "https://randomuser.me/api/portraits/men/52.jpg", name: "Julien Pasquier", role: "Caterer · Nantes" },
+        { text: "One contact from start to finish, zero jargon. I watched the site take shape and signed off with confidence.", image: "https://randomuser.me/api/portraits/women/68.jpg", name: "Nadia Séverin", role: "Restaurant · Paris" },
+        { text: "The result went beyond what I imagined. My local SEO took off and I get more calls than before.", image: "https://randomuser.me/api/portraits/men/76.jpg", name: "Thomas Lefèvre", role: "Garage · Toulouse" },
+        { text: "Everything is clear: a stated price, a free demo, then going live. I recommend it to every local business.", image: "https://randomuser.me/api/portraits/women/90.jpg", name: "Margaux Tessier", role: "Florist · Lille" },
       ],
     },
     faq: {
@@ -315,7 +411,7 @@ export const ui: Record<Lang, UI> = {
         { q: "Will I be able to edit the site myself?", a: "Yes. You get a simple login to change hours, prices, photos and news. For the rest, one edit is included every month in the Studio plan." },
         { q: "Can customers book or order online?", a: "Yes. Appointments, click & collect, quote forms, an orderable menu: we plug in the tool that fits your trade, with no hidden commission." },
         { q: "What about Google ranking?", a: "Every site is optimised for local search (listing, neighbourhood keywords, speed, mobile). The goal: that people find you when they search your trade nearby." },
-        { q: "What does it really cost?", a: "From €690 for the essential showcase, then a clear subscription for hosting and care. No surprise quote: the price is stated before we start." },
+        { q: "What does it really cost?", a: "From €499 for the essential showcase, then a clear subscription for hosting and care. No surprise quote: the price is stated before we start." },
       ],
     },
     cta: {
