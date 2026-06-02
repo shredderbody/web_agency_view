@@ -5,8 +5,32 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Clock, MapPin, Phone, Star } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import LangSelector from "@/components/LangSelector";
+import DemoTestimonials from "@/components/DemoTestimonials";
 import { useLang } from "@/lib/lang-context";
 import { getVitrine } from "@/lib/vitrineContent";
+
+// Numbered chapter marker that gives each section a clear, highlighted identity.
+// Inherits the per-vitrine theme (accent / bg) so it adapts to every trade.
+function SectionEyebrow({ num, label }: { num: string; label: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", marginBottom: "1.1rem" }}>
+      <span
+        className="vit-display"
+        style={{
+          flexShrink: 0, width: "2rem", height: "2rem", borderRadius: "99px",
+          display: "grid", placeItems: "center",
+          background: "var(--accent)", color: "var(--bg)",
+          fontSize: "0.82rem", fontWeight: 700, lineHeight: 1,
+        }}
+      >
+        {num}
+      </span>
+      <span style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.24em", textTransform: "uppercase", color: "var(--accent)" }}>
+        {label}
+      </span>
+    </div>
+  );
+}
 
 export default function DemoView({ slug }: { slug: string }) {
   const { lang, t } = useLang();
@@ -149,7 +173,7 @@ export default function DemoView({ slug }: { slug: string }) {
       <section id="carte" style={{ paddingBlock: "clamp(3.2rem, 7vw, 6rem)" }}>
         <div className="wrap">
           <Reveal>
-            <span className="vit-kicker" style={{ marginBottom: "1rem" }}>{v.servicesTitle}</span>
+            <SectionEyebrow num="01" label={v.servicesTitle} />
             <h2 className="vit-display" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", letterSpacing: ls, margin: "0 0 2.3rem", textTransform: isBarber ? "uppercase" : "none" }}>{c.servicesIntro}</h2>
           </Reveal>
           <div className="menu-grid" style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: "clamp(2rem, 5vw, 4rem)", alignItems: "start" }}>
@@ -177,7 +201,7 @@ export default function DemoView({ slug }: { slug: string }) {
         <div className="wrap">
           <Reveal>
             <div style={{ maxWidth: "56ch", marginBottom: "2.3rem" }}>
-              <span className="vit-kicker" style={{ marginBottom: "1rem" }}>{c.placeKicker}</span>
+              <SectionEyebrow num="02" label={c.placeKicker} />
               <h2 className="vit-display" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", letterSpacing: ls, margin: "0 0 0.9rem", textTransform: isBarber ? "uppercase" : "none" }}>{v.galleryTitle}</h2>
               <p style={{ color: "var(--fg-dim)", fontSize: "1.04rem", margin: 0 }}>{v.galleryLead}</p>
             </div>
@@ -214,7 +238,7 @@ export default function DemoView({ slug }: { slug: string }) {
               </div>
             </Reveal>
             <Reveal delay={120}>
-              <span className="vit-kicker" style={{ marginBottom: "1rem" }}>{c.artisanKicker}</span>
+              <SectionEyebrow num="03" label={c.artisanKicker} />
               <h2 className="vit-display" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", letterSpacing: ls, margin: "0 0 0.4rem", textTransform: isBarber ? "uppercase" : "none" }}>{v.artisanName}</h2>
               <p style={{ color: "var(--accent)", fontWeight: 600, margin: "0 0 1.4rem" }}>{v.artisanRole}</p>
               {v.artisanBio.map((p, i) => <p key={i} style={{ color: "var(--fg-dim)", fontSize: "1.04rem", margin: "0 0 1rem", maxWidth: "52ch" }}>{p}</p>)}
@@ -230,28 +254,8 @@ export default function DemoView({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* REVIEWS */}
-      <section style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--bg-2)", borderBlock: "1px solid var(--line)" }}>
-        <div className="wrap">
-          <Reveal>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "1rem", flexWrap: "wrap", marginBottom: "2.1rem" }}>
-              <h2 className="vit-display" style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.6rem)", letterSpacing: ls, margin: 0, textTransform: isBarber ? "uppercase" : "none" }}>{c.reviewsTitle}</h2>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", color: "var(--accent)" }}><Star size={17} fill="currentColor" stroke="none" /> <strong style={{ color: "var(--fg)" }}>{v.rating}</strong><span style={{ color: "var(--fg-dim)" }}>· {v.ratingMeta}</span></span>
-            </div>
-          </Reveal>
-          <div className="reviews-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.2rem" }}>
-            {v.reviews.map((r, i) => (
-              <Reveal key={i} delay={i * 80}>
-                <figure className="vit-card" style={{ height: "100%", margin: 0, padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-                  <div style={{ display: "flex", gap: "1px", color: "var(--accent)" }}>{Array.from({ length: 5 }).map((_, j) => <Star key={j} size={15} fill="currentColor" stroke="none" />)}</div>
-                  <blockquote style={{ margin: 0, fontSize: "1rem", lineHeight: 1.6, flex: 1 }}>« {r.text} »</blockquote>
-                  <figcaption style={{ fontSize: "0.86rem" }}><strong>{r.author}</strong><span style={{ color: "var(--fg-dim)" }}> · {r.meta}</span></figcaption>
-                </figure>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* REVIEWS — landing-style animated testimonial columns */}
+      <DemoTestimonials reviews={v.reviews} title={c.reviewsTitle} rating={v.rating} ratingMeta={v.ratingMeta} index="04" />
 
       {/* CLOSING */}
       <section id="reserver" style={{ paddingBlock: "clamp(3.2rem, 7vw, 6rem)" }}>
@@ -292,10 +296,8 @@ export default function DemoView({ slug }: { slug: string }) {
         @media (max-width: 860px) {
           .demo-hero, .menu-grid, .artisan-grid { grid-template-columns: 1fr !important; }
           .demo-hero > * { order: 0 !important; }
-          .reviews-grid { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 480px) { .gallery-pair { grid-template-columns: 1fr !important; } }
-        @media (min-width: 561px) and (max-width: 860px) { .reviews-grid { grid-template-columns: 1fr 1fr !important; } }
         @media (max-width: 620px) {
           .info-strip { grid-template-columns: 1fr !important; }
           .info-item { border-left: none !important; border-top: 1px solid var(--line); }

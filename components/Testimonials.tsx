@@ -11,7 +11,7 @@ export default function Testimonials() {
   const thirdColumn = items.slice(4, 6);
 
   return (
-    <section id="temoignages" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--paper-2)", borderBlock: "1px solid var(--border)" }}>
+    <section id="temoignages" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--paper-2)", borderTop: "1px solid var(--border)" }}>
       <div className="wrap">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

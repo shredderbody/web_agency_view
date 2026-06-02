@@ -132,10 +132,10 @@ export const ui: Record<Lang, UI> = {
       title: "Conçu pour celles et ceux qui veulent passer un cap.",
       body: "Vous reconnaissez votre situation ? On est faits pour travailler ensemble. Site vieillissant, pas de site, ou refonte complète : on s'occupe de tout.",
       items: [
-        { n: "001", t: "PME & TPE", d: "Vous avez une activité qui tourne, mais votre site ne reflète pas votre niveau actuel." },
-        { n: "002", t: "Artisans", d: "Bouche-à-oreille au top, mais vous perdez des clients qui ne vous trouvent pas en ligne." },
-        { n: "003", t: "Agences", d: "Beaucoup d'expertise, peu de demandes entrantes ? Un site qui met vos services en avant et attire les bons clients." },
-        { n: "004", t: "Indépendants", d: "Vous lancez votre activité ou repartez sur de nouvelles bases avec un site qui vend." },
+        { n: "1", t: "PME & TPE", d: "Vous avez une activité qui tourne, mais votre site ne reflète pas votre niveau actuel." },
+        { n: "2", t: "Artisans", d: "Bouche-à-oreille au top, mais vous perdez des clients qui ne vous trouvent pas en ligne." },
+        { n: "3", t: "Agences", d: "Beaucoup d'expertise, peu de demandes entrantes ? Un site qui met vos services en avant et attire les bons clients." },
+        { n: "4", t: "Indépendants", d: "Vous lancez votre activité ou repartez sur de nouvelles bases avec un site qui vend." },
       ],
     },
     metiers: {
@@ -317,10 +317,10 @@ export const ui: Record<Lang, UI> = {
       title: "Built for those ready to step up.",
       body: "Recognise your situation? We're made to work together. Ageing site, no site, or a full redesign: we handle everything.",
       items: [
-        { n: "001", t: "SMEs & small businesses", d: "Your business is doing well, but your site no longer reflects where you are today." },
-        { n: "002", t: "Artisans", d: "Word of mouth is great, but you lose customers who can't find you online." },
-        { n: "003", t: "Agencies", d: "Plenty of expertise, few inbound leads? A site that showcases your services and attracts the right clients." },
-        { n: "004", t: "Freelancers", d: "You're launching or starting fresh with a site that sells." },
+        { n: "1", t: "SMEs & small businesses", d: "Your business is doing well, but your site no longer reflects where you are today." },
+        { n: "2", t: "Artisans", d: "Word of mouth is great, but you lose customers who can't find you online." },
+        { n: "3", t: "Agencies", d: "Plenty of expertise, few inbound leads? A site that showcases your services and attracts the right clients." },
+        { n: "4", t: "Freelancers", d: "You're launching or starting fresh with a site that sells." },
       ],
     },
     metiers: {

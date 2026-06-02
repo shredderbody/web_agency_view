@@ -72,7 +72,7 @@ export default function Home() {
         </section>
 
         {/* ─── VALUE ─────────────────────────────────────────── */}
-        <section style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)" }}>
+        <section style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)", background: "var(--paper-2)", borderTop: "1px solid var(--border)" }}>
           <div className="wrap">
             <div className="pitch-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(1.6rem, 4vw, 5rem)", alignItems: "end" }}>
               <Reveal><span className="kicker" style={{ marginBottom: "1.1rem" }}>{t.value.kicker}</span><h2 className="d-xl" style={{ margin: 0 }}>{t.value.title}</h2></Reveal>
@@ -92,7 +92,7 @@ export default function Home() {
         </section>
 
         {/* ─── POUR QUI ──────────────────────────────────────── */}
-        <section id="pour-qui" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)" }}>
+        <section id="pour-qui" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)", borderTop: "1px solid var(--border)" }}>
           <div className="wrap">
             <Reveal>
               <div style={{ maxWidth: "62ch", marginBottom: "clamp(2.2rem, 5vw, 3.5rem)" }}>
@@ -116,7 +116,7 @@ export default function Home() {
         </section>
 
         {/* ─── MÉTIERS ───────────────────────────────────────── */}
-        <section id="metiers" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--paper-2)", borderBlock: "1px solid var(--border)" }}>
+        <section id="metiers" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--paper-2)", borderTop: "1px solid var(--border)" }}>
           <div className="wrap">
             <Reveal>
               <div style={{ maxWidth: "62ch", marginBottom: "clamp(2.2rem, 5vw, 3.5rem)" }}>
@@ -177,7 +177,7 @@ export default function Home() {
         </section>
 
         {/* ─── METHOD ────────────────────────────────────────── */}
-        <section id="methode" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)" }}>
+        <section id="methode" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)", borderTop: "1px solid var(--border)" }}>
           <div className="wrap">
             <Reveal><div style={{ maxWidth: "56ch", marginBottom: "clamp(2.2rem, 5vw, 3.5rem)" }}><span className="kicker" style={{ marginBottom: "1.1rem" }}>{t.method.kicker}</span><h2 className="d-xl" style={{ margin: 0 }}>{t.method.title}</h2></div></Reveal>
             <div className="steps-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0" }}>
@@ -198,7 +198,7 @@ export default function Home() {
         <Testimonials />
 
         {/* ─── PRICING ───────────────────────────────────────── */}
-        <section id="tarifs" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--paper-2)", borderBlock: "1px solid var(--border)" }}>
+        <section id="tarifs" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", borderTop: "1px solid var(--border)" }}>
           <div className="wrap">
             <Reveal>
               <div style={{ maxWidth: "56ch", marginBottom: "clamp(2.2rem, 5vw, 3.5rem)" }}>
@@ -238,7 +238,7 @@ export default function Home() {
         </section>
 
         {/* ─── OPTIONS / ADD-ONS ─────────────────────────────── */}
-        <section id="options" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)" }}>
+        <section id="options" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", background: "var(--paper-2)", borderTop: "1px solid var(--border)" }}>
           <div className="wrap">
             <Reveal>
               <div style={{ maxWidth: "56ch", marginBottom: "clamp(2rem, 5vw, 3.2rem)" }}>
@@ -264,7 +264,7 @@ export default function Home() {
         </section>
 
         {/* ─── FAQ ───────────────────────────────────────────── */}
-        <section id="faq" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)" }}>
+        <section id="faq" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)", borderTop: "1px solid var(--border)" }}>
           <div className="wrap wrap-tight">
             <Reveal><div style={{ marginBottom: "clamp(1.8rem, 4vw, 3rem)" }}><span className="kicker" style={{ marginBottom: "1.1rem" }}>{t.faq.kicker}</span><h2 className="d-xl" style={{ margin: 0 }}>{t.faq.title}</h2></div></Reveal>
             <Reveal delay={100}><Faq /></Reveal>
@@ -272,7 +272,7 @@ export default function Home() {
         </section>
 
         {/* ─── CTA ───────────────────────────────────────────── */}
-        <section id="contact" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)" }}>
+        <section id="contact" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)", background: "var(--paper-2)", borderTop: "1px solid var(--border)" }}>
           <div className="wrap">
             <Reveal>
               <div className="grain" style={{ position: "relative", overflow: "hidden", borderRadius: "var(--r-xl)", background: "var(--vermilion-deep)", color: "var(--surface)", padding: "clamp(2.2rem, 6vw, 4.5rem)" }}>
