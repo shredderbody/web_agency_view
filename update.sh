@@ -34,10 +34,11 @@ command -v docker &>/dev/null || die "Docker not installed."
 _rollback() {
   if docker image inspect atelier-vitrine:rollback &>/dev/null; then
     warn "Rolling back to atelier-vitrine:rollback…"
-    $DC down --remove-orphans 2>/dev/null || true
     docker tag atelier-vitrine:rollback "$IMAGE"
-    $DC up -d --no-build
-    ok "Rollback complete — check: $DC logs -f"
+    # Recreate ONLY web — never bring cloudflared down, or the quick-tunnel URL
+    # would change. The tunnel stays up and reconnects to the rolled-back web.
+    $DC up -d --no-deps --force-recreate web
+    ok "Rollback complete (tunnel URL preserved) — check: $DC logs -f"
   else
     warn "No :rollback image available — redeploy manually."
   fi
@@ -53,6 +54,15 @@ trap 'rm -f "$LOCKFILE"; _rollback' ERR
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
+
+# A non-empty TUNNEL_TOKEN in .env switches cloudflared to a NAMED tunnel
+# (stable domain). Exporting CLOUDFLARED_RUN_ARGS=run means TUNNEL_TOKEN is the
+# only thing you ever set — and the stable domain is kept on every restart.
+NAMED_TUNNEL=0
+if grep -qE "^TUNNEL_TOKEN=.+" .env 2>/dev/null; then
+  export CLOUDFLARED_RUN_ARGS="run"
+  NAMED_TUNNEL=1
+fi
 
 echo -e "\n${BOLD}  Atelier Vitrine — Build & Deploy${RESET}\n"
 
@@ -79,9 +89,24 @@ ok "New image built"
 
 # ── PHASE 2: Swap ────────────────────────────────────────────────────────────
 section "Phase 2 — Swap container"
-info "Replacing container…"
-$DC up -d
-ok "Containers up"
+# Recreate ONLY the web app. cloudflared keeps running untouched, so a quick
+# tunnel keeps the SAME public trycloudflare.com URL across redeploys.
+# (--no-deps: don't touch dependencies; cloudflared proxies to web:3010 over the
+#  docker network and reconnects to the new web container automatically.)
+info "Replacing web container (tunnel left running)…"
+$DC up -d --no-deps --force-recreate web
+ok "web container swapped"
+
+# Make sure the tunnel is up — but NEVER recreate it while it's running, or the
+# quick-tunnel URL would change. `up` would re-apply config changes (recreate);
+# so we only `up` cloudflared when it is NOT already running.
+if [ -n "$(docker ps -q -f 'name=^/atelier-vitrine-tunnel$' -f 'status=running')" ]; then
+  ok "cloudflared already running — left untouched (public URL preserved)"
+else
+  info "cloudflared not running — starting it…"
+  $DC up -d --no-deps cloudflared
+  ok "Tunnel started"
+fi
 
 # ── Health check (60s) ────────────────────────────────────────────────────────
 section "Health check (60s)"
@@ -97,19 +122,38 @@ else
   die "Health check failed after 60s — triggering rollback"
 fi
 
-# ── Public URL (quick tunnel) ─────────────────────────────────────────────────
+# ── Public URL ─────────────────────────────────────────────────────────────────
 section "Cloudflare tunnel"
-info "Resolving public URL from cloudflared logs…"
-URL=""
-for _ in $(seq 1 20); do
-  URL="$($DC logs cloudflared 2>/dev/null | grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' | tail -1 || true)"
-  [ -n "$URL" ] && break
-  sleep 1
-done
-if [ -n "$URL" ]; then
-  ok "Public URL: ${URL}"
+if [[ "$NAMED_TUNNEL" -eq 1 ]]; then
+  HOST="$(grep -E '^TUNNEL_HOSTNAME=' .env 2>/dev/null | cut -d= -f2- | tr -d '"' || true)"
+  if [ -n "$HOST" ]; then
+    ok "Public URL (stable): https://${HOST#https://}"
+  else
+    ok "Named tunnel running — stable domain (the hostname routed in the dashboard)."
+  fi
 else
-  warn "No quick-tunnel URL found (named tunnel in use?). Check: $DC logs cloudflared"
+  info "Resolving public URL from cloudflared logs…"
+  URL=""
+  for _ in $(seq 1 20); do
+    URL="$($DC logs cloudflared 2>/dev/null | grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' | tail -1 || true)"
+    [ -n "$URL" ] && break
+    sleep 1
+  done
+  if [ -n "$URL" ]; then
+    ok "Public URL (unchanged — tunnel kept running): ${URL}"
+    # Tunnel is left running so the URL is stable across this redeploy. Resync
+    # .env anyway so NEXT_PUBLIC_APP_URL always matches the live tunnel.
+    if [ -f .env ]; then
+      if grep -qE '^NEXT_PUBLIC_APP_URL=' .env; then
+        sed -i "s|^NEXT_PUBLIC_APP_URL=.*|NEXT_PUBLIC_APP_URL=${URL}|" .env
+      else
+        printf '\nNEXT_PUBLIC_APP_URL=%s\n' "$URL" >> .env
+      fi
+      ok ".env in sync: NEXT_PUBLIC_APP_URL=${URL}"
+    fi
+  else
+    warn "No quick-tunnel URL found. Check: $DC logs cloudflared"
+  fi
 fi
 
 echo ""

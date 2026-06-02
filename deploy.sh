@@ -37,16 +37,21 @@ echo -e "  Port:   ${BLUE}${PORT}${RESET}\n"
 
 # ── Env (optional) ─────────────────────────────────────────────────────────────
 section "Environment"
+NAMED_TUNNEL=0
 if [[ -f ".env" ]]; then
   ok ".env present"
-  # If a named tunnel token is set, it will be picked up by docker-compose.yml.
-  if grep -q "^TUNNEL_TOKEN=" .env 2>/dev/null; then
-    ok "TUNNEL_TOKEN found — make sure the named-tunnel command is enabled in docker-compose.yml"
+  # A non-empty TUNNEL_TOKEN switches docker-compose.yml to a NAMED tunnel
+  # (stable domain). We export CLOUDFLARED_RUN_ARGS=run so the only thing you
+  # ever have to set is TUNNEL_TOKEN itself.
+  if grep -qE "^TUNNEL_TOKEN=.+" .env 2>/dev/null; then
+    export CLOUDFLARED_RUN_ARGS="run"
+    NAMED_TUNNEL=1
+    ok "TUNNEL_TOKEN found — using a NAMED tunnel (stable domain, persists across restarts)."
   else
-    info "No TUNNEL_TOKEN — using an ephemeral quick tunnel (URL printed below)."
+    info "No TUNNEL_TOKEN — using an ephemeral quick tunnel (random URL printed below)."
   fi
 else
-  warn "No .env — fine for the marketing site (no runtime secrets required)."
+  warn "No .env — fine for the marketing site; tunnel will be an ephemeral quick tunnel."
 fi
 
 # ── Cleanup Docker ───────────────────────────────────────────────────────────
@@ -84,17 +89,41 @@ fi
 
 # ── Public URL (quick tunnel) ─────────────────────────────────────────────────
 section "Cloudflare tunnel"
-info "Resolving public URL from cloudflared logs…"
-URL=""
-for _ in $(seq 1 20); do
-  URL="$($DC logs cloudflared 2>/dev/null | grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' | tail -1 || true)"
-  [ -n "$URL" ] && break
-  sleep 1
-done
-if [ -n "$URL" ]; then
-  ok "Public URL: ${URL}"
+if [[ "$NAMED_TUNNEL" -eq 1 ]]; then
+  # Named tunnel: the public hostname is whatever you routed to this tunnel in
+  # the Cloudflare dashboard. It is STABLE across restarts. We surface it from
+  # an optional TUNNEL_HOSTNAME=... line in .env (purely informational).
+  HOST="$(grep -E '^TUNNEL_HOSTNAME=' .env 2>/dev/null | cut -d= -f2- | tr -d '"' || true)"
+  if [ -n "$HOST" ]; then
+    ok "Public URL (stable): https://${HOST#https://}"
+  else
+    ok "Named tunnel running — public URL is the hostname you routed in the dashboard."
+    info "Tip: add TUNNEL_HOSTNAME=atelier.mondomaine.com to .env to print it here."
+  fi
+  info "Tunnel status: $DC logs cloudflared | grep -i 'Registered\\|connection'"
 else
-  warn "No quick-tunnel URL found (named tunnel in use?). Check: $DC logs cloudflared"
+  info "Resolving public URL from cloudflared logs…"
+  URL=""
+  for _ in $(seq 1 20); do
+    URL="$($DC logs cloudflared 2>/dev/null | grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' | tail -1 || true)"
+    [ -n "$URL" ] && break
+    sleep 1
+  done
+  if [ -n "$URL" ]; then
+    ok "Public URL (fresh quick tunnel): ${URL}"
+    # Full deploy recreates cloudflared → new URL. Record it in .env so
+    # NEXT_PUBLIC_APP_URL stays in sync with the live tunnel.
+    if [ -f .env ]; then
+      if grep -qE '^NEXT_PUBLIC_APP_URL=' .env; then
+        sed -i "s|^NEXT_PUBLIC_APP_URL=.*|NEXT_PUBLIC_APP_URL=${URL}|" .env
+      else
+        printf '\nNEXT_PUBLIC_APP_URL=%s\n' "$URL" >> .env
+      fi
+      ok ".env synced: NEXT_PUBLIC_APP_URL=${URL}"
+    fi
+  else
+    warn "No quick-tunnel URL found. Check: $DC logs cloudflared"
+  fi
 fi
 
 echo ""

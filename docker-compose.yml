@@ -4,10 +4,11 @@
 #  • web         : Next.js standalone server on port 3010.
 #  • cloudflared : exposes the app publicly through a Cloudflare tunnel.
 #
-#  Default tunnel is a *quick tunnel* (ephemeral https://<name>.trycloudflare.com
-#  URL, printed in the cloudflared logs) — matching the project's existing
-#  launch_cloudflared_https workflow. For a stable custom domain, switch to a
-#  named tunnel: see the commented block under the cloudflared service.
+#  Tunnel mode is chosen automatically from .env:
+#    • TUNNEL_TOKEN set  → NAMED tunnel  → STABLE custom domain, survives restarts.
+#    • TUNNEL_TOKEN empty → QUICK tunnel → ephemeral trycloudflare.com URL (random).
+#  To pin the domain: create a named tunnel in the Cloudflare Zero Trust dashboard,
+#  copy its token into TUNNEL_TOKEN=... in .env, then redeploy. Nothing else to change.
 # ─────────────────────────────────────────────────────────────────────────────
 services:
   web:
@@ -40,13 +41,11 @@ services:
     depends_on:
       web:
         condition: service_healthy
-    # Quick tunnel (ephemeral URL printed in logs: docker compose logs cloudflared)
-    command: tunnel --no-autoupdate --url http://web:3010
-
-    # ── Named tunnel (stable custom domain) ──────────────────────────────────
-    # 1. Create a tunnel in the Cloudflare dashboard, copy its token.
-    # 2. Put TUNNEL_TOKEN=... in .env (gitignored).
-    # 3. Replace the command above with the line below and uncomment env.
-    # command: tunnel --no-autoupdate run
-    # environment:
-    #   - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    environment:
+      # Empty by default → quick tunnel. Set TUNNEL_TOKEN in .env → named tunnel.
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN:-}
+    # The run args switch automatically:
+    #   • TUNNEL_TOKEN set in .env  → CLOUDFLARED_RUN_ARGS defaults to "run"
+    #     (named tunnel: cloudflared reads TUNNEL_TOKEN from the env above).
+    #   • TUNNEL_TOKEN empty         → falls back to a quick tunnel to web:3010.
+    command: tunnel --no-autoupdate ${CLOUDFLARED_RUN_ARGS:---url http://web:3010}
