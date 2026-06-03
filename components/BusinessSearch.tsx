@@ -1,20 +1,35 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Loader2, MapPin, Search, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2, MapPin, Search, X } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 
 type Suggestion = { id: string; main: string; secondary: string };
+type Review = { rating: number | null; text: string; author: string; when: string };
 type Place = {
   id: string;
   name: string;
+  primaryType?: string;
+  primaryTypeDisplay?: string;
+  types?: string[];
   address: string;
-  mapsUri: string;
-  phone: string;
-  website: string;
+  streetNumber?: string;
+  route?: string;
+  locality?: string;
+  postalCode?: string;
+  adminArea?: string;
+  country?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  phoneNational?: string;
+  phoneInternational?: string;
+  website?: string;
+  mapsUri?: string;
+  rating?: number | null;
+  userRatingCount?: number | null;
+  openingHours?: string[];
+  reviews?: Review[];
+  businessStatus?: string;
 };
-
-// Adresse email qui reçoit les demandes de démo (identique au CTA mailto).
-const CONTACT_EMAIL = "bonjour@atelier-vitrine.fr";
 
 export default function BusinessSearch() {
   const { lang, t } = useLang();
@@ -28,6 +43,9 @@ export default function BusinessSearch() {
   const [selected, setSelected] = useState<Place | null>(null);
   const [manual, setManual] = useState(false);
   const [form, setForm] = useState({ name: "", trade: "", city: "", phone: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(false);
 
   const boxRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -87,25 +105,10 @@ export default function BusinessSearch() {
       if (data?.id) {
         setSelected(data as Place);
       } else {
-        // Repli : on garde au moins le nom affiché.
-        setSelected({
-          id: sug.id,
-          name: sug.main,
-          address: sug.secondary,
-          mapsUri: "",
-          phone: "",
-          website: "",
-        });
+        setSelected({ id: sug.id, name: sug.main, address: sug.secondary });
       }
     } catch {
-      setSelected({
-        id: sug.id,
-        name: sug.main,
-        address: sug.secondary,
-        mapsUri: "",
-        phone: "",
-        website: "",
-      });
+      setSelected({ id: sug.id, name: sug.main, address: sug.secondary });
     } finally {
       setLoading(false);
     }
@@ -117,39 +120,71 @@ export default function BusinessSearch() {
     setSuggestions([]);
     setSearched(false);
     setOpen(false);
+    setError(false);
   }
 
-  // Libellé sans le « (facultatif) » pour l'e-mail.
-  const cleanLabel = (l: string) => l.replace(/\s*\(.*\)$/, "");
-
-  function buildMailto(name: string, detailLines: string[]) {
-    const body = [s.emailIntro, "", ...detailLines, "", s.emailOutro].join("\n");
-    const subject = `${s.emailSubject} — ${name}`;
-    return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  // Mappe les données vers les colonnes de la table business_leads.
+  function googlePayload(p: Place) {
+    return {
+      source: "google",
+      lang,
+      place_id: p.id,
+      name: p.name,
+      primary_type: p.primaryType,
+      primary_type_display: p.primaryTypeDisplay,
+      types: p.types,
+      formatted_address: p.address,
+      street_number: p.streetNumber,
+      route: p.route,
+      locality: p.locality,
+      postal_code: p.postalCode,
+      admin_area: p.adminArea,
+      country: p.country,
+      latitude: p.latitude,
+      longitude: p.longitude,
+      phone_national: p.phoneNational,
+      phone_international: p.phoneInternational,
+      website: p.website,
+      google_maps_uri: p.mapsUri,
+      rating: p.rating,
+      user_rating_count: p.userRatingCount,
+      opening_hours: p.openingHours,
+      reviews: p.reviews,
+      business_status: p.businessStatus,
+    };
   }
 
-  function placeMailto(p: Place) {
-    return buildMailto(
-      p.name,
-      [`• ${p.name}`, p.address && `• ${p.address}`, p.mapsUri && `• ${p.mapsUri}`].filter(
-        Boolean
-      ) as string[]
-    );
+  function manualPayload() {
+    return {
+      source: "manual",
+      lang,
+      name: form.name.trim(),
+      primary_type_display: form.trade.trim(),
+      locality: form.city.trim(),
+      phone_national: form.phone.trim(),
+    };
   }
 
-  function manualMailto() {
-    return buildMailto(
-      form.name,
-      [
-        `• ${cleanLabel(s.manualName)} : ${form.name}`,
-        `• ${cleanLabel(s.manualTrade)} : ${form.trade}`,
-        `• ${cleanLabel(s.manualCity)} : ${form.city}`,
-        form.phone && `• ${cleanLabel(s.manualPhone)} : ${form.phone}`,
-      ].filter(Boolean) as string[]
-    );
+  async function submitLead(payload: Record<string, unknown>) {
+    setSubmitting(true);
+    setError(false);
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) setSubmitted(true);
+      else setError(true);
+    } catch {
+      setError(true);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
-  const manualValid = form.name.trim() && form.trade.trim() && form.city.trim();
+  const manualValid = !!(form.name.trim() && form.trade.trim() && form.city.trim());
 
   const inputBase: React.CSSProperties = {
     width: "100%",
@@ -163,7 +198,59 @@ export default function BusinessSearch() {
     outline: "none",
   };
 
-  // ── État sélectionné : carte de confirmation + CTA mailto pré-rempli ──
+  const submitBtnStyle = (enabled: boolean): React.CSSProperties => ({
+    marginTop: "0.8rem",
+    width: "100%",
+    background: "var(--surface)",
+    color: "var(--ink)",
+    justifyContent: "center",
+    opacity: enabled ? 1 : 0.5,
+    pointerEvents: enabled ? "auto" : "none",
+    border: "none",
+    cursor: enabled ? "pointer" : "default",
+  });
+
+  const errorLine = error && (
+    <p style={{ margin: "0.6rem 0 0", fontSize: "0.85rem", color: "oklch(0.96 0.02 40)" }}>
+      {s.errorMsg}
+    </p>
+  );
+
+  // ── État confirmation (lead enregistré) ──
+  if (submitted) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.7rem",
+          background: "var(--surface)",
+          color: "var(--ink)",
+          borderRadius: "0.7rem",
+          padding: "1rem 1.1rem",
+        }}
+      >
+        <span
+          style={{
+            display: "inline-grid",
+            placeItems: "center",
+            width: "2rem",
+            height: "2rem",
+            flexShrink: 0,
+            borderRadius: "50%",
+            background: "var(--vermilion)",
+            color: "var(--surface)",
+          }}
+        >
+          <Check size={18} />
+        </span>
+        <p style={{ margin: 0, fontSize: "0.95rem" }}>{s.success}</p>
+      </div>
+    );
+  }
+
+  // ── État sélectionné : carte de confirmation + envoi ──
   if (selected) {
     return (
       <div style={{ width: "100%" }}>
@@ -205,29 +292,31 @@ export default function BusinessSearch() {
             <X size={18} />
           </button>
         </div>
-        <a
-          href={placeMailto(selected)}
+        <button
+          type="button"
+          onClick={() => submitLead(googlePayload(selected))}
           className="btn btn-lg"
-          style={{
-            marginTop: "0.8rem",
-            width: "100%",
-            background: "var(--surface)",
-            color: "var(--ink)",
-            justifyContent: "center",
-          }}
+          disabled={submitting}
+          style={submitBtnStyle(!submitting)}
         >
-          {s.submit} <ArrowRight size={18} />
-        </a>
+          {submitting ? (
+            <>
+              {s.sending} <Loader2 size={18} className="bs-spin" />
+            </>
+          ) : (
+            <>
+              {s.submit} <ArrowRight size={18} />
+            </>
+          )}
+        </button>
+        {errorLine}
       </div>
     );
   }
 
   // ── État saisie manuelle (entreprise absente de Google) ──
   if (manual) {
-    const fieldStyle: React.CSSProperties = {
-      ...inputBase,
-      padding: "0.8rem 1rem",
-    };
+    const fieldStyle: React.CSSProperties = { ...inputBase, padding: "0.8rem 1rem" };
     return (
       <div style={{ width: "100%" }}>
         <p style={{ margin: "0 0 0.7rem", fontSize: "0.9rem", color: "oklch(0.96 0.02 40)" }}>
@@ -267,22 +356,24 @@ export default function BusinessSearch() {
             style={fieldStyle}
           />
         </div>
-        <a
-          href={manualValid ? manualMailto() : undefined}
-          aria-disabled={!manualValid}
+        <button
+          type="button"
+          onClick={() => submitLead(manualPayload())}
           className="btn btn-lg"
-          style={{
-            marginTop: "0.8rem",
-            width: "100%",
-            background: "var(--surface)",
-            color: "var(--ink)",
-            justifyContent: "center",
-            opacity: manualValid ? 1 : 0.5,
-            pointerEvents: manualValid ? "auto" : "none",
-          }}
+          disabled={!manualValid || submitting}
+          style={submitBtnStyle(manualValid && !submitting)}
         >
-          {s.submit} <ArrowRight size={18} />
-        </a>
+          {submitting ? (
+            <>
+              {s.sending} <Loader2 size={18} className="bs-spin" />
+            </>
+          ) : (
+            <>
+              {s.submit} <ArrowRight size={18} />
+            </>
+          )}
+        </button>
+        {errorLine}
         <button
           type="button"
           onClick={() => setManual(false)}

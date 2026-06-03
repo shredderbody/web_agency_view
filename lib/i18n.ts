@@ -83,6 +83,9 @@ type UI = {
     manualCity: string;
     manualPhone: string;
     backToSearch: string;
+    sending: string;
+    success: string;
+    errorMsg: string;
   };
   footer: {
     tagline: string;
@@ -277,6 +280,9 @@ export const ui: Record<Lang, UI> = {
       manualCity: "Ville",
       manualPhone: "Téléphone (facultatif)",
       backToSearch: "Revenir à la recherche Google",
+      sending: "Envoi…",
+      success: "Merci ! On prépare votre démo — vous recevez le lien sous 7 jours.",
+      errorMsg: "Oups, l'envoi a échoué. Réessayez ou appelez-nous.",
     },
     footer: {
       tagline: "L'atelier qui dessine la vitrine en ligne des commerces de quartier. Une démo à votre nom, puis un site qui travaille pour vous.",
@@ -484,6 +490,9 @@ export const ui: Record<Lang, UI> = {
       manualCity: "City",
       manualPhone: "Phone (optional)",
       backToSearch: "Back to Google search",
+      sending: "Sending…",
+      success: "Thanks! We're preparing your demo — you'll get the link within 7 days.",
+      errorMsg: "Oops, sending failed. Try again or call us.",
     },
     footer: {
       tagline: "The studio that designs the online showcase of neighbourhood businesses. A demo in your name, then a site that works for you.",
