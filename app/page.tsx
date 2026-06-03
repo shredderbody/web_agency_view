@@ -45,7 +45,8 @@ export default function Home() {
                   </div>
                 </Reveal>
                 <Reveal delay={360}>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem", marginTop: "2rem" }}>
+                  <p style={{ fontSize: "clamp(1rem, 1.4vw, 1.15rem)", fontWeight: 600, color: "var(--ink)", margin: "2rem 0 1.4rem", maxWidth: "44ch", lineHeight: 1.4 }}>{t.hero.pitch}</p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem" }}>
                     <a href="#metiers" className="btn btn-primary btn-lg">{t.hero.ctaPrimary} <ArrowRight size={18} /></a>
                     <a href="#contact" className="btn btn-ghost btn-lg">{t.hero.ctaSecondary}</a>
                   </div>
