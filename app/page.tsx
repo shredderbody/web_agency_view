@@ -27,15 +27,6 @@ export default function Home() {
         <section className="grain" style={{ position: "relative", paddingTop: "6.8rem", paddingBottom: "clamp(3rem, 6vw, 5rem)", overflow: "hidden" }}>
           <div aria-hidden style={{ position: "absolute", top: "-12%", right: "-8%", width: "46rem", height: "46rem", maxWidth: "100vw", borderRadius: "50%", background: "radial-gradient(circle, oklch(0.605 0.2 33 / 0.10), transparent 62%)", pointerEvents: "none" }} />
           <div className="wrap" style={{ position: "relative" }}>
-            <Reveal>
-              <div className="hero-pitch" style={{ maxWidth: "62ch", margin: "0 auto clamp(2.4rem, 5vw, 3.6rem)", textAlign: "center" }}>
-                <p className="hero-pitch-text" style={{ fontSize: "clamp(1.25rem, 2.4vw, 1.75rem)", lineHeight: 1.35, fontWeight: 600, color: "var(--ink)", margin: "0 0 1.6rem" }}>{t.hero.pitch}</p>
-                <div className="hero-pitch-cta" style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem", justifyContent: "center" }}>
-                  <a href="#metiers" className="btn btn-primary btn-lg">{t.hero.ctaPrimary} <ArrowRight size={18} /></a>
-                  <a href="#contact" className="btn btn-ghost btn-lg">{t.hero.ctaSecondary}</a>
-                </div>
-              </div>
-            </Reveal>
             <div className="hero-grid" style={{ display: "grid", gridTemplateColumns: "1.05fr 0.95fr", gap: "clamp(2.2rem, 5vw, 4.5rem)", alignItems: "center" }}>
               <div>
                 <Reveal><span className="chip chip-accent" style={{ marginBottom: "1.4rem" }}><Sparkles size={15} /> {t.hero.badge}</span></Reveal>
@@ -51,6 +42,12 @@ export default function Home() {
                   <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", marginTop: "2.1rem", color: "var(--ink-muted)", fontSize: "0.9rem" }}>
                     <div style={{ display: "flex", gap: "2px", color: "var(--clay-deep)" }}>{Array.from({ length: 5 }).map((_, i) => <Star key={i} size={15} fill="currentColor" stroke="none" />)}</div>
                     <span>{t.hero.rating}</span>
+                  </div>
+                </Reveal>
+                <Reveal delay={360}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem", marginTop: "2rem" }}>
+                    <a href="#metiers" className="btn btn-primary btn-lg">{t.hero.ctaPrimary} <ArrowRight size={18} /></a>
+                    <a href="#contact" className="btn btn-ghost btn-lg">{t.hero.ctaSecondary}</a>
                   </div>
                 </Reveal>
               </div>

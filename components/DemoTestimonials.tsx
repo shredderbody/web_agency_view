@@ -29,10 +29,10 @@ export default function DemoTestimonials({
     <section
       style={{
         paddingBlock: "clamp(3rem, 6vw, 5rem)",
-        background: "var(--paper-2)",
-        borderBlock: "1px solid var(--border)",
-        color: "var(--ink)",
-        fontFamily: "var(--font-body)",
+        background: "var(--bg-2, var(--paper-2))",
+        borderBlock: "1px solid var(--line, var(--border))",
+        color: "var(--fg, var(--ink))",
+        fontFamily: "var(--vit-body, var(--font-body))",
       }}
     >
       <div className="wrap">
@@ -49,23 +49,23 @@ export default function DemoTestimonials({
                 style={{
                   flexShrink: 0, width: "2rem", height: "2rem", borderRadius: "99px",
                   display: "grid", placeItems: "center",
-                  background: "var(--vermilion)", color: "var(--surface)",
+                  background: "var(--accent, var(--vermilion))", color: "var(--bg, var(--surface))",
                   fontFamily: "var(--font-display)", fontSize: "0.82rem", fontWeight: 700, lineHeight: 1,
                 }}
               >
                 {index}
               </span>
             )}
-            <span className="kicker" style={{ margin: 0 }}>{title}</span>
+            <span className="kicker" style={{ margin: 0, color: "var(--accent, var(--vermilion-deep))" }}>{title}</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.55rem", color: "var(--vermilion)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.55rem", color: "var(--accent, var(--vermilion))" }}>
             <span style={{ display: "flex", gap: "1px" }}>
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star key={i} size={18} fill="currentColor" stroke="none" />
               ))}
             </span>
-            <strong style={{ color: "var(--ink)", fontFamily: "var(--font-display)", fontSize: "1.15rem" }}>{rating}</strong>
-            <span style={{ color: "var(--ink-muted)" }}>· {ratingMeta}</span>
+            <strong style={{ color: "var(--fg, var(--ink))", fontFamily: "var(--vit-display, var(--font-display))", fontSize: "1.15rem" }}>{rating}</strong>
+            <span style={{ color: "var(--fg-dim, var(--ink-muted))" }}>· {ratingMeta}</span>
           </div>
         </motion.div>
 
