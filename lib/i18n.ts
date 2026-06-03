@@ -14,6 +14,7 @@ type UI = {
   nav: { metiers: string; methode: string; tarifs: string; faq: string; devis: string; home: string; menu: string; close: string };
   hero: {
     badge: string;
+    pitch: string;
     titleLead: string;
     titleAccent: string;
     lead: string;
@@ -105,6 +106,7 @@ export const ui: Record<Lang, UI> = {
     nav: { metiers: "Métiers", methode: "Méthode", tarifs: "Tarifs", faq: "Questions", devis: "Devis gratuit", home: "accueil", menu: "Ouvrir le menu", close: "Fermer le menu" },
     hero: {
       badge: "Créateur de sites web pour commerces",
+      pitch: "Un site professionnel livré en 7 jours, à partir de 490€ — pour les PME et agences qui veulent une présence web qui en impose.",
       titleLead: "Je crée le site web de votre",
       titleAccent: "commerce.",
       lead: "Conception, design et mise en ligne de vitrines web sur-mesure pour les artisans et commerces de proximité. Choisissez votre métier ci-dessous : vous verrez un site complet, déjà pensé pour vous.",
@@ -291,6 +293,7 @@ export const ui: Record<Lang, UI> = {
     nav: { metiers: "Trades", methode: "Method", tarifs: "Pricing", faq: "FAQ", devis: "Free quote", home: "home", menu: "Open menu", close: "Close menu" },
     hero: {
       badge: "Website maker for local businesses",
+      pitch: "A professional website delivered in 7 days, from €490 — for SMEs and agencies that want a web presence that commands attention.",
       titleLead: "I build the website for your",
       titleAccent: "business.",
       lead: "Design, build and launch of bespoke showcase websites for local artisans and shops. Pick your trade below: you'll see a complete site already designed for you.",

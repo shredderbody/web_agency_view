@@ -27,6 +27,15 @@ export default function Home() {
         <section className="grain" style={{ position: "relative", paddingTop: "6.8rem", paddingBottom: "clamp(3rem, 6vw, 5rem)", overflow: "hidden" }}>
           <div aria-hidden style={{ position: "absolute", top: "-12%", right: "-8%", width: "46rem", height: "46rem", maxWidth: "100vw", borderRadius: "50%", background: "radial-gradient(circle, oklch(0.605 0.2 33 / 0.10), transparent 62%)", pointerEvents: "none" }} />
           <div className="wrap" style={{ position: "relative" }}>
+            <Reveal>
+              <div className="hero-pitch" style={{ maxWidth: "62ch", margin: "0 auto clamp(2.4rem, 5vw, 3.6rem)", textAlign: "center" }}>
+                <p className="hero-pitch-text" style={{ fontSize: "clamp(1.25rem, 2.4vw, 1.75rem)", lineHeight: 1.35, fontWeight: 600, color: "var(--ink)", margin: "0 0 1.6rem" }}>{t.hero.pitch}</p>
+                <div className="hero-pitch-cta" style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem", justifyContent: "center" }}>
+                  <a href="#metiers" className="btn btn-primary btn-lg">{t.hero.ctaPrimary} <ArrowRight size={18} /></a>
+                  <a href="#contact" className="btn btn-ghost btn-lg">{t.hero.ctaSecondary}</a>
+                </div>
+              </div>
+            </Reveal>
             <div className="hero-grid" style={{ display: "grid", gridTemplateColumns: "1.05fr 0.95fr", gap: "clamp(2.2rem, 5vw, 4.5rem)", alignItems: "center" }}>
               <div>
                 <Reveal><span className="chip chip-accent" style={{ marginBottom: "1.4rem" }}><Sparkles size={15} /> {t.hero.badge}</span></Reveal>
@@ -37,12 +46,6 @@ export default function Home() {
                 </Reveal>
                 <Reveal delay={140}>
                   <p style={{ fontSize: "clamp(1.02rem, 1.5vw, 1.22rem)", color: "var(--ink-dim)", maxWidth: "47ch", margin: "0 0 2rem" }}>{t.hero.lead}</p>
-                </Reveal>
-                <Reveal delay={210}>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem" }}>
-                    <a href="#metiers" className="btn btn-primary btn-lg">{t.hero.ctaPrimary} <ArrowRight size={18} /></a>
-                    <a href="#contact" className="btn btn-ghost btn-lg">{t.hero.ctaSecondary}</a>
-                  </div>
                 </Reveal>
                 <Reveal delay={290}>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", marginTop: "2.1rem", color: "var(--ink-muted)", fontSize: "0.9rem" }}>
@@ -294,6 +297,14 @@ export default function Home() {
 
       <style>{`
         @media (max-width: 980px) { .hero-grid { grid-template-columns: 1fr !important; } }
+        /* Tablette : pitch resserré, CTA confortables */
+        @media (max-width: 900px) { .hero-pitch { max-width: 46ch !important; } }
+        /* Mobile : pitch lisible, boutons empilés pleine largeur */
+        @media (max-width: 560px) {
+          .hero-pitch { max-width: 100% !important; }
+          .hero-pitch-cta { flex-direction: column; align-items: stretch; }
+          .hero-pitch-cta .btn { width: 100%; justify-content: center; }
+        }
         @media (max-width: 820px) { .pitch-grid { grid-template-columns: 1fr !important; } }
         @media (min-width: 700px) and (max-width: 1024px) { .incl-grid { grid-template-columns: 1fr 1fr !important; } .steps-grid { grid-template-columns: 1fr 1fr !important; } }
         @media (max-width: 1000px) { .audience-grid { grid-template-columns: 1fr 1fr !important; } }
