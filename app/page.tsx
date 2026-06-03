@@ -272,9 +272,17 @@ export default function Home() {
 
         {/* ─── FAQ ───────────────────────────────────────────── */}
         <section id="faq" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)", borderTop: "1px solid var(--border)" }}>
-          <div className="wrap wrap-tight">
-            <Reveal><div style={{ marginBottom: "clamp(1.8rem, 4vw, 3rem)" }}><span className="kicker" style={{ marginBottom: "1.1rem" }}>{t.faq.kicker}</span><h2 className="d-xl" style={{ margin: 0 }}>{t.faq.title}</h2></div></Reveal>
-            <Reveal delay={100}><Faq /></Reveal>
+          <div className="wrap">
+            <div className="faq-layout" style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "clamp(2rem, 5vw, 5rem)", alignItems: "start" }}>
+              <Reveal>
+                <div style={{ position: "sticky", top: "7rem" }}>
+                  <span className="kicker" style={{ marginBottom: "1.1rem" }}>{t.faq.kicker}</span>
+                  <h2 className="d-lg" style={{ margin: "0 0 1rem" }}>{t.faq.title}</h2>
+                  <p style={{ fontSize: "0.95rem", color: "var(--ink-muted)", margin: 0, maxWidth: "28ch" }}>{t.faq.kicker === "Questions fréquentes" ? "Tout ce qu'il faut savoir avant de se lancer." : "Everything you need to know before getting started."}</p>
+                </div>
+              </Reveal>
+              <Reveal delay={100}><Faq /></Reveal>
+            </div>
           </div>
         </section>
 
@@ -311,6 +319,7 @@ export default function Home() {
           .cta-btns { min-width: 0 !important; flex-direction: column; }
           .cta-btns .btn { width: 100%; min-height: 3.4rem; }
         }
+        @media (max-width: 760px) { .faq-layout { grid-template-columns: 1fr !important; } }
         @media (max-width: 820px) { .pitch-grid { grid-template-columns: 1fr !important; } }
         @media (min-width: 700px) and (max-width: 1024px) { .incl-grid { grid-template-columns: 1fr 1fr !important; } .steps-grid { grid-template-columns: 1fr 1fr !important; } }
         @media (max-width: 1000px) { .audience-grid { grid-template-columns: 1fr 1fr !important; } }
