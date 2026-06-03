@@ -82,6 +82,7 @@ type UI = {
     manualTrade: string;
     manualCity: string;
     manualEmail: string;
+    popupEmail: string;
     manualPhone: string;
     backToSearch: string;
     sending: string;
@@ -284,6 +285,7 @@ export const ui: Record<Lang, UI> = {
       manualTrade: "Métier / activité",
       manualCity: "Ville",
       manualEmail: "Adresse e-mail",
+      popupEmail: "Votre e-mail pour recevoir la démo (facultatif)",
       manualPhone: "Téléphone (facultatif)",
       backToSearch: "Revenir à la recherche Google",
       sending: "Envoi…",
@@ -499,6 +501,7 @@ export const ui: Record<Lang, UI> = {
       manualTrade: "Trade / activity",
       manualCity: "City",
       manualEmail: "Email address",
+      popupEmail: "Your email to receive the demo (optional)",
       manualPhone: "Phone (optional)",
       backToSearch: "Back to Google search",
       sending: "Sending…",

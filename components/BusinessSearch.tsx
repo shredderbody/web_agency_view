@@ -60,6 +60,8 @@ export default function BusinessSearch() {
   const [selected, setSelected] = useState<Place | null>(null);
   const [manual, setManual] = useState(false);
   const [form, setForm] = useState({ name: "", trade: "", city: "", email: "", phone: "" });
+  const [popupEmail, setPopupEmail] = useState("");
+  const [popupPhone, setPopupPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
@@ -145,6 +147,8 @@ export default function BusinessSearch() {
     setSelected(null);
     setSubmitted(false);
     setError(false);
+    setPopupEmail("");
+    setPopupPhone("");
     setQuery("");
     setSuggestions([]);
     setSearched(false);
@@ -169,8 +173,10 @@ export default function BusinessSearch() {
       country: p.country,
       latitude: p.latitude,
       longitude: p.longitude,
-      phone_national: p.phoneNational,
+      // Téléphone saisi par l'entreprise s'il est fourni, sinon celui de Google.
+      phone_national: popupPhone.trim() || p.phoneNational,
       phone_international: p.phoneInternational,
+      email: popupEmail.trim(),
       website: p.website,
       google_maps_uri: p.mapsUri,
       rating: p.rating,
@@ -514,6 +520,52 @@ export default function BusinessSearch() {
                   ))}
                 </div>
               </div>
+            )}
+
+            {/* E-mail facultatif pour recontacter l'entreprise */}
+            {!submitted && (
+              <input
+                type="email"
+                value={popupEmail}
+                onChange={(e) => setPopupEmail(e.target.value)}
+                placeholder={s.popupEmail}
+                aria-label={s.popupEmail}
+                style={{
+                  width: "100%",
+                  marginTop: shownReviews.length > 0 || selected.address ? "1.1rem" : "0.4rem",
+                  border: "1px solid var(--border)",
+                  background: "var(--paper-2)",
+                  color: "var(--ink)",
+                  borderRadius: "0.7rem",
+                  padding: "0.8rem 1rem",
+                  fontSize: "0.98rem",
+                  fontFamily: "inherit",
+                  outline: "none",
+                }}
+              />
+            )}
+
+            {/* Téléphone facultatif */}
+            {!submitted && (
+              <input
+                type="tel"
+                value={popupPhone}
+                onChange={(e) => setPopupPhone(e.target.value)}
+                placeholder={s.manualPhone}
+                aria-label={s.manualPhone}
+                style={{
+                  width: "100%",
+                  marginTop: "0.6rem",
+                  border: "1px solid var(--border)",
+                  background: "var(--paper-2)",
+                  color: "var(--ink)",
+                  borderRadius: "0.7rem",
+                  padding: "0.8rem 1rem",
+                  fontSize: "0.98rem",
+                  fontFamily: "inherit",
+                  outline: "none",
+                }}
+              />
             )}
 
             {/* CTA → envoi + remplissage Supabase en arrière-plan */}
