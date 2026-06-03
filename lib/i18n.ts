@@ -185,7 +185,7 @@ export const ui: Record<Lang, UI> = {
       body: "Création unique, puis un abonnement simple pour l'hébergement et le suivi. Sans engagement piège.",
       mostChosen: "Le plus choisi",
       plans: [
-        { name: "Essentielle", price: "490 €", sub: "+ 29 €/mois", featured: false, feats: ["Audit express de votre présence en ligne", "Vitrine une page soignée", "Photos et textes rédigés pour vous", "SEO local de base + fiche Google", "1 round de révisions", "Mobile et performance optimisés", "Livraison en 7 jours"], cta: "Démarrer" },
+        { name: "Essentielle", price: "490 €", sub: "+ 49 €/mois", featured: false, feats: ["Audit express de votre présence en ligne", "Vitrine une page soignée", "Photos et textes rédigés pour vous", "SEO local de base + fiche Google", "1 round de révisions", "Mobile et performance optimisés", "Livraison en 7 jours"], cta: "Démarrer" },
         { name: "Atelier", price: "990 €", sub: "+ 49 €/mois", featured: true, feats: ["Audit complet de votre activité", "Vitrine multi-pages (jusqu'à 5 pages)", "Maquette design sur-mesure", "Réservation ou click & collect intégré", "SEO local avancé + suivi des performances", "3 rounds de révisions", "1 retouche incluse / mois", "Livraison en 7 jours"], cta: "Choisir Atelier" },
         { name: "Signature", price: "Sur devis", sub: "projet dédié", featured: false, feats: ["Tout l'Atelier inclus", "Conception 100% sur-mesure, sans limite de pages", "Fonctions avancées (boutique, espace membre)", "Rounds de révisions illimités", "Accompagnement prioritaire dédié", "Livraison en 7 jours"], cta: "En parler" },
       ],
@@ -372,7 +372,7 @@ export const ui: Record<Lang, UI> = {
       body: "A one-off build, then a simple subscription for hosting and care. No hidden lock-in.",
       mostChosen: "Most chosen",
       plans: [
-        { name: "Essential", price: "€490", sub: "+ €29/mo", featured: false, feats: ["Express audit of your online presence", "Polished one-page showcase", "Photos and copy written for you", "Basic local SEO + Google listing", "1 round of revisions", "Mobile and performance optimised", "Delivered in 7 days"], cta: "Get started" },
+        { name: "Essential", price: "€490", sub: "+ €49/mo", featured: false, feats: ["Express audit of your online presence", "Polished one-page showcase", "Photos and copy written for you", "Basic local SEO + Google listing", "1 round of revisions", "Mobile and performance optimised", "Delivered in 7 days"], cta: "Get started" },
         { name: "Studio", price: "€990", sub: "+ €49/mo", featured: true, feats: ["Full audit of your business", "Multi-page showcase (up to 5 pages)", "Bespoke design mockup", "Built-in booking or click & collect", "Advanced local SEO + performance tracking", "3 rounds of revisions", "1 edit included / month", "Delivered in 7 days"], cta: "Choose Studio" },
         { name: "Signature", price: "On request", sub: "dedicated project", featured: false, feats: ["Everything in Studio included", "Fully bespoke build, no page limit", "Advanced features (shop, member area)", "Unlimited rounds of revisions", "Dedicated priority support", "Delivered in 7 days"], cta: "Talk to me" },
       ],
