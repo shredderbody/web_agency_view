@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, Clock, MapPin, Phone, Star } from 
 import Reveal from "@/components/Reveal";
 import LangSelector from "@/components/LangSelector";
 import DemoTestimonials from "@/components/DemoTestimonials";
+import OrderModal from "@/components/OrderModal";
 import { useLang } from "@/lib/lang-context";
 import { getVitrine } from "@/lib/vitrineContent";
 
@@ -35,10 +36,11 @@ function SectionEyebrow({ num, label }: { num: string; label: string }) {
 export default function DemoView({ slug }: { slug: string }) {
   const { lang, t } = useLang();
   const [menu, setMenu] = useState(false);
+  const [modal, setModal] = useState(false);
   useEffect(() => {
-    document.body.style.overflow = menu ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [menu]);
+    if (!modal) document.body.style.overflow = menu ? "hidden" : "";
+    return () => { if (!modal) document.body.style.overflow = ""; };
+  }, [menu, modal]);
   const v = getVitrine(lang, slug);
   if (!v) return null;
   const c = t.demoCommon;
@@ -69,7 +71,7 @@ export default function DemoView({ slug }: { slug: string }) {
           <nav className="vit-nav-desktop" style={{ display: "none", alignItems: "center", gap: "1.5rem", fontSize: "0.9rem" }}>
             {navLinks.map((l) => <a key={l.href} href={l.href} className="vit-navlink">{l.label}</a>)}
             <LangSelector tone={dark ? "dark" : "light"} />
-            <a href="#reserver" className="vit-btn" style={{ padding: "0.55rem 1.1rem" }}>{v.primaryCta}</a>
+            <button onClick={() => setModal(true)} className="vit-btn" style={{ padding: "0.55rem 1.1rem", border: "none", cursor: "pointer" }}>{v.primaryCta}</button>
           </nav>
           <button
             className="vit-burger" aria-label={t.nav.menu} aria-expanded={menu} onClick={() => setMenu((x) => !x)}
@@ -119,7 +121,7 @@ export default function DemoView({ slug }: { slug: string }) {
         </nav>
         <div style={{ marginTop: "auto", paddingTop: "1.8rem", display: "flex", flexDirection: "column", gap: "1.1rem" }}>
           <LangSelector tone={dark ? "dark" : "light"} />
-          <a href="#reserver" onClick={() => setMenu(false)} className="vit-btn" style={{ width: "100%" }}>{v.primaryCta}</a>
+          <button onClick={() => { setMenu(false); setModal(true); }} className="vit-btn" style={{ width: "100%", border: "none", cursor: "pointer" }}>{v.primaryCta}</button>
         </div>
       </aside>
 
@@ -132,7 +134,7 @@ export default function DemoView({ slug }: { slug: string }) {
               <h1 className="vit-display" style={{ fontSize: "clamp(2.2rem, 6vw, 4.4rem)", lineHeight: isBarber ? 0.96 : 1.03, letterSpacing: ls, margin: "0 0 1.3rem", textTransform: isBarber ? "uppercase" : "none" }}>{v.heroTitle}</h1>
               <p style={{ fontSize: "clamp(1.02rem, 1.4vw, 1.18rem)", color: "var(--fg-dim)", maxWidth: "46ch", margin: "0 0 2rem" }}>{v.heroLead}</p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem", alignItems: "center" }}>
-                <a href="#reserver" className="vit-btn">{v.primaryCta}</a>
+                <button onClick={() => setModal(true)} className="vit-btn" style={{ border: "none", cursor: "pointer" }}>{v.primaryCta}</button>
                 <a href="#carte" className="vit-btn vit-btn-outline">{v.secondaryCta}</a>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "0.7rem", marginTop: "1.7rem" }}>
@@ -267,7 +269,7 @@ export default function DemoView({ slug }: { slug: string }) {
                 <p style={{ color: "var(--fg-dim)", fontSize: "1rem", margin: 0, maxWidth: "44ch" }}>{v.closingLead}</p>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem", flexShrink: 0, minWidth: "min(100%, 15rem)" }}>
-                <a href={`tel:${v.phone.replace(/\s/g, "")}`} className="vit-btn" style={{ justifyContent: "center" }}>{v.primaryCta}</a>
+                <button onClick={() => setModal(true)} className="vit-btn" style={{ justifyContent: "center", border: "none", cursor: "pointer" }}>{v.primaryCta}</button>
                 <a href="#carte" className="vit-btn vit-btn-outline" style={{ justifyContent: "center" }}>{v.secondaryCta}</a>
               </div>
             </div>
@@ -285,6 +287,15 @@ export default function DemoView({ slug }: { slug: string }) {
           <Link href="/#contact" className="vit-btn">{c.createCta} <ArrowUpRight size={16} /></Link>
         </div>
       </footer>
+
+      {modal && (
+        <OrderModal
+          vit={v.vit}
+          services={v.services}
+          business={v.business}
+          onClose={() => setModal(false)}
+        />
+      )}
 
       <style>{`
         .vit-navlink { color: var(--fg-dim); transition: color 0.18s var(--ease); }
