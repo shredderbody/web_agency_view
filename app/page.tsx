@@ -287,7 +287,7 @@ export default function Home() {
                 <div style={{ position: "relative", maxWidth: "42ch" }}>
                   <h2 className="d-xl" style={{ margin: "0 0 1.1rem", color: "var(--surface)" }}>{t.cta.title}</h2>
                   <p style={{ fontSize: "clamp(1.05rem, 1.5vw, 1.15rem)", color: "oklch(0.96 0.02 40)", margin: "0 0 2rem" }}>{t.cta.body}</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem" }}>
+                  <div className="cta-btns" style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem" }}>
                     <a href="mailto:bonjour@atelier-vitrine.fr" className="btn btn-lg" style={{ background: "var(--surface)", color: "var(--ink)" }}>{t.cta.primary} <ArrowRight size={18} /></a>
                     <a href="tel:+33100000000" className="btn btn-lg btn-ghost" style={{ color: "var(--surface)", borderColor: "oklch(1 0 0 / 0.4)" }}>{t.cta.secondary}</a>
                   </div>
@@ -305,9 +305,8 @@ export default function Home() {
         @media (max-width: 900px) { .hero-pitch { max-width: 46ch !important; } }
         /* Mobile : pitch lisible, boutons empilés pleine largeur */
         @media (max-width: 560px) {
-          .hero-pitch { max-width: 100% !important; }
-          .hero-pitch-cta { flex-direction: column; align-items: stretch; }
-          .hero-pitch-cta .btn { width: 100%; justify-content: center; }
+          .cta-btns { flex-direction: column; align-items: stretch; }
+          .cta-btns .btn { width: 100%; justify-content: center; min-height: 3.4rem; }
         }
         @media (max-width: 820px) { .pitch-grid { grid-template-columns: 1fr !important; } }
         @media (min-width: 700px) and (max-width: 1024px) { .incl-grid { grid-template-columns: 1fr 1fr !important; } .steps-grid { grid-template-columns: 1fr 1fr !important; } }
