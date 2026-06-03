@@ -258,19 +258,17 @@ export default function DemoView({ slug }: { slug: string }) {
       <DemoTestimonials reviews={v.reviews} title={c.reviewsTitle} rating={v.rating} ratingMeta={v.ratingMeta} index="04" />
 
       {/* CLOSING */}
-      <section id="reserver" style={{ paddingBlock: "clamp(3.2rem, 7vw, 6rem)" }}>
+      <section id="reserver" style={{ paddingBlock: "clamp(2.5rem, 5vw, 4rem)", borderTop: "1px solid var(--line)" }}>
         <div className="wrap">
           <Reveal>
-            <div style={{ position: "relative", overflow: "hidden", borderRadius: "1.8rem", border: "1px solid var(--line)" }}>
-              <Image src={v.scene} alt="" fill sizes="100vw" style={{ objectFit: "cover", opacity: dark ? 0.3 : 0.16 }} />
-              <div style={{ position: "absolute", inset: 0, background: dark ? "linear-gradient(180deg, oklch(0 0 0 / 0.55), oklch(0 0 0 / 0.72))" : "linear-gradient(180deg, var(--bg), oklch(1 0 0 / 0.5))" }} />
-              <div style={{ position: "relative", padding: "clamp(2.4rem, 6vw, 4.5rem)", textAlign: "center", maxWidth: "44ch", marginInline: "auto" }}>
-                <h2 className="vit-display" style={{ fontSize: "clamp(1.9rem, 5vw, 3.6rem)", letterSpacing: ls, margin: "0 0 1rem", textTransform: isBarber ? "uppercase" : "none" }}>{v.closingTitle}</h2>
-                <p style={{ color: "var(--fg-dim)", fontSize: "1.08rem", margin: "0 0 2rem" }}>{v.closingLead}</p>
-                <div style={{ display: "flex", gap: "0.8rem", justifyContent: "center", flexWrap: "wrap" }}>
-                  <a href={`tel:${v.phone.replace(/\s/g, "")}`} className="vit-btn">{v.primaryCta}</a>
-                  <a href="#carte" className="vit-btn vit-btn-outline">{v.secondaryCta}</a>
-                </div>
+            <div className="vit-reserver-layout" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "clamp(1.5rem, 4vw, 3rem)" }}>
+              <div style={{ flex: "1 1 0", minWidth: 0 }}>
+                <h2 className="vit-display" style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.6rem)", letterSpacing: ls, margin: "0 0 0.65rem", textTransform: isBarber ? "uppercase" : "none" }}>{v.closingTitle}</h2>
+                <p style={{ color: "var(--fg-dim)", fontSize: "1rem", margin: 0, maxWidth: "44ch" }}>{v.closingLead}</p>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem", flexShrink: 0, minWidth: "min(100%, 15rem)" }}>
+                <a href={`tel:${v.phone.replace(/\s/g, "")}`} className="vit-btn" style={{ justifyContent: "center" }}>{v.primaryCta}</a>
+                <a href="#carte" className="vit-btn vit-btn-outline" style={{ justifyContent: "center" }}>{v.secondaryCta}</a>
               </div>
             </div>
           </Reveal>
@@ -304,6 +302,11 @@ export default function DemoView({ slug }: { slug: string }) {
           .info-item:first-child { border-top: none; }
         }
         @media (max-width: 720px) { .demo-ribbon .ribbon-mid { display: none; } }
+        @media (max-width: 640px) {
+          .vit-reserver-layout { flex-direction: column; align-items: stretch; }
+          .vit-reserver-layout > div:last-child { min-width: 0 !important; }
+          .vit-reserver-layout .vit-btn { width: 100%; min-height: 3.2rem; }
+        }
       `}</style>
     </div>
   );

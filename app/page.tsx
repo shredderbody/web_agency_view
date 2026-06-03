@@ -282,14 +282,16 @@ export default function Home() {
         <section id="contact" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)", background: "var(--paper-2)", borderTop: "1px solid var(--border)" }}>
           <div className="wrap">
             <Reveal>
-              <div className="grain" style={{ position: "relative", overflow: "hidden", borderRadius: "var(--r-xl)", background: "var(--vermilion-deep)", color: "var(--surface)", padding: "clamp(2.2rem, 6vw, 4.5rem)" }}>
+              <div className="grain cta-inner" style={{ position: "relative", overflow: "hidden", borderRadius: "var(--r-xl)", background: "var(--vermilion-deep)", color: "var(--surface)", padding: "clamp(2.2rem, 5vw, 3.8rem)" }}>
                 <div aria-hidden style={{ position: "absolute", top: "-30%", right: "-10%", width: "30rem", height: "30rem", maxWidth: "100vw", borderRadius: "50%", background: "radial-gradient(circle, oklch(0.74 0.11 66 / 0.4), transparent 60%)" }} />
-                <div style={{ position: "relative", maxWidth: "42ch" }}>
-                  <h2 className="d-xl" style={{ margin: "0 0 1.1rem", color: "var(--surface)" }}>{t.cta.title}</h2>
-                  <p style={{ fontSize: "clamp(1.05rem, 1.5vw, 1.15rem)", color: "oklch(0.96 0.02 40)", margin: "0 0 2rem" }}>{t.cta.body}</p>
-                  <div className="cta-btns" style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem" }}>
-                    <a href="mailto:bonjour@atelier-vitrine.fr" className="btn btn-lg" style={{ background: "var(--surface)", color: "var(--ink)" }}>{t.cta.primary} <ArrowRight size={18} /></a>
-                    <a href="tel:+33100000000" className="btn btn-lg btn-ghost" style={{ color: "var(--surface)", borderColor: "oklch(1 0 0 / 0.4)" }}>{t.cta.secondary}</a>
+                <div className="cta-layout" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "clamp(1.5rem, 4vw, 3rem)" }}>
+                  <div style={{ flex: "1 1 0", minWidth: 0 }}>
+                    <h2 className="d-xl" style={{ margin: "0 0 0.7rem", color: "var(--surface)" }}>{t.cta.title}</h2>
+                    <p style={{ fontSize: "clamp(1rem, 1.4vw, 1.1rem)", color: "oklch(0.96 0.02 40)", margin: 0, maxWidth: "46ch" }}>{t.cta.body}</p>
+                  </div>
+                  <div className="cta-btns" style={{ display: "flex", flexDirection: "column", gap: "0.7rem", flexShrink: 0, minWidth: "min(100%, 17rem)" }}>
+                    <a href="mailto:bonjour@atelier-vitrine.fr" className="btn btn-lg" style={{ background: "var(--surface)", color: "var(--ink)", justifyContent: "center" }}>{t.cta.primary} <ArrowRight size={18} /></a>
+                    <a href="tel:+33100000000" className="btn btn-lg btn-ghost" style={{ color: "var(--surface)", borderColor: "oklch(1 0 0 / 0.4)", justifyContent: "center" }}>{t.cta.secondary}</a>
                   </div>
                 </div>
               </div>
@@ -304,9 +306,10 @@ export default function Home() {
         /* Tablette : pitch resserré, CTA confortables */
         @media (max-width: 900px) { .hero-pitch { max-width: 46ch !important; } }
         /* Mobile : pitch lisible, boutons empilés pleine largeur */
-        @media (max-width: 560px) {
-          .cta-btns { flex-direction: column; align-items: stretch; }
-          .cta-btns .btn { width: 100%; justify-content: center; min-height: 3.4rem; }
+        @media (max-width: 700px) {
+          .cta-layout { flex-direction: column; align-items: stretch; }
+          .cta-btns { min-width: 0 !important; flex-direction: column; }
+          .cta-btns .btn { width: 100%; min-height: 3.4rem; }
         }
         @media (max-width: 820px) { .pitch-grid { grid-template-columns: 1fr !important; } }
         @media (min-width: 700px) and (max-width: 1024px) { .incl-grid { grid-template-columns: 1fr 1fr !important; } .steps-grid { grid-template-columns: 1fr 1fr !important; } }
