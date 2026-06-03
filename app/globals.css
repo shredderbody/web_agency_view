@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    ATELIER VITRINE — Design System
@@ -6,41 +8,6 @@
    Type: Bricolage Grotesque (display) + Hanken Grotesk (body).
    Colors authored in OKLCH, neutrals tinted toward the warm brand hue.
    ═══════════════════════════════════════════════════════════════════════════ */
-
-@theme inline {
-  --font-display: var(--font-bricolage), "Bricolage Grotesque", system-ui, sans-serif;
-  --font-body: var(--font-hanken), "Hanken Grotesk", system-ui, sans-serif;
-  --font-barber: var(--font-anton), "Anton", "Arial Narrow", sans-serif;
-  --font-elegant: var(--font-marcellus), "Marcellus", Georgia, serif;
-
-  --color-paper: oklch(0.972 0.012 84);
-  --color-paper-2: oklch(0.952 0.016 80);
-  --color-surface: oklch(0.992 0.006 86);
-  --color-ink: oklch(0.235 0.018 55);
-  --color-ink-dim: oklch(0.43 0.022 55);
-  --color-ink-muted: oklch(0.585 0.02 60);
-  --color-vermilion: oklch(0.605 0.2 33);
-  --color-vermilion-deep: oklch(0.5 0.18 32);
-  --color-clay: oklch(0.74 0.11 66);
-
-  /* shadcn-compatible aliases → brand palette, for /components/ui primitives
-     (testimonials-columns-1 uses bg-background / border / shadow-primary). */
-  --color-background: var(--surface);
-  --color-foreground: var(--ink);
-  --color-card: var(--surface);
-  --color-card-foreground: var(--ink);
-  --color-primary: var(--vermilion);
-  --color-primary-foreground: var(--surface);
-  --color-muted: var(--paper-2);
-  --color-muted-foreground: var(--ink-muted);
-  --color-border: var(--border);
-  --color-ring: var(--vermilion);
-  --radius: var(--r-lg);
-
-  /* Radix accordion (shadcn) collapse/expand, used by /components/ui/accordion */
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
-}
 
 @keyframes accordion-down {
   from { height: 0; }
