@@ -199,9 +199,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ─── TÉMOIGNAGES ───────────────────────────────────── */}
-        <Testimonials />
-
         {/* ─── PRICING ───────────────────────────────────────── */}
         <section id="tarifs" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", borderTop: "1px solid var(--border)" }}>
           <div className="wrap">
@@ -283,6 +280,9 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* ─── TÉMOIGNAGES ───────────────────────────────────── */}
+        <Testimonials />
 
         {/* ─── CTA ───────────────────────────────────────────── */}
         <section id="contact" style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)", background: "var(--paper-2)", borderTop: "1px solid var(--border)" }}>

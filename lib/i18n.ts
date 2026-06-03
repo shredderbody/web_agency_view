@@ -83,6 +83,8 @@ type UI = {
     manualCity: string;
     manualEmail: string;
     popupEmail: string;
+    popupEmailLabel: string;
+    popupPhoneLabel: string;
     manualPhone: string;
     backToSearch: string;
     sending: string;
@@ -286,6 +288,8 @@ export const ui: Record<Lang, UI> = {
       manualCity: "Ville",
       manualEmail: "Adresse e-mail",
       popupEmail: "Votre e-mail pour recevoir la démo (facultatif)",
+      popupEmailLabel: "E-mail (facultatif)",
+      popupPhoneLabel: "Téléphone (facultatif)",
       manualPhone: "Téléphone (facultatif)",
       backToSearch: "Revenir à la recherche Google",
       sending: "Envoi…",
@@ -502,6 +506,8 @@ export const ui: Record<Lang, UI> = {
       manualCity: "City",
       manualEmail: "Email address",
       popupEmail: "Your email to receive the demo (optional)",
+      popupEmailLabel: "Email (optional)",
+      popupPhoneLabel: "Phone (optional)",
       manualPhone: "Phone (optional)",
       backToSearch: "Back to Google search",
       sending: "Sending…",

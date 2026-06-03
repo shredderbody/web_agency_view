@@ -524,48 +524,58 @@ export default function BusinessSearch() {
 
             {/* E-mail facultatif pour recontacter l'entreprise */}
             {!submitted && (
-              <input
-                type="email"
-                value={popupEmail}
-                onChange={(e) => setPopupEmail(e.target.value)}
-                placeholder={s.popupEmail}
-                aria-label={s.popupEmail}
-                style={{
-                  width: "100%",
-                  marginTop: shownReviews.length > 0 || selected.address ? "1.1rem" : "0.4rem",
-                  border: "1px solid var(--border)",
-                  background: "var(--paper-2)",
-                  color: "var(--ink)",
-                  borderRadius: "0.7rem",
-                  padding: "0.8rem 1rem",
-                  fontSize: "0.98rem",
-                  fontFamily: "inherit",
-                  outline: "none",
-                }}
-              />
+              <div style={{ marginTop: shownReviews.length > 0 || selected.address ? "1.1rem" : "0.4rem" }}>
+                <label htmlFor="popup-email" style={{ display: "block", margin: "0 0 0.35rem", fontSize: "0.88rem", fontWeight: 700, color: "var(--ink)" }}>
+                  {s.popupEmailLabel}
+                </label>
+                <input
+                  id="popup-email"
+                  type="email"
+                  value={popupEmail}
+                  onChange={(e) => setPopupEmail(e.target.value)}
+                  placeholder={s.popupEmail}
+                  aria-label={s.popupEmail}
+                  style={{
+                    width: "100%",
+                    border: "1.5px solid var(--border-strong)",
+                    background: "oklch(0.965 0.05 88)",
+                    color: "var(--ink)",
+                    borderRadius: "0.7rem",
+                    padding: "0.8rem 1rem",
+                    fontSize: "0.98rem",
+                    fontFamily: "inherit",
+                    outline: "none",
+                  }}
+                />
+              </div>
             )}
 
             {/* Téléphone facultatif */}
             {!submitted && (
-              <input
-                type="tel"
-                value={popupPhone}
-                onChange={(e) => setPopupPhone(e.target.value)}
-                placeholder={s.manualPhone}
-                aria-label={s.manualPhone}
-                style={{
-                  width: "100%",
-                  marginTop: "0.6rem",
-                  border: "1px solid var(--border)",
-                  background: "var(--paper-2)",
-                  color: "var(--ink)",
-                  borderRadius: "0.7rem",
-                  padding: "0.8rem 1rem",
-                  fontSize: "0.98rem",
-                  fontFamily: "inherit",
-                  outline: "none",
-                }}
-              />
+              <div style={{ marginTop: "0.7rem" }}>
+                <label htmlFor="popup-phone" style={{ display: "block", margin: "0 0 0.35rem", fontSize: "0.88rem", fontWeight: 700, color: "var(--ink)" }}>
+                  {s.popupPhoneLabel}
+                </label>
+                <input
+                  id="popup-phone"
+                  type="tel"
+                  value={popupPhone}
+                  onChange={(e) => setPopupPhone(e.target.value)}
+                  placeholder={s.manualPhone}
+                  aria-label={s.manualPhone}
+                  style={{
+                    width: "100%",
+                    border: "1.5px solid var(--border-strong)",
+                    background: "oklch(0.965 0.05 88)",
+                    color: "var(--ink)",
+                    borderRadius: "0.7rem",
+                    padding: "0.8rem 1rem",
+                    fontSize: "0.98rem",
+                    fontFamily: "inherit",
+                    outline: "none",
+                  }}
+                />
+              </div>
             )}
 
             {/* CTA → envoi + remplissage Supabase en arrière-plan */}
