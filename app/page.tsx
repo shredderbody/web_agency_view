@@ -44,13 +44,6 @@ export default function Home() {
                     <span>{t.hero.rating}</span>
                   </div>
                 </Reveal>
-                <Reveal delay={360}>
-                  <p style={{ fontSize: "clamp(1rem, 1.4vw, 1.15rem)", fontWeight: 600, color: "var(--ink)", margin: "2rem 0 1.4rem", maxWidth: "44ch", lineHeight: 1.4 }}>{t.hero.pitch}</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem" }}>
-                    <a href="#metiers" className="btn btn-primary btn-lg">{t.hero.ctaPrimary} <ArrowRight size={18} /></a>
-                    <a href="#contact" className="btn btn-ghost btn-lg">{t.hero.ctaSecondary}</a>
-                  </div>
-                </Reveal>
               </div>
 
               <Reveal delay={180}>
@@ -69,6 +62,16 @@ export default function Home() {
                 </div>
               </Reveal>
             </div>
+
+            <Reveal delay={400}>
+              <div style={{ textAlign: "center", marginTop: "clamp(2.4rem, 5vw, 3.6rem)", paddingTop: "clamp(2rem, 4vw, 3rem)", borderTop: "1px solid var(--border)" }}>
+                <p style={{ fontSize: "clamp(1.05rem, 1.5vw, 1.2rem)", fontWeight: 600, color: "var(--ink)", margin: "0 0 1.6rem", maxWidth: "56ch", marginInline: "auto", lineHeight: 1.4 }}>{t.hero.pitch}</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem", justifyContent: "center" }}>
+                  <a href="#metiers" className="btn btn-primary btn-lg">{t.hero.ctaPrimary} <ArrowRight size={18} /></a>
+                  <a href="#contact" className="btn btn-ghost btn-lg">{t.hero.ctaSecondary}</a>
+                </div>
+              </div>
+            </Reveal>
           </div>
         </section>
 
