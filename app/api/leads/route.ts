@@ -23,6 +23,7 @@ const ALLOWED = new Set([
   "longitude",
   "phone_national",
   "phone_international",
+  "email",
   "website",
   "google_maps_uri",
   "rating",

@@ -23,6 +23,10 @@ services:
     # Bound to loopback only: public access goes through the tunnel, not the host.
     ports:
       - "127.0.0.1:3010:3010"
+    # Secrets serveur au runtime (clé Google Places, service_role Supabase, etc.).
+    # Le standalone Next ne lit pas .env tout seul : on injecte les variables ici.
+    env_file:
+      - .env
     environment:
       - NODE_ENV=production
       - PORT=3010

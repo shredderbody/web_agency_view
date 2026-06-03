@@ -33,6 +33,7 @@ create table if not exists public.business_leads (
   -- Contact
   phone_national        text,
   phone_international    text,
+  email                 text,
   website               text,
 
   -- Lien Maps
