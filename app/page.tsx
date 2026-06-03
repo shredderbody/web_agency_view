@@ -10,6 +10,7 @@ import SiteFooter from "@/components/SiteFooter";
 import Reveal from "@/components/Reveal";
 import Faq from "@/components/Faq";
 import Testimonials from "@/components/Testimonials";
+import BusinessSearch from "@/components/BusinessSearch";
 import { getDemos } from "@/lib/demos";
 import { useLang } from "@/lib/lang-context";
 
@@ -159,9 +160,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ─── TESTIMONIALS ──────────────────────────────────── */}
-        <Testimonials />
-
         {/* ─── INCLUDED ──────────────────────────────────────── */}
         <section style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)", background: "var(--ink)", color: "var(--paper)" }}>
           <div className="wrap">
@@ -297,8 +295,8 @@ export default function Home() {
                     <h2 className="d-xl" style={{ margin: "0 0 0.7rem", color: "var(--surface)" }}>{t.cta.title}</h2>
                     <p style={{ fontSize: "clamp(1rem, 1.4vw, 1.1rem)", color: "oklch(0.96 0.02 40)", margin: 0, maxWidth: "46ch" }}>{t.cta.body}</p>
                   </div>
-                  <div className="cta-btns" style={{ display: "flex", flexDirection: "column", gap: "0.7rem", flexShrink: 0, minWidth: "min(100%, 17rem)" }}>
-                    <a href="mailto:bonjour@atelier-vitrine.fr" className="btn btn-lg" style={{ background: "var(--surface)", color: "var(--ink)", justifyContent: "center" }}>{t.cta.primary} <ArrowRight size={18} /></a>
+                  <div className="cta-btns" style={{ display: "flex", flexDirection: "column", gap: "0.7rem", flexShrink: 0, minWidth: "min(100%, 22rem)" }}>
+                    <BusinessSearch />
                     <a href="tel:+33100000000" className="btn btn-lg btn-ghost" style={{ color: "var(--surface)", borderColor: "oklch(1 0 0 / 0.4)", justifyContent: "center" }}>{t.cta.secondary}</a>
                   </div>
                 </div>

@@ -64,6 +64,26 @@ type UI = {
   };
   faq: { kicker: string; title: string; items: { q: string; a: string }[] };
   cta: { title: string; body: string; primary: string; secondary: string };
+  demoSearch: {
+    label: string;
+    placeholder: string;
+    hint: string;
+    searching: string;
+    noResults: string;
+    foundLabel: string;
+    change: string;
+    submit: string;
+    emailSubject: string;
+    emailIntro: string;
+    emailOutro: string;
+    cantFind: string;
+    manualTitle: string;
+    manualName: string;
+    manualTrade: string;
+    manualCity: string;
+    manualPhone: string;
+    backToSearch: string;
+  };
   footer: {
     tagline: string;
     bookCall: string;
@@ -237,6 +257,26 @@ export const ui: Record<Lang, UI> = {
       body: "Dites-moi votre métier et votre ville. Sous 7 jours, vous recevez le lien d'une vitrine pensée pour vous. Vous décidez ensuite, en connaissance de cause.",
       primary: "Demander ma démo gratuite",
       secondary: "M'appeler",
+    },
+    demoSearch: {
+      label: "Trouvez votre établissement",
+      placeholder: "Nom de votre commerce, ex. « Boulangerie Martin »",
+      hint: "Tapez le nom de votre commerce : on le retrouve sur Google pour préparer votre démo.",
+      searching: "Recherche…",
+      noResults: "Aucun établissement trouvé. Réessayez avec le nom exact.",
+      foundLabel: "On a trouvé votre établissement :",
+      change: "Modifier",
+      submit: "Demander ma démo gratuite",
+      emailSubject: "Demande de démo gratuite",
+      emailIntro: "Bonjour,\n\nJe souhaite recevoir une démo gratuite pour mon établissement :",
+      emailOutro: "Merci d'avance !",
+      cantFind: "Je ne trouve pas mon entreprise",
+      manualTitle: "Renseignez votre entreprise",
+      manualName: "Nom de l'entreprise",
+      manualTrade: "Métier / activité",
+      manualCity: "Ville",
+      manualPhone: "Téléphone (facultatif)",
+      backToSearch: "Revenir à la recherche Google",
     },
     footer: {
       tagline: "L'atelier qui dessine la vitrine en ligne des commerces de quartier. Une démo à votre nom, puis un site qui travaille pour vous.",
@@ -424,6 +464,26 @@ export const ui: Record<Lang, UI> = {
       body: "Tell me your trade and your city. Within 7 days you receive the link to a showcase designed for you. Then you decide, with all the facts.",
       primary: "Request my free demo",
       secondary: "Call me",
+    },
+    demoSearch: {
+      label: "Find your business",
+      placeholder: "Your business name, e.g. “Martin Bakery”",
+      hint: "Type your business name: we'll find it on Google to prepare your demo.",
+      searching: "Searching…",
+      noResults: "No business found. Try the exact name.",
+      foundLabel: "We found your business:",
+      change: "Change",
+      submit: "Request my free demo",
+      emailSubject: "Free demo request",
+      emailIntro: "Hello,\n\nI'd like to receive a free demo for my business:",
+      emailOutro: "Thanks in advance!",
+      cantFind: "I can't find my business",
+      manualTitle: "Tell us about your business",
+      manualName: "Business name",
+      manualTrade: "Trade / activity",
+      manualCity: "City",
+      manualPhone: "Phone (optional)",
+      backToSearch: "Back to Google search",
     },
     footer: {
       tagline: "The studio that designs the online showcase of neighbourhood businesses. A demo in your name, then a site that works for you.",
