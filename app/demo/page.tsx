@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowLeft, ArrowUpRight, ChevronDown } from "lucide-react";
 import SiteFooter from "@/components/SiteFooter";
 import Reveal from "@/components/Reveal";
 import LangSelector from "@/components/LangSelector";
@@ -11,6 +12,13 @@ import { useLang } from "@/lib/lang-context";
 export default function DemoIndex() {
   const { lang, t } = useLang();
   const demos = getDemos(lang);
+  const [showScrollHint, setShowScrollHint] = useState(true);
+  useEffect(() => {
+    const onScroll = () => { if (window.scrollY > 80) setShowScrollHint(false); };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <>
       <header style={{ position: "sticky", top: 0, zIndex: 50, background: "oklch(0.972 0.012 84 / 0.85)", backdropFilter: "blur(14px)", borderBottom: "1px solid var(--border)" }}>
@@ -56,6 +64,40 @@ export default function DemoIndex() {
         </div>
       </main>
       <SiteFooter />
+
+      {/* Scroll hint — mobile only, disparaît après 80px */}
+      {showScrollHint && (
+        <div
+          className="md:hidden"
+          style={{
+            position: "fixed", bottom: "1.5rem", left: "50%", transform: "translateX(-50%)",
+            zIndex: 50, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem",
+            pointerEvents: "none", animation: "avScrollFadeIn 0.6s ease both",
+          }}
+        >
+          <span style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--vermilion-deep)", opacity: 0.9 }}>
+            {t.demoCommon.scroll}
+          </span>
+          <div style={{
+            width: 40, height: 40, borderRadius: "999px", display: "grid", placeItems: "center",
+            background: "var(--vermilion)", animation: "avScrollPulse 1.4s ease-in-out infinite",
+          }}>
+            <ChevronDown size={22} color="white" strokeWidth={2.5} />
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes avScrollPulse {
+          0%   { box-shadow: 0 0 0 0 oklch(0.605 0.2 33 / 0.65); transform: translateY(0); }
+          50%  { box-shadow: 0 0 0 10px oklch(0.605 0.2 33 / 0); transform: translateY(4px); }
+          100% { box-shadow: 0 0 0 0 oklch(0.605 0.2 33 / 0); transform: translateY(0); }
+        }
+        @keyframes avScrollFadeIn {
+          from { opacity: 0; transform: translate(-50%, 12px); }
+          to   { opacity: 1; transform: translate(-50%, 0); }
+        }
+      `}</style>
     </>
   );
 }

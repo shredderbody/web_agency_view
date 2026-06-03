@@ -1,8 +1,9 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
-  ArrowRight, ArrowUpRight, Check, Clock, Compass,
+  ArrowRight, ArrowUpRight, Check, ChevronDown, Clock, Compass,
   PenTool, Rocket, Sparkles, Star, Store, Wrench,
 } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
@@ -19,6 +20,12 @@ const INCLUDED_ICONS = [PenTool, Store, Clock, Compass, Wrench, Rocket];
 export default function Home() {
   const { lang, t } = useLang();
   const demos = getDemos(lang);
+  const [showScrollHint, setShowScrollHint] = useState(true);
+  useEffect(() => {
+    const onScroll = () => { if (window.scrollY > 80) setShowScrollHint(false); };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
@@ -337,7 +344,38 @@ export default function Home() {
           .hero-chip-bl { left: 0.4rem !important; bottom: -0.9rem !important; }
           .hero-chip-tr { right: 0.4rem !important; top: -0.9rem !important; }
         }
+        @keyframes avScrollPulse {
+          0%   { box-shadow: 0 0 0 0 oklch(0.605 0.2 33 / 0.65); transform: translateY(0); }
+          50%  { box-shadow: 0 0 0 10px oklch(0.605 0.2 33 / 0); transform: translateY(4px); }
+          100% { box-shadow: 0 0 0 0 oklch(0.605 0.2 33 / 0); transform: translateY(0); }
+        }
+        @keyframes avScrollFadeIn {
+          from { opacity: 0; transform: translate(-50%, 12px); }
+          to   { opacity: 1; transform: translate(-50%, 0); }
+        }
       `}</style>
+
+      {/* Scroll hint — mobile only, disparaît après 80px */}
+      {showScrollHint && (
+        <div
+          className="md:hidden"
+          style={{
+            position: "fixed", bottom: "1.5rem", left: "50%", transform: "translateX(-50%)",
+            zIndex: 50, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem",
+            pointerEvents: "none", animation: "avScrollFadeIn 0.6s ease both",
+          }}
+        >
+          <span style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--vermilion-deep)", opacity: 0.9 }}>
+            {t.hero.scrollHint}
+          </span>
+          <div style={{
+            width: 40, height: 40, borderRadius: "999px", display: "grid", placeItems: "center",
+            background: "var(--vermilion)", animation: "avScrollPulse 1.4s ease-in-out infinite",
+          }}>
+            <ChevronDown size={22} color="white" strokeWidth={2.5} />
+          </div>
+        </div>
+      )}
     </>
   );
 }

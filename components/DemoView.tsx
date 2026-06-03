@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Clock, MapPin, Phone, Star } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, ChevronDown, Clock, MapPin, Phone, Star } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import LangSelector from "@/components/LangSelector";
 import DemoTestimonials from "@/components/DemoTestimonials";
@@ -37,10 +37,16 @@ export default function DemoView({ slug }: { slug: string }) {
   const { lang, t } = useLang();
   const [menu, setMenu] = useState(false);
   const [modal, setModal] = useState(false);
+  const [showScrollHint, setShowScrollHint] = useState(true);
   useEffect(() => {
     if (!modal) document.body.style.overflow = menu ? "hidden" : "";
     return () => { if (!modal) document.body.style.overflow = ""; };
   }, [menu, modal]);
+  useEffect(() => {
+    const onScroll = () => { if (window.scrollY > 80) setShowScrollHint(false); };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const v = getVitrine(lang, slug);
   if (!v) return null;
   const c = t.demoCommon;
@@ -288,6 +294,28 @@ export default function DemoView({ slug }: { slug: string }) {
         </div>
       </footer>
 
+      {/* Scroll hint — mobile only, disparaît après 80px */}
+      {showScrollHint && (
+        <div
+          className="md:hidden"
+          style={{
+            position: "fixed", bottom: "1.5rem", left: "50%", transform: "translateX(-50%)",
+            zIndex: 55, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem",
+            pointerEvents: "none", animation: "avScrollFadeIn 0.6s ease both",
+          }}
+        >
+          <span style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--accent)", opacity: 0.9 }}>
+            {c.scroll}
+          </span>
+          <div style={{
+            width: 40, height: 40, borderRadius: "999px", display: "grid", placeItems: "center",
+            background: "var(--accent)", animation: "avScrollPulse 1.4s ease-in-out infinite",
+          }}>
+            <ChevronDown size={22} color="var(--bg)" strokeWidth={2.5} />
+          </div>
+        </div>
+      )}
+
       {modal && (
         <OrderModal
           vit={v.vit}
@@ -298,6 +326,15 @@ export default function DemoView({ slug }: { slug: string }) {
       )}
 
       <style>{`
+        @keyframes avScrollPulse {
+          0%   { box-shadow: 0 0 0 0 color-mix(in oklch, var(--accent) 65%, transparent); transform: translateY(0); }
+          50%  { box-shadow: 0 0 0 10px transparent; transform: translateY(4px); }
+          100% { box-shadow: 0 0 0 0 transparent; transform: translateY(0); }
+        }
+        @keyframes avScrollFadeIn {
+          from { opacity: 0; transform: translate(-50%, 12px); }
+          to   { opacity: 1; transform: translate(-50%, 0); }
+        }
         .vit-navlink { color: var(--fg-dim); transition: color 0.18s var(--ease); }
         .vit-navlink:hover { color: var(--accent); }
         @media (min-width: 860px) { .vit-burger { display: none !important; } .vit-sidebar, .vit-overlay { display: none !important; } }

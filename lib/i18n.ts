@@ -26,6 +26,7 @@ type UI = {
     chipCraftTitle: string;
     chipCraftSub: string;
     heroAlt: string;
+    scrollHint: string;
   };
   value: { kicker: string; title: string; body: string; figures: { n: string; l: string }[] };
   audience: { kicker: string; title: string; body: string; items: { n: string; t: string; d: string }[] };
@@ -128,6 +129,7 @@ type UI = {
     footerNote: string;
     createCta: string;
     metaSuffix: string;
+    scroll: string;
   };
 };
 
@@ -149,6 +151,7 @@ export const ui: Record<Lang, UI> = {
       chipCraftTitle: "100% sur-mesure",
       chipCraftSub: "jamais un thème recyclé",
       heroAlt: "Atelier de création web : un site de commerce en cours de design sur un ordinateur portable",
+      scrollHint: "Défiler",
     },
     value: {
       kicker: "Ce que je fais",
@@ -347,6 +350,7 @@ export const ui: Record<Lang, UI> = {
       footerNote: "Vitrine de démonstration. Le commerce est fictif, le savoir-faire ne l'est pas.",
       createCta: "Créer ma vitrine avec Atelier Vitrine",
       metaSuffix: "Vitrine de démonstration réalisée par Atelier Vitrine.",
+      scroll: "Défiler",
     },
   },
 
@@ -367,6 +371,7 @@ export const ui: Record<Lang, UI> = {
       chipCraftTitle: "100% bespoke",
       chipCraftSub: "never a recycled theme",
       heroAlt: "Web design studio: a small-business website being designed on a laptop",
+      scrollHint: "Scroll",
     },
     value: {
       kicker: "What I do",
@@ -565,6 +570,7 @@ export const ui: Record<Lang, UI> = {
       footerNote: "Demo showcase. The business is fictional, the craft is not.",
       createCta: "Build my showcase with Atelier Vitrine",
       metaSuffix: "Demo showcase made by Atelier Vitrine.",
+      scroll: "Scroll",
     },
   },
 };
