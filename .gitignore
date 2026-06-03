@@ -45,3 +45,9 @@ Thumbs.db
 
 # Cloudflared logs
 /log_tmp/
+
+# Claude Code internal files
+.claude/
+
+# Backup files
+*.bak

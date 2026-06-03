@@ -158,6 +158,9 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ─── TESTIMONIALS ──────────────────────────────────── */}
+        <Testimonials />
+
         {/* ─── INCLUDED ──────────────────────────────────────── */}
         <section style={{ paddingBlock: "clamp(3.5rem, 7vw, 6rem)", background: "var(--ink)", color: "var(--paper)" }}>
           <div className="wrap">
