@@ -2,11 +2,12 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ArrowUpRight, ChevronDown, Clock, MapPin, Phone, Star } from "lucide-react";
+import { ArrowLeft, ChevronDown, Clock, MapPin, Phone, Star } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import LangSelector from "@/components/LangSelector";
 import DemoTestimonials from "@/components/DemoTestimonials";
 import OrderModal from "@/components/OrderModal";
+import BusinessSearch from "@/components/BusinessSearch";
 import { useLang } from "@/lib/lang-context";
 import { getVitrine } from "@/lib/vitrineContent";
 
@@ -67,7 +68,7 @@ export default function DemoView({ slug }: { slug: string }) {
       <div className="demo-ribbon">
         <Link href="/#metiers" className="back"><ArrowLeft size={16} /> {c.allDemos}</Link>
         <span className="ribbon-mid" style={{ opacity: 0.78 }}>{c.isDemoBanner}</span>
-        <Link href="/#contact" className="cta">{c.wantMine} <ArrowRight size={14} /></Link>
+        <a href="#demo-request" className="cta">{c.wantMine}</a>
       </div>
 
       {/* Local header */}
@@ -283,14 +284,70 @@ export default function DemoView({ slug }: { slug: string }) {
         </div>
       </section>
 
+      {/* DEMO REQUEST — recherche intégrée, même processus que la landing */}
+      <section id="demo-request" style={{ paddingBlock: "clamp(3rem, 6vw, 5rem)", borderTop: "1px solid var(--line)" }}>
+        <div className="wrap">
+          <Reveal>
+            <div
+              className="grain vit-demo-cta"
+              style={{
+                position: "relative", overflow: "hidden",
+                borderRadius: "var(--r-xl)",
+                background: "var(--accent)", color: "var(--bg)",
+                padding: "clamp(2rem, 5vw, 3.5rem)",
+              }}
+            >
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute", top: "-30%", right: "-8%",
+                  width: "26rem", height: "26rem", maxWidth: "100vw",
+                  borderRadius: "50%",
+                  background: "radial-gradient(circle, oklch(1 0 0 / 0.12), transparent 60%)",
+                  pointerEvents: "none",
+                }}
+              />
+              <div
+                className="vit-cta-layout"
+                style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "clamp(1.5rem, 4vw, 3rem)" }}
+              >
+                <div style={{ flex: "1 1 0", minWidth: 0 }}>
+                  <span style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", opacity: 0.7, marginBottom: "0.8rem" }}>
+                    {v.trade}
+                  </span>
+                  <h2
+                    className="vit-display"
+                    style={{
+                      fontSize: "clamp(1.8rem, 3.8vw, 3rem)",
+                      letterSpacing: ls, margin: "0 0 0.7rem",
+                      color: "var(--bg)",
+                      textTransform: isBarber ? "uppercase" : "none",
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {t.cta.title}
+                  </h2>
+                  <p style={{ fontSize: "clamp(0.95rem, 1.3vw, 1.05rem)", opacity: 0.82, margin: 0, maxWidth: "44ch", color: "var(--bg)" }}>
+                    {t.cta.body}
+                  </p>
+                </div>
+                <div className="vit-cta-search" style={{ flexShrink: 0, minWidth: "min(100%, 22rem)" }}>
+                  <BusinessSearch />
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       {/* FOOTER */}
-      <footer style={{ borderTop: "1px solid var(--line)", paddingBlock: "2.4rem" }}>
-        <div className="wrap" style={{ display: "flex", flexWrap: "wrap", gap: "1.2rem", alignItems: "center", justifyContent: "space-between" }}>
+      <footer style={{ borderTop: "1px solid var(--line)", paddingBlock: "2rem" }}>
+        <div className="wrap" style={{ display: "flex", flexWrap: "wrap", gap: "1rem", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ maxWidth: "52ch" }}>
             <span className="vit-display" style={{ fontSize: "1.1rem", fontWeight: 700 }}>{v.business}</span>
             <p style={{ margin: "0.3rem 0 0", color: "var(--fg-dim)", fontSize: "0.9rem" }}>{c.footerNote}</p>
           </div>
-          <Link href="/#contact" className="vit-btn">{c.createCta} <ArrowUpRight size={16} /></Link>
+          <a href="#demo-request" className="vit-btn" style={{ fontSize: "0.9rem" }}>{c.createCta}</a>
         </div>
       </footer>
 
@@ -354,6 +411,10 @@ export default function DemoView({ slug }: { slug: string }) {
           .vit-reserver-layout { flex-direction: column; align-items: stretch; }
           .vit-reserver-layout > div:last-child { min-width: 0 !important; }
           .vit-reserver-layout .vit-btn { width: 100%; min-height: 3.2rem; }
+        }
+        @media (max-width: 700px) {
+          .vit-cta-layout { flex-direction: column; align-items: stretch; }
+          .vit-cta-search { min-width: 0 !important; }
         }
       `}</style>
     </div>
