@@ -35,6 +35,9 @@ function comp(components: any[], type: string): string {
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id")?.trim() ?? "";
   const lang = req.nextUrl.searchParams.get("lang") === "en" ? "en" : "fr";
+  // Même jeton que les requêtes autocomplete → clôt la session de facturation :
+  // les frappes autocomplete deviennent gratuites, seul ce Details est facturé.
+  const sessionToken = req.nextUrl.searchParams.get("sessiontoken")?.trim() ?? "";
 
   if (!id) {
     return NextResponse.json({ error: "missing_id" }, { status: 400 });
@@ -47,7 +50,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const res = await fetch(
-      `https://places.googleapis.com/v1/places/${encodeURIComponent(id)}?languageCode=${lang}`,
+      `https://places.googleapis.com/v1/places/${encodeURIComponent(id)}?languageCode=${lang}${sessionToken ? `&sessionToken=${encodeURIComponent(sessionToken)}` : ""}`,
       {
         headers: {
           "X-Goog-Api-Key": key,

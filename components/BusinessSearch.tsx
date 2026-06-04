@@ -70,6 +70,12 @@ export default function BusinessSearch() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reqIdRef = useRef(0);
 
+  // Jeton de session Places : partagé par toutes les frappes d'autocomplétion ET
+  // le Place Details final → une seule session facturée. Régénéré après sélection.
+  const newToken = () =>
+    typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2);
+  const sessionTokenRef = useRef<string>(newToken());
+
   // Recherche d'autocomplétion débouncée (300 ms).
   useEffect(() => {
     if (selected) return;
@@ -85,7 +91,7 @@ export default function BusinessSearch() {
     debounceRef.current = setTimeout(async () => {
       const reqId = ++reqIdRef.current;
       try {
-        const res = await fetch(`/api/places/autocomplete?q=${encodeURIComponent(q)}&lang=${lang}`);
+        const res = await fetch(`/api/places/autocomplete?q=${encodeURIComponent(q)}&lang=${lang}&sessiontoken=${sessionTokenRef.current}`);
         const data = await res.json();
         if (reqId !== reqIdRef.current) return; // réponse périmée
         setSuggestions(data.suggestions ?? []);
@@ -133,12 +139,14 @@ export default function BusinessSearch() {
     setSubmitted(false);
     setError(false);
     try {
-      const res = await fetch(`/api/places/details?id=${encodeURIComponent(sug.id)}&lang=${lang}`);
+      const res = await fetch(`/api/places/details?id=${encodeURIComponent(sug.id)}&lang=${lang}&sessiontoken=${sessionTokenRef.current}`);
       const data = await res.json();
       setSelected(data?.id ? (data as Place) : { id: sug.id, name: sug.main, address: sug.secondary });
     } catch {
       setSelected({ id: sug.id, name: sug.main, address: sug.secondary });
     } finally {
+      // La session est consommée par ce Place Details → on en ouvre une neuve.
+      sessionTokenRef.current = newToken();
       setLoading(false);
     }
   }

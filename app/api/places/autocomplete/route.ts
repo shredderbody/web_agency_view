@@ -5,6 +5,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get("q")?.trim() ?? "";
   const lang = req.nextUrl.searchParams.get("lang") === "en" ? "en" : "fr";
+  // Jeton de session : regroupe ces requêtes + le Place Details final en UNE
+  // session facturée (sinon chaque frappe est payée au tarif "per request").
+  const sessionToken = req.nextUrl.searchParams.get("sessiontoken")?.trim() ?? "";
 
   if (q.length < 3) {
     return NextResponse.json({ suggestions: [] });
@@ -27,6 +30,7 @@ export async function GET(req: NextRequest) {
         languageCode: lang,
         // On privilégie les établissements (commerces) plutôt que les adresses pures.
         includedPrimaryTypes: ["establishment"],
+        ...(sessionToken ? { sessionToken } : {}),
       }),
       // Évite la mise en cache côté Next.
       cache: "no-store",
