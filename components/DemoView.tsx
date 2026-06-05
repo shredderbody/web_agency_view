@@ -340,17 +340,6 @@ export default function DemoView({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer style={{ borderTop: "1px solid var(--line)", paddingBlock: "2rem" }}>
-        <div className="wrap" style={{ display: "flex", flexWrap: "wrap", gap: "1rem", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ maxWidth: "52ch" }}>
-            <span className="vit-display" style={{ fontSize: "1.1rem", fontWeight: 700 }}>{v.business}</span>
-            <p style={{ margin: "0.3rem 0 0", color: "var(--fg-dim)", fontSize: "0.9rem" }}>{c.footerNote}</p>
-          </div>
-          <a href="#demo-request" className="vit-btn" style={{ fontSize: "0.9rem" }}>{c.createCta}</a>
-        </div>
-      </footer>
-
       {/* Scroll hint — mobile only, disparaît après 80px */}
       {showScrollHint && (
         <div
