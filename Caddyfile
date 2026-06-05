@@ -1,0 +1,240 @@
+# =============================================================================
+#  Caddyfile Global — zerocall.io & grit-united.com
+#  TLS automatique via Let's Encrypt
+# =============================================================================
+
+# ── Snippets Communs ──────────────────────────────────────────────────────────
+
+# Headers de sécurité de base (communs à tous les sites)
+(base_security) {
+    header {
+        -Server
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+        Permissions-Policy "camera=(), geolocation=(), payment=(), usb=(), bluetooth=()"
+    }
+}
+
+# Configuration Next.js (Compression + Cache statique)
+(nextjs_optim) {
+    encode gzip
+    @static path /_next/static/*
+    header @static Cache-Control "public, max-age=31536000, immutable"
+}
+
+# Proxy avec retry pour Docker (Zero Downtime Swap)
+(proxy_config) {
+    lb_try_duration 8s
+    lb_try_interval 500ms
+    header_up X-Forwarded-Proto {scheme}
+    header_up X-Real-IP {remote_host}
+}
+
+# ── Snippets Spécifiques ZEROCALL ─────────────────────────────────────────────
+
+(cors_zerocall) {
+    @origin_devis  header Origin "https://devis.zerocall.io"
+    @origin_quotes header Origin "https://quotes.zerocall.io"
+
+    @preflight_devis {
+        method OPTIONS
+        header Origin "https://devis.zerocall.io"
+    }
+    @preflight_quotes {
+        method OPTIONS
+        header Origin "https://quotes.zerocall.io"
+    }
+
+    handle @preflight_devis {
+        header Access-Control-Allow-Origin  "https://devis.zerocall.io"
+        header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        header Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+        header Access-Control-Max-Age       "86400"
+        header Vary "Origin"
+        respond "" 204
+    }
+    handle @preflight_quotes {
+        header Access-Control-Allow-Origin  "https://quotes.zerocall.io"
+        header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        header Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+        header Access-Control-Max-Age       "86400"
+        header Vary "Origin"
+        respond "" 204
+    }
+
+    header @origin_devis  Access-Control-Allow-Origin "https://devis.zerocall.io"
+    header @origin_quotes Access-Control-Allow-Origin "https://quotes.zerocall.io"
+    header Vary "Origin"
+}
+
+(csp_zerocall) {
+    header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://uvpuhoyaovmztephqknq.supabase.co wss://uvpuhoyaovmztephqknq.supabase.co https://n8n.zerocall.io; media-src 'self' blob: https://uvpuhoyaovmztephqknq.supabase.co; frame-src 'self' blob:; object-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+}
+
+# ── Snippets Spécifiques GRIT UNITED ──────────────────────────────────────────
+
+(csp_grit) {
+    header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://bbxwezoscjuwsoflponx.supabase.co wss://bbxwezoscjuwsoflponx.supabase.co https://n8n.zerocall.io https://api.kie.ai; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+}
+
+# ── Configuration des Domaines ────────────────────────────────────────────────
+
+# --- PROJET ZEROCALL ---
+
+devis.zerocall.io {
+    import base_security
+    import csp_zerocall
+    import cors_zerocall
+    import nextjs_optim
+
+    reverse_proxy 127.0.0.1:3000 {
+        import proxy_config
+        header_up X-Site-Lang fr
+    }
+
+    log {
+        output file /var/log/caddy/devis.zerocall.io.log {
+            roll_size 10MB
+            roll_keep 3
+        }
+    }
+}
+
+quotes.zerocall.io {
+    import base_security
+    import csp_zerocall
+    import cors_zerocall
+    import nextjs_optim
+
+    reverse_proxy 127.0.0.1:3000 {
+        import proxy_config
+        header_up X-Site-Lang en
+    }
+
+    log {
+        output file /var/log/caddy/quotes.zerocall.io.log {
+            roll_size 10MB
+            roll_keep 3
+        }
+    }
+}
+
+# --- PROJET GRIT UNITED ---
+
+www.grit-united.com {
+    redir https://grit-united.com{uri} permanent
+}
+
+grit-united.com {
+    import base_security
+    import csp_grit
+    import nextjs_optim
+
+    reverse_proxy 127.0.0.1:3050 {
+        import proxy_config
+    }
+
+    log {
+        output file /var/log/caddy/grit-united.com.log {
+            roll_size 10MB
+            roll_keep 5
+        }
+    }
+}
+
+# ── n8n ───────────────────────────────────────────────────────────────────────
+n8n.zerocall.io {
+    reverse_proxy 127.0.0.1:5678 {
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Real-IP        {remote_host}
+    }
+
+    log {
+        output file /var/log/caddy/n8n.zerocall.io.log {
+            roll_size 10MB
+            roll_keep 3
+        }
+    }
+}
+
+# --- PROJET ATELIER VITRINE (receptionniste) ---
+(csp_receptionniste) {
+    header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://uvpuhoyaovmztephqknq.supabase.co wss://uvpuhoyaovmztephqknq.supabase.co https://n8n.zerocall.io https://api.kie.ai https://api.deepgram.com wss://api.deepgram.com https://places.googleapis.com https://www.facebook.com; media-src 'self' blob: https://uvpuhoyaovmztephqknq.supabase.co https://api.deepgram.com; frame-src 'self' blob:; object-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+}
+
+receptionniste.zerocall.io {
+    import base_security
+    import csp_receptionniste
+    import nextjs_optim
+
+    reverse_proxy 127.0.0.1:3010 {
+        import proxy_config
+        header_up X-Site-Lang fr
+    }
+
+    log {
+        output file /var/log/caddy/receptionniste.zerocall.io.log {
+            roll_size 10MB
+            roll_keep 3
+        }
+    }
+}
+
+# --- PROJET ATELIER VITRINE (webmaster) — même app que receptionniste, :3010 ---
+webmaster.zerocall.io {
+    import base_security
+    import csp_receptionniste
+    import nextjs_optim
+
+    reverse_proxy 127.0.0.1:3010 {
+        import proxy_config
+        header_up X-Site-Lang fr
+    }
+
+    log {
+        output file /var/log/caddy/webmaster.zerocall.io.log {
+            roll_size 10MB
+            roll_keep 3
+        }
+    }
+}
+
+# --- PROJET RECEPTIONIST (vitrine vocale Vapi) — app Docker nginx sur :3005 ---
+
+# Compression + cache des assets statiques Vite
+(spa_optim) {
+    encode gzip zstd
+    @assets path /assets/*
+    header @assets Cache-Control "public, max-age=31536000, immutable"
+}
+
+# CSP — Supabase (REST + Realtime + Edge Functions), Vapi (WebRTC voix), Cal.com
+(csp_receptionist) {
+    header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://uvpuhoyaovmztephqknq.supabase.co wss://uvpuhoyaovmztephqknq.supabase.co https://*.vapi.ai wss://*.vapi.ai https://*.daily.co wss://*.daily.co https://*.pluot.blue https://api.cal.com https://*.cal.com https://places.googleapis.com; media-src 'self' blob: data: mediastream: https://uvpuhoyaovmztephqknq.supabase.co; frame-src 'self' https://cal.com https://*.cal.com https://*.daily.co; worker-src 'self' blob:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+}
+
+receptionist.zerocall.io {
+    # Sécurité de base — inline (pas import base_security) car la Permissions-Policy
+    # doit autoriser microphone=(self) pour l'assistant vocal Vapi.
+    header {
+        -Server
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+        Permissions-Policy "camera=(), geolocation=(), payment=(), usb=(), bluetooth=(), microphone=(self)"
+    }
+    import csp_receptionist
+    import spa_optim
+
+    reverse_proxy 127.0.0.1:3005 {
+        import proxy_config
+    }
+
+    log {
+        output file /var/log/caddy/receptionist.zerocall.io.log {
+            roll_size 10MB
+            roll_keep 3
+        }
+    }
+}
