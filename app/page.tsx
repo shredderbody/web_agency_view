@@ -21,15 +21,64 @@ export default function Home() {
   const { lang, t } = useLang();
   const demos = getDemos(lang);
   const [showScrollHint, setShowScrollHint] = useState(true);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [payStatus, setPayStatus] = useState<"succes" | "annule" | null>(null);
   useEffect(() => {
     const onScroll = () => { if (window.scrollY > 80) setShowScrollHint(false); };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Bannière de retour de paiement (redirigé sur la home page).
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get("paiement");
+    if (p === "succes" || p === "annule") {
+      setPayStatus(p);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("paiement");
+      url.searchParams.delete("session_id");
+      window.history.replaceState(null, "", url.toString());
+    }
+  }, []);
+
+  async function startCheckout(plan: "essentielle" | "atelier") {
+    try {
+      setLoadingPlan(plan);
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan, lang }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data?.url) { window.location.href = data.url; return; }
+      console.error("checkout error", data);
+      alert(t.checkout.errorMsg);
+    } catch {
+      alert(t.checkout.errorMsg);
+    } finally {
+      setLoadingPlan(null);
+    }
+  }
+
   return (
     <>
       <SiteNav />
+      {payStatus && (
+        <div
+          role="status"
+          onClick={() => setPayStatus(null)}
+          style={{
+            position: "fixed", top: "5rem", left: "50%", transform: "translateX(-50%)",
+            zIndex: 60, maxWidth: "min(92vw, 34rem)", padding: "0.9rem 1.3rem",
+            borderRadius: "var(--r-lg)", cursor: "pointer", boxShadow: "var(--shadow-lg)",
+            border: "1px solid var(--border)", fontSize: "0.95rem",
+            background: payStatus === "succes" ? "var(--ink)" : "var(--surface)",
+            color: payStatus === "succes" ? "var(--paper)" : "var(--ink)",
+          }}
+        >
+          {payStatus === "succes" ? t.checkout.successBanner : t.checkout.canceledBanner}
+        </div>
+      )}
       <main>
         {/* ─── HERO ──────────────────────────────────────────── */}
         <section className="grain" style={{ position: "relative", paddingTop: "6.8rem", paddingBottom: "clamp(3rem, 6vw, 5rem)", overflow: "hidden" }}>
@@ -219,6 +268,8 @@ export default function Home() {
             <div className="price-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.3rem", alignItems: "stretch" }}>
               {t.pricing.plans.map((p, i) => {
                 const featured = p.featured;
+                const planId = i === 0 ? "essentielle" : i === 1 ? "atelier" : null;
+                const loading = planId !== null && loadingPlan === planId;
                 return (
                   <Reveal key={i} delay={i * 90}>
                     <div className="price-card" style={{ height: "100%", display: "flex", flexDirection: "column", padding: "1.8rem 1.6rem", borderRadius: "var(--r-lg)", border: `1px solid ${featured ? "var(--ink)" : "var(--border)"}`, background: featured ? "var(--ink)" : "var(--surface)", color: featured ? "var(--paper)" : "var(--ink)", transform: featured ? "translateY(-0.6rem)" : "none", boxShadow: featured ? "var(--shadow-lg)" : "none" }}>
@@ -237,7 +288,19 @@ export default function Home() {
                           </li>
                         ))}
                       </ul>
-                      <a href="#contact" className={featured ? "btn btn-accent" : "btn btn-ghost"} style={{ width: "100%" }}>{p.cta}</a>
+                      {planId ? (
+                        <button
+                          type="button"
+                          onClick={() => startCheckout(planId)}
+                          disabled={loading}
+                          className={featured ? "btn btn-accent" : "btn btn-ghost"}
+                          style={{ width: "100%", justifyContent: "center", cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}
+                        >
+                          {loading ? t.checkout.redirecting : p.cta}
+                        </button>
+                      ) : (
+                        <a href="#contact" className={featured ? "btn btn-accent" : "btn btn-ghost"} style={{ width: "100%" }}>{p.cta}</a>
+                      )}
                     </div>
                   </Reveal>
                 );

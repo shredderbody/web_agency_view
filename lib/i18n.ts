@@ -57,6 +57,16 @@ type UI = {
     note: string;
     items: { name: string; price: string }[];
   };
+  checkout: {
+    redirecting: string;
+    errorMsg: string;
+    successBanner: string;
+    canceledBanner: string;
+    subName: string;
+    subDesc: string;
+    feeName: string;
+    feeDesc: string;
+  };
   testimonials: {
     kicker: string;
     title: string;
@@ -240,6 +250,16 @@ export const ui: Record<Lang, UI> = {
         { name: "Animation 3D", price: "Prix sur devis" },
         { name: "Pack Sérénité 6 mois*", price: "490 €" },
       ],
+    },
+    checkout: {
+      redirecting: "Redirection…",
+      errorMsg: "Le paiement est momentanément indisponible. Réessayez ou contactez-nous.",
+      successBanner: "✓ Paiement confirmé — merci ! Nous ouvrons votre dossier et revenons vers vous très vite.",
+      canceledBanner: "Paiement annulé. Vous pouvez réessayer quand vous le souhaitez.",
+      subName: "Abonnement vitrine",
+      subDesc: "Maintenance, hébergement et support — {months} mois",
+      feeName: "Mise en place — formule",
+      feeDesc: "Installation, ouverture de dossier, infrastructure système et création du design (paiement unique)",
     },
     testimonials: {
       kicker: "Ils m'ont fait confiance",
@@ -460,6 +480,16 @@ export const ui: Record<Lang, UI> = {
         { name: "3D animation", price: "On request" },
         { name: "Serenity Pack 6 months*", price: "€490" },
       ],
+    },
+    checkout: {
+      redirecting: "Redirecting…",
+      errorMsg: "Payment is temporarily unavailable. Please retry or contact us.",
+      successBanner: "✓ Payment confirmed — thank you! We're opening your file and will reach out shortly.",
+      canceledBanner: "Payment canceled. You can try again whenever you like.",
+      subName: "Showcase subscription",
+      subDesc: "Maintenance, hosting and support — {months} months",
+      feeName: "Setup — plan",
+      feeDesc: "Installation, file opening, system infrastructure and design creation (one-time payment)",
     },
     testimonials: {
       kicker: "They trusted me",
