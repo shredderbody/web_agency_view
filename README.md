@@ -2,9 +2,12 @@
 
 Site marketing d'un studio web qui crée des vitrines en ligne sur-mesure pour les commerces de quartier (barbiers, ongleries, charcutiers-traiteurs, restaurants). Le site présente l'offre **et** fait visiter des vitrines de démonstration complètes, chacune dans son propre univers visuel.
 
+> 📚 **Documentation complète** dans [`docs/`](./docs/) :
+> [PRODUCT](./docs/PRODUCT.md) · [DESIGN](./docs/DESIGN.md) · [ARCHITECTURE](./docs/ARCHITECTURE.md) · [DEVELOPMENT](./docs/DEVELOPMENT.md) · [DEPLOY](./docs/DEPLOY.md) · [STRIPE](./docs/STRIPE.md) — index : [docs/README.md](./docs/README.md).
+
 ## Stack
 - Next.js 15 (App Router) · React 19 · TypeScript
-- Tailwind CSS v4 (CSS-first `@theme`) + design system maison dans `app/globals.css`
+- Tailwind CSS v3.4 + design system maison (tokens OKLCH) dans `app/globals.css`
 - Polices : Bricolage Grotesque, Hanken Grotesk, Anton, Marcellus (`next/font/google`)
 - Icônes : `lucide-react`
 
