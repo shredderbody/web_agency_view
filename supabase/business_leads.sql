@@ -60,3 +60,23 @@ create index if not exists business_leads_place_id_idx   on public.business_lead
 -- RLS activé sans policy : seul le service_role (qui contourne RLS) peut écrire/lire.
 -- La clé anon publique ne peut donc rien faire sur cette table.
 alter table public.business_leads enable row level security;
+
+-- ── Suivi commercial (ajouté après coup — colonnes éditées depuis le dashboard
+--    Supabase par l'agence, jamais par le formulaire public) ──────────────────
+alter table public.business_leads
+  add column if not exists sector text,
+  add column if not exists status text not null default 'new',
+  add column if not exists notes  text;
+
+comment on column public.business_leads.sector is
+  'Secteur d''activité normalisé, choisi/validé dans le formulaire (liste contrôlée), distinct du primary_type_display brut renvoyé par Google.';
+comment on column public.business_leads.status is
+  'Suivi commercial du lead : new | contacted | converted | lost. Renseigné par l''agence, jamais par le formulaire public.';
+comment on column public.business_leads.notes is
+  'Notes internes libres ajoutées par l''agence après prise de contact.';
+
+alter table public.business_leads drop constraint if exists business_leads_status_check;
+alter table public.business_leads
+  add constraint business_leads_status_check check (status in ('new', 'contacted', 'converted', 'lost'));
+
+create index if not exists business_leads_status_idx on public.business_leads (status);

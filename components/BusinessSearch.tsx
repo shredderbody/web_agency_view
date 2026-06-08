@@ -48,6 +48,55 @@ function Stars({ rating, size = 16 }: { rating: number; size?: number }) {
   );
 }
 
+// Champ du formulaire pré-rempli (libellé + contrôle), style cohérent pop-up.
+const popupFieldStyle: React.CSSProperties = {
+  width: "100%",
+  border: "1.5px solid var(--border-strong)",
+  background: "oklch(0.965 0.05 88)",
+  color: "var(--ink)",
+  borderRadius: "0.7rem",
+  padding: "0.8rem 1rem",
+  fontSize: "0.98rem",
+  fontFamily: "inherit",
+  outline: "none",
+};
+
+function PopupField({ label, htmlFor, children }: { label: string; htmlFor?: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label htmlFor={htmlFor} style={{ display: "block", margin: "0 0 0.35rem", fontSize: "0.88rem", fontWeight: 700, color: "var(--ink)" }}>
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+// Devine un secteur (parmi la liste contrôlée s.sectors, même ordre/index) à
+// partir des types Google Places — comparaison exacte sur les valeurs d'énum
+// Google (https://developers.google.com/maps/documentation/places/web-service/place-types)
+// pour éviter les faux positifs de sous-chaîne (ex. "bar" ⊂ "barber_shop").
+const SECTOR_TYPE_INDEX: Record<string, number> = {
+  restaurant: 0, food: 0, bakery: 0, cafe: 0, bar: 0, meal_takeaway: 0, meal_delivery: 0, catering_service: 0,
+  barber_shop: 1, hair_care: 1, hair_salon: 1,
+  beauty_salon: 2, spa: 2, nail_salon: 2, massage: 2,
+  doctor: 3, dentist: 3, health: 3, medical_lab: 3, pharmacy: 3, physiotherapist: 3, hospital: 3,
+  plumber: 4, electrician: 4, general_contractor: 4, roofing_contractor: 4, locksmith: 4, painter: 4,
+  store: 5, clothing_store: 5, shopping_mall: 5, supermarket: 5, florist: 5, jewelry_store: 5,
+  hotel: 6, lodging: 6, travel_agency: 6, tourist_attraction: 6, campground: 6,
+  gym: 7, stadium: 7, sports_club: 7, fitness_center: 7,
+  real_estate_agency: 8, lawyer: 8, accounting: 8, insurance_agency: 8, laundry: 8, moving_company: 8,
+};
+
+function guessSector(p: Place, sectors: string[]): string {
+  for (const t of [p.primaryType, ...(p.types ?? [])]) {
+    if (!t) continue;
+    const idx = SECTOR_TYPE_INDEX[t.toLowerCase()];
+    if (idx !== undefined) return sectors[idx] ?? "";
+  }
+  return sectors[sectors.length - 1] ?? ""; // "Autre" / "Other"
+}
+
 export default function BusinessSearch() {
   const { lang, t } = useLang();
   const s = t.demoSearch;
@@ -62,6 +111,11 @@ export default function BusinessSearch() {
   const [form, setForm] = useState({ name: "", trade: "", city: "", email: "", phone: "" });
   const [popupEmail, setPopupEmail] = useState("");
   const [popupPhone, setPopupPhone] = useState("");
+  // Champs « entreprise trouvée », pré-remplis depuis Google Places puis modifiables.
+  const [gName, setGName] = useState("");
+  const [gSector, setGSector] = useState("");
+  const [gAddress, setGAddress] = useState("");
+  const [gWebsite, setGWebsite] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
@@ -151,12 +205,31 @@ export default function BusinessSearch() {
     }
   }
 
+  // Pré-remplit le formulaire éditable dès qu'une fiche Google est sélectionnée
+  // (et le ré-initialise sur demande, bouton « Réinitialiser »).
+  function prefillFromGoogle(p: Place) {
+    setGName(p.name ?? "");
+    setGSector(guessSector(p, s.sectors));
+    setGAddress(p.address ?? "");
+    setGWebsite(p.website ?? "");
+    setPopupPhone(p.phoneNational ?? "");
+  }
+
+  useEffect(() => {
+    if (selected) prefillFromGoogle(selected);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected]);
+
   function closeModal() {
     setSelected(null);
     setSubmitted(false);
     setError(false);
     setPopupEmail("");
     setPopupPhone("");
+    setGName("");
+    setGSector("");
+    setGAddress("");
+    setGWebsite("");
     setQuery("");
     setSuggestions([]);
     setSearched(false);
@@ -168,11 +241,13 @@ export default function BusinessSearch() {
       source: "google",
       lang,
       place_id: p.id,
-      name: p.name,
+      // Champs modifiés par le prospect dans le formulaire pré-rempli (sinon valeur Google).
+      name: gName.trim() || p.name,
+      sector: gSector.trim() || undefined,
       primary_type: p.primaryType,
       primary_type_display: p.primaryTypeDisplay,
       types: p.types,
-      formatted_address: p.address,
+      formatted_address: gAddress.trim() || p.address,
       street_number: p.streetNumber,
       route: p.route,
       locality: p.locality,
@@ -181,11 +256,10 @@ export default function BusinessSearch() {
       country: p.country,
       latitude: p.latitude,
       longitude: p.longitude,
-      // Téléphone saisi par l'entreprise s'il est fourni, sinon celui de Google.
       phone_national: popupPhone.trim() || p.phoneNational,
       phone_international: p.phoneInternational,
       email: popupEmail.trim(),
-      website: p.website,
+      website: gWebsite.trim() || p.website,
       google_maps_uri: p.mapsUri,
       rating: p.rating,
       user_rating_count: p.userRatingCount,
@@ -474,42 +548,73 @@ export default function BusinessSearch() {
               <X size={17} />
             </button>
 
-            {/* Métier */}
-            {selected.primaryTypeDisplay && (
-              <span className="kicker" style={{ marginBottom: "0.7rem", color: "var(--vermilion-deep)" }}>
-                {selected.primaryTypeDisplay}
-              </span>
-            )}
+            {/* Bandeau : informations pré-remplies depuis Google Places */}
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                background: "oklch(0.94 0.05 150)",
+                color: "oklch(0.4 0.09 150)",
+                border: "1px solid oklch(0.82 0.08 150)",
+                borderRadius: "0.6rem",
+                padding: "0.55rem 0.85rem",
+                marginBottom: "1rem",
+                fontSize: "0.86rem",
+                fontWeight: 700,
+              }}
+            >
+              <Check size={15} /> {s.loadedFromGoogle}
+            </div>
 
-            {/* Nom — mis en avant */}
-            <h3 className="d-lg" style={{ margin: "0 0 0.6rem", fontFamily: "var(--font-display)", lineHeight: 1.1 }}>
-              {selected.name}
-            </h3>
-
-            {/* Note + nombre d'avis */}
+            {/* Note + nombre d'avis (repère visuel : « c'est bien votre établissement ») */}
             {typeof selected.rating === "number" && (
-              <div style={{ display: "flex", alignItems: "center", gap: "0.55rem", marginBottom: "0.6rem", flexWrap: "wrap" }}>
-                <Stars rating={selected.rating} size={18} />
-                <span style={{ fontWeight: 700, fontSize: "1.05rem" }}>{selected.rating.toFixed(1)}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.1rem", flexWrap: "wrap" }}>
+                <Stars rating={selected.rating} size={16} />
+                <span style={{ fontWeight: 700, fontSize: "0.98rem" }}>{selected.rating.toFixed(1)}</span>
                 {typeof selected.userRatingCount === "number" && (
-                  <span style={{ color: "var(--ink-dim)", fontSize: "0.92rem" }}>
+                  <span style={{ color: "var(--ink-dim)", fontSize: "0.88rem" }}>
                     · {selected.userRatingCount} {s.reviewsWord}
                   </span>
                 )}
               </div>
             )}
 
-            {/* Adresse */}
-            {selected.address && (
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", color: "var(--ink-dim)", fontSize: "0.95rem", marginBottom: "1.1rem" }}>
-                <MapPin size={17} style={{ color: "var(--vermilion)", flexShrink: 0, marginTop: "0.1rem" }} />
-                <span>{selected.address}</span>
-              </div>
-            )}
+            {/* Formulaire pré-rempli depuis Google Places — entièrement modifiable avant envoi */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <PopupField label={s.fieldName} htmlFor="g-name">
+                <input id="g-name" type="text" value={gName} onChange={(e) => setGName(e.target.value)} placeholder={s.manualName} aria-label={s.fieldName} style={popupFieldStyle} />
+              </PopupField>
 
-            {/* Avis */}
+              <PopupField label={s.fieldSector} htmlFor="g-sector">
+                <select id="g-sector" value={gSector} onChange={(e) => setGSector(e.target.value)} aria-label={s.fieldSector} style={{ ...popupFieldStyle, cursor: "pointer" }}>
+                  <option value="" disabled>{s.sectorPlaceholder}</option>
+                  {s.sectors.map((sec) => (
+                    <option key={sec} value={sec}>{sec}</option>
+                  ))}
+                </select>
+              </PopupField>
+
+              <PopupField label={s.fieldAddress} htmlFor="g-address">
+                <input id="g-address" type="text" value={gAddress} onChange={(e) => setGAddress(e.target.value)} placeholder={s.fieldAddress} aria-label={s.fieldAddress} style={popupFieldStyle} />
+              </PopupField>
+
+              <PopupField label={s.fieldWebsite} htmlFor="g-website">
+                <input id="g-website" type="url" value={gWebsite} onChange={(e) => setGWebsite(e.target.value)} placeholder={s.websitePlaceholder} aria-label={s.fieldWebsite} style={popupFieldStyle} />
+              </PopupField>
+
+              <PopupField label={s.popupEmailLabel} htmlFor="popup-email">
+                <input id="popup-email" type="email" value={popupEmail} onChange={(e) => setPopupEmail(e.target.value)} placeholder={s.popupEmail} aria-label={s.popupEmail} style={popupFieldStyle} />
+              </PopupField>
+
+              <PopupField label={s.fieldPhone} htmlFor="popup-phone">
+                <input id="popup-phone" type="tel" value={popupPhone} onChange={(e) => setPopupPhone(e.target.value)} placeholder={s.manualPhone} aria-label={s.fieldPhone} style={popupFieldStyle} />
+              </PopupField>
+            </div>
+
+            {/* Avis — preuve sociale, conservée sous le formulaire */}
             {shownReviews.length > 0 && (
-              <div style={{ borderTop: "1px solid var(--border)", paddingTop: "1.1rem", marginBottom: "0.4rem" }}>
+              <div style={{ borderTop: "1px solid var(--border)", marginTop: "1.2rem", paddingTop: "1.1rem", marginBottom: "0.4rem" }}>
                 <p style={{ margin: "0 0 0.8rem", fontSize: "0.82rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--ink-dim)" }}>
                   {s.reviewsTitle}
                 </p>
@@ -530,64 +635,29 @@ export default function BusinessSearch() {
               </div>
             )}
 
-            {/* E-mail facultatif pour recontacter l'entreprise */}
+            {/* Réinitialiser → revient aux valeurs d'origine Google Places */}
             {!submitted && (
-              <div style={{ marginTop: shownReviews.length > 0 || selected.address ? "1.1rem" : "0.4rem" }}>
-                <label htmlFor="popup-email" style={{ display: "block", margin: "0 0 0.35rem", fontSize: "0.88rem", fontWeight: 700, color: "var(--ink)" }}>
-                  {s.popupEmailLabel}
-                </label>
-                <input
-                  id="popup-email"
-                  type="email"
-                  value={popupEmail}
-                  onChange={(e) => setPopupEmail(e.target.value)}
-                  placeholder={s.popupEmail}
-                  aria-label={s.popupEmail}
-                  style={{
-                    width: "100%",
-                    border: "1.5px solid var(--border-strong)",
-                    background: "oklch(0.965 0.05 88)",
-                    color: "var(--ink)",
-                    borderRadius: "0.7rem",
-                    padding: "0.8rem 1rem",
-                    fontSize: "0.98rem",
-                    fontFamily: "inherit",
-                    outline: "none",
-                  }}
-                />
-              </div>
-            )}
-
-            {/* Téléphone facultatif */}
-            {!submitted && (
-              <div style={{ marginTop: "0.7rem" }}>
-                <label htmlFor="popup-phone" style={{ display: "block", margin: "0 0 0.35rem", fontSize: "0.88rem", fontWeight: 700, color: "var(--ink)" }}>
-                  {s.popupPhoneLabel}
-                </label>
-                <input
-                  id="popup-phone"
-                  type="tel"
-                  value={popupPhone}
-                  onChange={(e) => setPopupPhone(e.target.value)}
-                  placeholder={s.manualPhone}
-                  aria-label={s.manualPhone}
-                  style={{
-                    width: "100%",
-                    border: "1.5px solid var(--border-strong)",
-                    background: "oklch(0.965 0.05 88)",
-                    color: "var(--ink)",
-                    borderRadius: "0.7rem",
-                    padding: "0.8rem 1rem",
-                    fontSize: "0.98rem",
-                    fontFamily: "inherit",
-                    outline: "none",
-                  }}
-                />
-              </div>
+              <button
+                type="button"
+                onClick={() => prefillFromGoogle(selected)}
+                style={{
+                  marginTop: "1.1rem",
+                  background: "transparent",
+                  border: "1.5px solid var(--border-strong)",
+                  borderRadius: "0.6rem",
+                  cursor: "pointer",
+                  color: "var(--ink-dim)",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  padding: "0.55rem 1rem",
+                }}
+              >
+                {s.reset}
+              </button>
             )}
 
             {/* CTA → envoi + remplissage Supabase en arrière-plan */}
-            <SubmitButton onClick={() => submitLead(googlePayload(selected))} enabled />
+            <SubmitButton onClick={() => submitLead(googlePayload(selected))} enabled={!!gName.trim()} />
             {statusLine}
           </div>
         </div>

@@ -98,6 +98,16 @@ type UI = {
     popupPhoneLabel: string;
     manualPhone: string;
     backToSearch: string;
+    loadedFromGoogle: string;
+    fieldName: string;
+    fieldSector: string;
+    sectorPlaceholder: string;
+    sectors: string[];
+    fieldAddress: string;
+    fieldWebsite: string;
+    websitePlaceholder: string;
+    fieldPhone: string;
+    reset: string;
     sending: string;
     success: string;
     errorMsg: string;
@@ -315,6 +325,27 @@ export const ui: Record<Lang, UI> = {
       popupPhoneLabel: "Téléphone (facultatif)",
       manualPhone: "Téléphone (facultatif)",
       backToSearch: "Revenir à la recherche Google",
+      loadedFromGoogle: "Informations chargées depuis Google Places",
+      fieldName: "Nom de l'entreprise",
+      fieldSector: "Secteur d'activité",
+      sectorPlaceholder: "Choisissez un secteur",
+      sectors: [
+        "Restauration & traiteur",
+        "Coiffure & barbier",
+        "Beauté & bien-être",
+        "Santé & soins",
+        "Artisanat & bâtiment",
+        "Commerce & boutique",
+        "Hôtellerie & tourisme",
+        "Sport & loisirs",
+        "Services à la personne",
+        "Autre",
+      ],
+      fieldAddress: "Adresse",
+      fieldWebsite: "Site web",
+      websitePlaceholder: "https://www.votre-site.fr",
+      fieldPhone: "Téléphone",
+      reset: "Réinitialiser",
       sending: "Envoi…",
       success: "Merci ! On prépare votre démo — vous recevez le lien sous 7 jours.",
       errorMsg: "Oups, l'envoi a échoué. Réessayez ou appelez-nous.",
@@ -545,6 +576,27 @@ export const ui: Record<Lang, UI> = {
       popupPhoneLabel: "Phone (optional)",
       manualPhone: "Phone (optional)",
       backToSearch: "Back to Google search",
+      loadedFromGoogle: "Information loaded from Google Places",
+      fieldName: "Business name",
+      fieldSector: "Business sector",
+      sectorPlaceholder: "Choose a sector",
+      sectors: [
+        "Food & catering",
+        "Hair & barbering",
+        "Beauty & wellness",
+        "Health & care",
+        "Trades & construction",
+        "Retail & shops",
+        "Hospitality & tourism",
+        "Sports & leisure",
+        "Personal services",
+        "Other",
+      ],
+      fieldAddress: "Address",
+      fieldWebsite: "Website",
+      websitePlaceholder: "https://www.your-site.com",
+      fieldPhone: "Phone",
+      reset: "Reset",
       sending: "Sending…",
       success: "Thanks! We're preparing your demo — you'll get the link within 7 days.",
       errorMsg: "Oops, sending failed. Try again or call us.",

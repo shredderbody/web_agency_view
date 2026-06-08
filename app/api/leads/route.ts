@@ -11,6 +11,7 @@ const ALLOWED = new Set([
   "name",
   "primary_type",
   "primary_type_display",
+  "sector",
   "types",
   "formatted_address",
   "street_number",
