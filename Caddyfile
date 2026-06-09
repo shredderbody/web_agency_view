@@ -160,7 +160,7 @@ n8n.zerocall.io {
 
 # --- PROJET ATELIER VITRINE (receptionniste) ---
 (csp_receptionniste) {
-    header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://uvpuhoyaovmztephqknq.supabase.co wss://uvpuhoyaovmztephqknq.supabase.co https://n8n.zerocall.io https://api.kie.ai https://api.deepgram.com wss://api.deepgram.com https://places.googleapis.com https://www.facebook.com; media-src 'self' blob: https://uvpuhoyaovmztephqknq.supabase.co https://api.deepgram.com; frame-src 'self' blob:; object-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+    header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://connect.facebook.net https://unpkg.com https://esm.sh; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://uvpuhoyaovmztephqknq.supabase.co wss://uvpuhoyaovmztephqknq.supabase.co https://n8n.zerocall.io https://api.kie.ai https://api.deepgram.com wss://api.deepgram.com https://places.googleapis.com https://www.facebook.com https://unpkg.com https://esm.sh https://*.vapi.ai wss://*.vapi.ai https://*.daily.co wss://*.daily.co https://*.pluot.blue; media-src 'self' blob: data: mediastream: https://uvpuhoyaovmztephqknq.supabase.co https://api.deepgram.com; frame-src 'self' blob: https://*.daily.co; worker-src 'self' blob:; object-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
 }
 
 receptionniste.zerocall.io {

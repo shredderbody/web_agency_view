@@ -372,3 +372,19 @@ button { font-family: inherit; }
   background: var(--vermilion); color: var(--surface);
   padding: 0.4rem 1rem; border-radius: 99px; font-weight: 600;
 }
+
+/* ── Bulle Vapi hybride (chat + appel) ────────────────────────────────────────
+   Le web-component <vapi-widget> se positionne en fixed et gère son propre
+   rendu (shadow DOM). On garde l'élément hôte au-dessus du contenu et on borne
+   sa largeur sur petits écrans pour que la fenêtre de chat reste confortable
+   sur mobile et tablette sans déborder. */
+vapi-widget {
+  position: fixed;
+  z-index: 70;
+}
+@media (max-width: 640px) {
+  vapi-widget {
+    /* la fenêtre de chat ne doit jamais coller les bords de l'écran */
+    max-width: calc(100vw - 1.5rem);
+  }
+}

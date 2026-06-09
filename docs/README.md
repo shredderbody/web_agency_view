@@ -11,10 +11,12 @@ charcutiers-traiteurs, restaurants, plombiers…). Le site présente l'offre **e
 fait visiter des vitrines de démonstration complètes, chacune dans son propre
 univers visuel.
 
-Trois fonctions « backend » sont branchées :
+Quatre fonctions « backend » sont branchées :
 - **Stripe Checkout** (abonnement + frais de mise en place) pour les formules tarifaires.
 - **Google Places (New)** via un proxy serveur, pour le widget « cherchez votre commerce ».
 - **Supabase** (PostgREST) pour stocker les leads entreprises captés par ce widget.
+- **Vapi** : une bulle de discussion hybride (chat + appel) par page métier, branchée
+  sur un assistant inbound bilingue FR/EN qui prend des rendez-vous de démo.
 
 ## Stack (résumé)
 
@@ -34,6 +36,7 @@ Trois fonctions « backend » sont branchées :
 | [DEVELOPMENT.md](./DEVELOPMENT.md) | Installation locale, commandes npm, scripts utilitaires |
 | [DEPLOY.md](./DEPLOY.md) | Déploiement Docker, Caddy / Cloudflare, scripts, variables d'env |
 | [STRIPE.md](./STRIPE.md) | Intégration Stripe : flux de paiement, webhook, prix, env vars |
+| [VAPI_ASSISTANTS.md](./VAPI_ASSISTANTS.md) | Bulle Vapi hybride par métier, assistants inbound bilingues, function tools, CSP |
 
 ## Conventions
 

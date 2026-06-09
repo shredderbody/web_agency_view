@@ -8,6 +8,7 @@ import LangSelector from "@/components/LangSelector";
 import DemoTestimonials from "@/components/DemoTestimonials";
 import OrderModal from "@/components/OrderModal";
 import BusinessSearch from "@/components/BusinessSearch";
+import VapiWidget from "@/components/VapiWidget";
 import { useLang } from "@/lib/lang-context";
 import { getVitrine } from "@/lib/vitrineContent";
 
@@ -370,6 +371,10 @@ export default function DemoView({ slug }: { slug: string }) {
           onClose={() => setModal(false)}
         />
       )}
+
+      {/* Bulle Vapi hybride (chat + appel) — assistant inbound dédié au métier,
+          couleurs alignées sur la page. */}
+      <VapiWidget slug={slug} />
 
       <style>{`
         @keyframes avScrollPulse {
