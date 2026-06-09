@@ -50,12 +50,16 @@ create table if not exists public.business_leads (
   reviews               jsonb,
 
   -- Statut
-  business_status       text
+  business_status       text,
+
+  -- Traçabilité du domaine/projet d'origine
+  domain_name           text
 );
 
 -- Index utiles pour le suivi des leads.
 create index if not exists business_leads_created_at_idx on public.business_leads (created_at desc);
 create index if not exists business_leads_place_id_idx   on public.business_leads (place_id);
+create index if not exists business_leads_domain_name_idx on public.business_leads (domain_name);
 
 -- RLS activé sans policy : seul le service_role (qui contourne RLS) peut écrire/lire.
 -- La clé anon publique ne peut donc rien faire sur cette table.

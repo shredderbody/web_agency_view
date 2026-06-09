@@ -32,6 +32,7 @@ const ALLOWED = new Set([
   "opening_hours",
   "reviews",
   "business_status",
+  "domain_name",
 ]);
 
 export async function POST(req: NextRequest) {
@@ -61,6 +62,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "name_required" }, { status: 400 });
   }
   if (!row.source) row.source = "google";
+
+  const domain_name = req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? '';
+  row.domain_name = domain_name;
 
   try {
     const res = await fetch(`${url}/rest/v1/business_leads`, {
