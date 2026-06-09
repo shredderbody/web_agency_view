@@ -119,17 +119,12 @@ confirmé. Tous pointent vers `POST {NEXT_PUBLIC_APP_URL}/api/vapi/booking`.
 - Les autres événements Vapi (status-update, end-of-call-report…) sont acquittés
   par `{ received: true }`.
 
-Table Supabase optionnelle (à créer si on veut historiser les démos) :
-
-```sql
-create table if not exists demo_bookings (
-  id uuid primary key default gen_random_uuid(),
-  created_at timestamptz default now(),
-  tool text,
-  payload jsonb,
-  meta jsonb
-);
-```
+Table Supabase d'historisation : **`supabase/migrations/002_demo_bookings.sql`**
+(table `demo_bookings`, RLS activé sans policy → service_role seul, indexée).
+Comme le reste du projet, ce SQL s'applique **à la main** dans le *SQL editor*
+Supabase (pas de CLI / migration runner). Une fois la table créée, l'endpoint
+l'alimente automatiquement ; tant qu'elle n'existe pas, l'insert best-effort est
+silencieusement ignoré et la confirmation au client reste inchangée.
 
 ---
 
