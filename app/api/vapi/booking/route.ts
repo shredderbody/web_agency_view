@@ -56,7 +56,12 @@ function frConfirmation(name: string, a: Record<string, unknown>): string {
   return `${label} de démonstration bien enregistré pour ${who} ${bits.join(" ")}.`.replace(/\s+/g, " ").trim();
 }
 
-async function tryStore(name: string, args: Record<string, unknown>, meta: Record<string, unknown>) {
+async function tryStore(
+  name: string,
+  args: Record<string, unknown>,
+  meta: Record<string, unknown>,
+  domain_name: string,
+) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return;
@@ -69,7 +74,7 @@ async function tryStore(name: string, args: Record<string, unknown>, meta: Recor
         "Content-Type": "application/json",
         Prefer: "return=minimal",
       },
-      body: JSON.stringify({ tool: name, payload: args, meta }),
+      body: JSON.stringify({ tool: name, payload: args, meta, domain_name: domain_name || null }),
       cache: "no-store",
     });
   } catch {
@@ -99,12 +104,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
+  // Domaine d'origine : même convention que les leads (app/api/leads/route.ts).
+  const domain_name = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "";
+  // Le slug du métier est porté par metadata de l'assistant (cf.
+  // scripts/vapi-setup-assistants.mjs → metadata.slug), pas au niveau message.
+  const assistant = (message.assistant ?? (message.call as Record<string, unknown>)?.assistant) as
+    | Record<string, unknown>
+    | undefined;
+  const assistantMeta = (assistant?.metadata ?? {}) as Record<string, unknown>;
+  const slug = assistantMeta.slug ?? message.slug ?? null;
+
   const results = [];
   for (const c of calls) {
     const id = c.toolCallId || c.id || "";
     const name = c.function?.name || c.name || "enregistrer_rendezvous";
     const args = parseArgs(c.function?.arguments ?? c.arguments);
-    await tryStore(name, args, { slug: message.slug, ts: new Date().toISOString() });
+    await tryStore(name, args, { slug, ts: new Date().toISOString() }, domain_name);
     results.push({ toolCallId: id, result: frConfirmation(name, args) });
   }
 
