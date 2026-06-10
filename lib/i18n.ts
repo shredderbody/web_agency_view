@@ -146,10 +146,8 @@ type UI = {
     artisanKicker: string;
     sheetCaption: string;
     reviewsTitle: string;
-    footerNote: string;
     footerNavLabel: string;
     footerInfoLabel: string;
-    createCta: string;
     metaSuffix: string;
     scroll: string;
   };
@@ -400,10 +398,8 @@ export const ui: Record<Lang, UI> = {
       artisanKicker: "L'artisan",
       sheetCaption: "Le même accueil, quel que soit l'angle. Imagerie réalisée sur-mesure pour la vitrine.",
       reviewsTitle: "Ils en parlent mieux que nous",
-      footerNote: "Vitrine de démonstration. Le commerce est fictif, le savoir-faire ne l'est pas.",
       footerNavLabel: "Navigation",
       footerInfoLabel: "Infos pratiques",
-      createCta: "Créer ma vitrine avec Atelier Vitrine",
       metaSuffix: "Vitrine de démonstration réalisée par Atelier Vitrine.",
       scroll: "Défiler",
     },
@@ -653,10 +649,8 @@ export const ui: Record<Lang, UI> = {
       artisanKicker: "The artisan",
       sheetCaption: "The same welcome, from every angle. Imagery crafted bespoke for the showcase.",
       reviewsTitle: "They say it better than we do",
-      footerNote: "Demo showcase. The business is fictional, the craft is not.",
       footerNavLabel: "Navigation",
       footerInfoLabel: "Practical info",
-      createCta: "Build my showcase with Atelier Vitrine",
       metaSuffix: "Demo showcase made by Atelier Vitrine.",
       scroll: "Scroll",
     },

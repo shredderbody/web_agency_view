@@ -60,11 +60,6 @@ export default function DemoFooter({ v, isBarber, ls }: { v: Vitrine; isBarber: 
             </ul>
           </div>
         </div>
-
-        <div className="vit-foot-bottom" style={{ marginTop: "clamp(2.2rem, 5vw, 3.2rem)", paddingTop: "1.4rem", borderTop: "1px solid oklch(0.97 0.01 80 / 0.14)", display: "flex", flexWrap: "wrap", gap: "0.8rem 1.5rem", alignItems: "center", justifyContent: "space-between" }}>
-          <p style={{ margin: 0, fontSize: "0.84rem", color: "oklch(0.72 0.01 80)" }}>{c.footerNote}</p>
-          <a href="/#contact" className="vit-foot-link" style={{ fontWeight: 600 }}>{c.createCta}</a>
-        </div>
       </div>
 
       <style>{`
@@ -75,7 +70,6 @@ export default function DemoFooter({ v, isBarber, ls }: { v: Vitrine; isBarber: 
         @media (max-width: 560px) {
           .vit-foot-grid { grid-template-columns: 1fr !important; }
           .vit-foot-grid > div:first-child { grid-column: auto; }
-          .vit-foot-bottom { flex-direction: column; align-items: flex-start !important; }
         }
       `}</style>
     </footer>
