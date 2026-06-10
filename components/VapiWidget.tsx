@@ -111,25 +111,30 @@ export default function VapiWidget({ slug }: { slug: string }) {
     };
   }, [slug]);
 
-  // Avatar "présentateur" superposé à la bulle : incarne l'assistant vocal
-  // (genre assorti à la voix Vapi configurée pour ce métier, cf. lib/vapi.ts).
+  // Avatar "présentateur" en badge sur le coin de la bulle Vapi : incarne
+  // l'assistant vocal (genre assorti à la voix configurée, cf. lib/vapi.ts).
+  // Chevauche le coin haut-droit de la bulle (au lieu de flotter séparément)
+  // pour former un seul bloc visuel. Liseré = couleur de fond du panneau de
+  // chat (cfg.base) pour le détacher proprement de la bulle.
   // z-index volontairement < 9999 (vapi-widget-wrapper) : quand la fenêtre de
-  // chat/appel s'ouvre, son panneau opaque recouvre naturellement l'avatar.
+  // chat/appel s'ouvre, son panneau opaque recouvre naturellement le badge.
+  const cfg = getVapiMetier(slug);
   const avatar = getVapiAvatar(slug);
-  if (!avatar) return null;
+  if (!cfg || !avatar) return null;
 
   return (
     <div
       aria-hidden="true"
       style={{
         position: "fixed",
-        right: "1.5rem",
-        bottom: "calc(1.5rem + 4rem + 0.75rem)",
-        width: "3.5rem",
-        height: "3.5rem",
+        right: "0.125rem",
+        bottom: "3.625rem",
+        width: "2.75rem",
+        height: "2.75rem",
         borderRadius: "9999px",
         overflow: "hidden",
-        boxShadow: "0 8px 24px rgba(0, 0, 0, 0.25)",
+        border: `2px solid ${cfg.base}`,
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.25)",
         zIndex: 9998,
         pointerEvents: "none",
       }}
@@ -138,7 +143,7 @@ export default function VapiWidget({ slug }: { slug: string }) {
         src={avatar.src}
         alt={avatar.alt}
         fill
-        sizes="56px"
+        sizes="44px"
         style={{ objectFit: "cover", objectPosition: "50% 15%" }}
       />
     </div>
