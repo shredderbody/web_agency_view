@@ -1,161 +1,181 @@
-// Catalogue des voix vocales (ElevenLabs en priorité, Cartesia / MiniMax en
-// alternative légère pour les voix mono-langue).
+// Catalogue des voix vocales utilisées par les assistants Vapi (ElevenLabs,
+// Cartesia, MiniMax) — compilé depuis vapi_export/assistants/*.json et
+// VAPI_PLAYBOOK.md.
 //
-// Règle de sélection :
+// Règle de sélection (`selectVoice`) :
 // - Le client demande 1 SEULE langue   -> on prend une voix "mono" dans cette
-//   langue. Si un équivalent Cartesia/MiniMax existe pour cette voix (champ
-//   `fallback`), on le privilégie : moteur plus léger, latence plus faible,
-//   moins cher. Sinon on reste sur ElevenLabs avec un modèle rapide
-//   (eleven_flash_v2_5).
+//   langue, en priorisant Cartesia/MiniMax (moteur plus léger, latence plus
+//   faible, moins cher) avant une voix ElevenLabs équivalente.
 // - Le client demande PLUSIEURS langues -> on prend une voix "multilingual"
-//   qui couvre toutes les langues demandées, avec un modèle multilingue
-//   ElevenLabs (eleven_flash_v2_5 par défaut, eleven_multilingual_v2 si on
-//   privilégie la qualité à la latence).
+//   qui couvre toutes les langues demandées (à défaut, celle qui en couvre le
+//   plus).
+//
+// `fallbackPlan` reflète le `fallbackPlan.voices[0]` de Vapi (bascule en cas
+// d'indisponibilité du provider principal) — ce n'est PAS un mécanisme de
+// sélection par langue.
 
 export type VoiceProvider = "11labs" | "cartesia" | "minimax";
 
 export type VoiceMode = "multilingual" | "mono";
 
-export interface VoiceFallback {
+export interface VoiceFallbackPlan {
   provider: VoiceProvider;
-  voiceId: string;
   model: string;
+  voiceId: string;
 }
 
 export interface VoiceCatalogEntry {
   /** Identifiant interne lisible. */
   id: string;
-  /** ID de la voix chez le provider principal. */
   voiceId: string;
   provider: VoiceProvider;
+  /** Modèle/moteur Vapi pour ce voiceId chez `provider`. */
+  model: string;
   name: string;
-  gender: "female" | "male";
+  gender?: "female" | "male";
   ageGroup?: string;
   mode: VoiceMode;
   /** Codes ISO 639-1. */
   languages: string[];
-  /** Modèle/moteur recommandé pour ce voiceId chez `provider`. */
-  model: string;
-  /**
-   * Alternative plus légère/rapide pour une voix mono-langue (Cartesia ou
-   * MiniMax). Renseigner `voiceId` une fois la voix équivalente créée chez ce
-   * provider — tant qu'il est vide, le fallback est ignoré.
-   */
-  fallback?: VoiceFallback;
+  /** Bascule de résilience Vapi (provider TTS de secours), pas un critère de sélection. */
+  fallbackPlan?: VoiceFallbackPlan;
+  notes?: string;
 }
 
 export const VOICE_CATALOG: VoiceCatalogEntry[] = [
   {
-    id: "elevenlabs-female-multi-middle-age",
-    voiceId: "MNKK2Wl2wbbsEPQTHZGt",
-    provider: "11labs",
-    name: "Voix féminine multilingue (âge moyen)",
-    gender: "female",
-    ageGroup: "middle-aged",
-    mode: "multilingual",
-    languages: ["fr", "de", "es", "it", "pt", "ru"],
-    model: "eleven_flash_v2_5",
-  },
-  {
-    id: "elevenlabs-female-fr",
-    voiceId: "YxrwjAKoUKULGd0g8K9Y",
-    provider: "11labs",
-    name: "Voix féminine FR uniquement",
+    id: "fr-mono-minimax-journalist",
+    voiceId: "French_Female Journalist",
+    provider: "minimax",
+    model: "speech-02-turbo",
+    name: "French Female Journalist (MiniMax)",
     gender: "female",
     mode: "mono",
     languages: ["fr"],
-    model: "eleven_flash_v2_5",
-    fallback: {
-      provider: "cartesia",
-      voiceId: "",
-      model: "sonic-2",
-    },
+    fallbackPlan: { provider: "cartesia", model: "sonic-2", voiceId: "65b25c5d-ff07-4687-a04c-da2f43ef6fa9" },
+    notes: "Profil FR par défaut (VAPI_PLAYBOOK §2.A) — utilisé par la majorité des assistants receptionist FR.",
   },
   {
-    id: "elevenlabs-male-fr",
+    id: "fr-mono-elevenlabs-female",
+    voiceId: "YxrwjAKoUKULGd0g8K9Y",
+    provider: "11labs",
+    model: "eleven_flash_v2_5",
+    name: "Voix féminine FR (ElevenLabs)",
+    gender: "female",
+    mode: "mono",
+    languages: ["fr"],
+    fallbackPlan: { provider: "cartesia", model: "sonic-2", voiceId: "a249eaff-1e96-4d2c-b23b-12efa4f66f41" },
+    notes: "Pas encore utilisée dans un assistant. En mono-langue FR, l'entrée MiniMax ci-dessus est priorisée (moteur plus léger).",
+  },
+  {
+    id: "fr-mono-elevenlabs-male",
     voiceId: "1EmYoP3UnnnwhlJKovEy",
     provider: "11labs",
-    name: "Voix masculine FR uniquement",
+    model: "eleven_flash_v2_5",
+    name: "Voix masculine FR (ElevenLabs)",
     gender: "male",
     mode: "mono",
     languages: ["fr"],
+    fallbackPlan: { provider: "cartesia", model: "sonic-2", voiceId: "a249eaff-1e96-4d2c-b23b-12efa4f66f41" },
+    notes: "Pas encore utilisée dans un assistant. Pas d'équivalent Cartesia/MiniMax masculin FR identifié pour l'instant.",
+  },
+  {
+    id: "en-es-multilingual-cartesia",
+    voiceId: "57dcab65-68ac-45a6-8480-6c4c52ec1cd1",
+    provider: "cartesia",
+    model: "sonic-multilingual",
+    name: "Cartesia Sonic Multilingual (EN/ES)",
+    mode: "multilingual",
+    languages: ["en", "es"],
+    fallbackPlan: { provider: "cartesia", model: "sonic-2", voiceId: "a249eaff-1e96-4d2c-b23b-12efa4f66f41" },
+    notes: "Profil EN par défaut (VAPI_PLAYBOOK §2.B) — ex. DEV - Receptionist - Altifluence - Cart.",
+  },
+  {
+    id: "en-es-multilingual-elevenlabs",
+    voiceId: "FUfBrNit0NNZAwb58KWH",
+    provider: "11labs",
+    model: "eleven_multilingual_v2",
+    name: "ElevenLabs Multilingual (Altifluence)",
+    mode: "multilingual",
+    languages: ["en", "es"],
+    fallbackPlan: { provider: "11labs", model: "eleven_multilingual_v2", voiceId: "FUfBrNit0NNZAwb58KWH" },
+    notes: "Profil MULTI (VAPI_PLAYBOOK §2.C) — ex. DEV - Receptionist - Altifluence - 11Lab.",
+  },
+  {
+    id: "multi-elevenlabs-female-middle-age",
+    voiceId: "MNKK2Wl2wbbsEPQTHZGt",
+    provider: "11labs",
     model: "eleven_flash_v2_5",
-    fallback: {
-      provider: "cartesia",
-      voiceId: "",
-      model: "sonic-2",
-    },
+    name: "Voix féminine multilingue, âge moyen (ElevenLabs)",
+    gender: "female",
+    ageGroup: "middle-aged",
+    mode: "multilingual",
+    languages: ["en", "fr", "de", "es", "it", "pt", "ru"],
+    fallbackPlan: { provider: "cartesia", model: "sonic-2", voiceId: "65b25c5d-ff07-4687-a04c-da2f43ef6fa9" },
+    notes: "Utilisée par EN - Receptionist/Leads ZeroCall Lovable, Lead Qualifier, Riley.",
+  },
+  {
+    id: "en-mono-elevenlabs-beaute",
+    voiceId: "WQKwBV2Uzw1gSGr69N8I",
+    provider: "11labs",
+    model: "eleven_flash_v2_5",
+    name: "Voix EN (ElevenLabs) — démos Beauté",
+    mode: "mono",
+    languages: ["en"],
+    fallbackPlan: { provider: "cartesia", model: "sonic-2", voiceId: "a249eaff-1e96-4d2c-b23b-12efa4f66f41" },
+    notes: "DEV - Receptionist - Beauté - Nailz / URSS.",
+  },
+  {
+    id: "en-mono-elevenlabs-fallback-leadqualifier",
+    voiceId: "kdmDKE6EkgrWrrykO9Qt",
+    provider: "11labs",
+    model: "eleven_flash_v2_5",
+    name: "Voix EN (ElevenLabs) — fallback Lead Qualifier",
+    mode: "mono",
+    languages: ["en"],
+    notes: "Référencée uniquement comme fallbackPlan de la voix multilingue ci-dessus dans 'Lead Qualifier'.",
   },
 ];
-
-export interface VoiceSelection {
-  entry: VoiceCatalogEntry;
-  provider: VoiceProvider;
-  voiceId: string;
-  model: string;
-}
 
 /**
  * Sélectionne la meilleure voix du catalogue pour les langues demandées.
  *
- * - 1 langue   -> voix mono dans cette langue (fallback Cartesia/MiniMax si
- *   renseigné), sinon voix multilingue couvrant cette langue.
+ * - 1 langue   -> voix mono dans cette langue, Cartesia/MiniMax priorisés sur
+ *   ElevenLabs (moteur plus léger/rapide pour une langue unique).
  * - N langues  -> voix multilingue couvrant toutes les langues demandées
  *   (à défaut, celle qui en couvre le plus).
  */
 export function selectVoice(
   requestedLanguages: string[],
   opts: { gender?: "female" | "male" } = {}
-): VoiceSelection | null {
+): VoiceCatalogEntry | null {
   const langs = [...new Set(requestedLanguages.map((l) => l.toLowerCase()))];
   const candidates = opts.gender
-    ? VOICE_CATALOG.filter((v) => v.gender === opts.gender)
+    ? VOICE_CATALOG.filter((v) => !v.gender || v.gender === opts.gender)
     : VOICE_CATALOG;
 
   if (langs.length === 1) {
     const [lang] = langs;
+    const monoCandidates = candidates.filter((v) => v.mode === "mono" && v.languages.includes(lang));
 
-    const mono = candidates.find(
-      (v) => v.mode === "mono" && v.languages.includes(lang)
-    );
-    if (mono) {
-      if (mono.fallback?.voiceId) {
-        return {
-          entry: mono,
-          provider: mono.fallback.provider,
-          voiceId: mono.fallback.voiceId,
-          model: mono.fallback.model,
-        };
-      }
-      return { entry: mono, provider: mono.provider, voiceId: mono.voiceId, model: mono.model };
-    }
+    const lighter = monoCandidates.find((v) => v.provider !== "11labs");
+    if (lighter) return lighter;
+    if (monoCandidates[0]) return monoCandidates[0];
 
-    const multi = candidates.find(
-      (v) => v.mode === "multilingual" && v.languages.includes(lang)
-    );
-    if (multi) {
-      return { entry: multi, provider: multi.provider, voiceId: multi.voiceId, model: multi.model };
-    }
-
-    return null;
+    return candidates.find((v) => v.mode === "multilingual" && v.languages.includes(lang)) ?? null;
   }
 
   // Plusieurs langues : voix multilingue couvrant tout, sinon le meilleur recouvrement.
-  const fullMatch = candidates.find(
-    (v) => v.mode === "multilingual" && langs.every((l) => v.languages.includes(l))
-  );
-  if (fullMatch) {
-    return { entry: fullMatch, provider: fullMatch.provider, voiceId: fullMatch.voiceId, model: fullMatch.model };
-  }
-
   const multilingualVoices = candidates.filter((v) => v.mode === "multilingual");
+
+  const fullMatch = multilingualVoices.find((v) => langs.every((l) => v.languages.includes(l)));
+  if (fullMatch) return fullMatch;
+
   if (multilingualVoices.length === 0) return null;
 
-  const best = multilingualVoices.reduce((best, v) => {
+  return multilingualVoices.reduce((best, v) => {
     const overlap = v.languages.filter((l) => langs.includes(l)).length;
     const bestOverlap = best.languages.filter((l) => langs.includes(l)).length;
     return overlap > bestOverlap ? v : best;
   });
-
-  return { entry: best, provider: best.provider, voiceId: best.voiceId, model: best.model };
 }
