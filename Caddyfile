@@ -164,7 +164,15 @@ n8n.zerocall.io {
 }
 
 receptionniste.zerocall.io {
-    import base_security
+    # Sécurité de base — inline (pas import base_security) car la Permissions-Policy
+    # doit autoriser microphone=(self) pour la bulle vocale Vapi des pages /demo.
+    header {
+        -Server
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+        Permissions-Policy "camera=(), geolocation=(), payment=(), usb=(), bluetooth=(), microphone=(self)"
+    }
     import csp_receptionniste
     import nextjs_optim
 
@@ -183,7 +191,15 @@ receptionniste.zerocall.io {
 
 # --- PROJET ATELIER VITRINE (webmaster) — même app que receptionniste, :3010 ---
 webmaster.zerocall.io {
-    import base_security
+    # Sécurité de base — inline (pas import base_security) car la Permissions-Policy
+    # doit autoriser microphone=(self) pour la bulle vocale Vapi des pages /demo.
+    header {
+        -Server
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+        Permissions-Policy "camera=(), geolocation=(), payment=(), usb=(), bluetooth=(), microphone=(self)"
+    }
     import csp_receptionniste
     import nextjs_optim
 
