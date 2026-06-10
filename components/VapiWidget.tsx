@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { getVapiMetier, vapiPublicKey } from "@/lib/vapi";
+import { getVapiMetier, vapiPublicKey, vapiWidgetEnabled } from "@/lib/vapi";
 
 /* ════════════════════════════════════════════════════════════════════════════
    Bulle de discussion HYBRIDE Vapi (chat + appel vocal) pour les pages métier.
@@ -67,6 +67,9 @@ function ensureWidgetLoader(): Promise<WidgetLoaderCtor> {
 
 export default function VapiWidget({ slug }: { slug: string }) {
   useEffect(() => {
+    // Piloté par NEXT_PUBLIC_VAPI_WIDGET_ENABLED (false par défaut) : tant que le
+    // drapeau n'est pas explicitement activé, la bulle ne se monte pas du tout.
+    if (!vapiWidgetEnabled()) return;
     const cfg = getVapiMetier(slug);
     if (!cfg || !cfg.assistantId) return;
 
