@@ -9,6 +9,15 @@
 
 export type VapiTheme = "light" | "dark";
 
+export type VapiAvatar = {
+  /** Identifiant court (utile si un métier propose plusieurs avatars). */
+  id: string;
+  /** Chemin de l'image (dans /public), idéalement un portrait carré/3:4. */
+  src: string;
+  /** Texte alternatif. */
+  alt: string;
+};
+
 export type VapiMetier = {
   /** ID de l'assistant inbound Vapi dédié au métier. */
   assistantId: string;
@@ -21,6 +30,12 @@ export type VapiMetier = {
   theme: VapiTheme;
   /** Titre affiché en haut de la fenêtre de chat. */
   label: string;
+  /**
+   * Avatar(s) affiché(s) au-dessus de la bulle Vapi pour incarner l'assistant.
+   * Le premier élément est l'avatar actif. Le tableau permet à un client de
+   * proposer plusieurs avatars (ex: équipe, choix client) sans changer le type.
+   */
+  avatars?: VapiAvatar[];
 };
 
 const PUBLIC_KEY =
@@ -40,6 +55,9 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#18130e",
     theme: "dark",
     label: "Maison Brutus",
+    avatars: [
+      { id: "barbier", src: "/characters/barbershop-portrait.webp", alt: "Barbier de Maison Brutus" },
+    ],
   },
   onglerie: {
     assistantId:
@@ -49,6 +67,9 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#ffffff",
     theme: "light",
     label: "L'Atelier Rosé",
+    avatars: [
+      { id: "prothesiste", src: "/characters/onglerie-portrait.webp", alt: "Prothésiste ongulaire de L'Atelier Rosé" },
+    ],
   },
   traiteur: {
     assistantId:
@@ -58,6 +79,9 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#ffffff",
     theme: "light",
     label: "Maison Ferrand",
+    avatars: [
+      { id: "traiteur", src: "/characters/traiteur-portrait.webp", alt: "Traiteur de Maison Ferrand" },
+    ],
   },
   restaurant: {
     assistantId:
@@ -67,6 +91,9 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#141d16",
     theme: "dark",
     label: "Le Comptoir 12",
+    avatars: [
+      { id: "cheffe", src: "/characters/restaurant-portrait.webp", alt: "Cheffe du Comptoir 12" },
+    ],
   },
   plombier: {
     assistantId:
@@ -76,9 +103,17 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#ffffff",
     theme: "light",
     label: "Plomberie Mercier",
+    avatars: [
+      { id: "plombier", src: "/characters/plombier-portrait.webp", alt: "Plombier de Plomberie Mercier" },
+    ],
   },
 };
 
 export function getVapiMetier(slug: string): VapiMetier | null {
   return CONFIG[slug] ?? null;
+}
+
+/** Avatar actif pour un métier (premier élément de `avatars`), ou null si non défini. */
+export function getVapiAvatar(slug: string): VapiAvatar | null {
+  return CONFIG[slug]?.avatars?.[0] ?? null;
 }

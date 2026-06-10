@@ -1,6 +1,7 @@
 "use client";
+import Image from "next/image";
 import { useEffect } from "react";
-import { getVapiMetier, vapiPublicKey } from "@/lib/vapi";
+import { getVapiAvatar, getVapiMetier, vapiPublicKey } from "@/lib/vapi";
 
 /* ════════════════════════════════════════════════════════════════════════════
    Bulle de discussion HYBRIDE Vapi (chat + appel vocal) pour les pages métier.
@@ -110,5 +111,36 @@ export default function VapiWidget({ slug }: { slug: string }) {
     };
   }, [slug]);
 
-  return null;
+  // Avatar "présentateur" superposé à la bulle : incarne l'assistant vocal
+  // (genre assorti à la voix Vapi configurée pour ce métier, cf. lib/vapi.ts).
+  // z-index volontairement < 9999 (vapi-widget-wrapper) : quand la fenêtre de
+  // chat/appel s'ouvre, son panneau opaque recouvre naturellement l'avatar.
+  const avatar = getVapiAvatar(slug);
+  if (!avatar) return null;
+
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: "fixed",
+        right: "1.5rem",
+        bottom: "calc(1.5rem + 4rem + 0.75rem)",
+        width: "3.5rem",
+        height: "3.5rem",
+        borderRadius: "9999px",
+        overflow: "hidden",
+        boxShadow: "0 8px 24px rgba(0, 0, 0, 0.25)",
+        zIndex: 9998,
+        pointerEvents: "none",
+      }}
+    >
+      <Image
+        src={avatar.src}
+        alt={avatar.alt}
+        fill
+        sizes="56px"
+        style={{ objectFit: "cover", objectPosition: "50% 15%" }}
+      />
+    </div>
+  );
 }
