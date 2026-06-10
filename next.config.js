@@ -4,6 +4,7 @@ const path = require("path");
 const nextConfig = {
   output: "standalone",
   outputFileTracingRoot: path.join(__dirname),
+  devIndicators: false,
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 31536000,
