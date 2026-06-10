@@ -314,6 +314,43 @@ un rendu propre multi-format :
   l'instance (`instance.destroy()` + `container.remove()`) au changement de route
   pour éviter les bulles fantômes (déjà géré par le `useEffect` cleanup du §3).
 
+### ⚠️ Panneau trop grand sur mobile (largeurs/hauteurs FIXES)
+
+Le bundle v0.1.1 rend le panneau ouvert avec des **dimensions fixes** en `rem`
+(largeur `w-96`=24rem ou `w-[28rem]`=28rem ; hauteur `h-[24rem]`…`h-[44rem]`).
+Sur un mobile (~360–390px) ça **déborde** l'écran. Le widget rend dans le DOM
+normal sous `.vapi-widget-wrapper` (PAS en shadow DOM ici) → on peut le **borner
+en CSS**. Override responsive à coller dans le CSS global du projet :
+
+```css
+@media (max-width: 640px) {
+  /* Largeur : gouttière de 1rem de chaque côté, jamais collé aux bords */
+  .vapi-widget-wrapper .w-96,
+  .vapi-widget-wrapper .w-\[28rem\] {
+    width: calc(100vw - 2rem) !important;
+    max-width: calc(100vw - 2rem) !important;
+  }
+  /* Hauteur : bornée au viewport (place pour la bulle + barres système) */
+  .vapi-widget-wrapper .h-\[24rem\],
+  .vapi-widget-wrapper .h-\[32rem\],
+  .vapi-widget-wrapper .h-\[36rem\],
+  .vapi-widget-wrapper .h-\[40rem\],
+  .vapi-widget-wrapper .h-\[44rem\] {
+    height: min(32rem, calc(100dvh - 6.5rem)) !important;
+    max-height: calc(100dvh - 6.5rem) !important;
+  }
+  /* Padding de sécurité : décolle panneau + bulle des bords */
+  .vapi-widget-wrapper .right-6 { right: 1rem !important; }
+  .vapi-widget-wrapper .left-6  { left: 1rem !important; }
+  .vapi-widget-wrapper .bottom-6 { bottom: 1rem !important; }
+}
+```
+
+> `!important` est nécessaire : le widget **injecte sa feuille de style au
+> runtime** (après le CSS de l'app), donc à spécificité égale il gagnerait sinon.
+> Adapter la liste des classes `h-[…]` si une future version du bundle change ses
+> paliers (vérifier dans le CSS injecté : `grep 'h-\[' widget.umd.js`).
+
 ---
 
 ## 6. Vérification (prod)
