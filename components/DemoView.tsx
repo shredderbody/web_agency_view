@@ -6,6 +6,7 @@ import { ArrowLeft, ChevronDown, Clock, MapPin, Phone, Star } from "lucide-react
 import Reveal from "@/components/Reveal";
 import LangSelector from "@/components/LangSelector";
 import DemoTestimonials from "@/components/DemoTestimonials";
+import DemoFooter from "@/components/DemoFooter";
 import OrderModal from "@/components/OrderModal";
 import BusinessSearch from "@/components/BusinessSearch";
 import VapiWidget from "@/components/VapiWidget";
@@ -340,6 +341,8 @@ export default function DemoView({ slug }: { slug: string }) {
           </Reveal>
         </div>
       </section>
+
+      <DemoFooter v={v} isBarber={isBarber} ls={ls} />
 
       {/* Scroll hint — mobile only, disparaît après 80px */}
       {showScrollHint && (
