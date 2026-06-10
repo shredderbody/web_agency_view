@@ -9,6 +9,10 @@ bascule automatique en anglais), prennent des **rendez-vous de démonstration**
 > Tout est autoportant dans ce dépôt : aucun besoin du projet `receptionist`.
 > Pour (re)provisionner les assistants : `node scripts/vapi-setup-assistants.mjs`.
 
+> 🔌 **Intégration front-end du widget** (montage, CSP, autorisation micro,
+> responsive mobile/tablette/desktop, dépannage « la bulle ne s'affiche pas ») →
+> playbook réutilisable **[`VAPI_FRONTEND_WIDGET.md`](./VAPI_FRONTEND_WIDGET.md)**.
+
 ---
 
 ## 1. Vue d'ensemble

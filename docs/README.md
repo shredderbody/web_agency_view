@@ -37,6 +37,7 @@ Quatre fonctions « backend » sont branchées :
 | [DEPLOY.md](./DEPLOY.md) | Déploiement Docker, Caddy / Cloudflare, scripts, variables d'env |
 | [STRIPE.md](./STRIPE.md) | Intégration Stripe : flux de paiement, webhook, prix, env vars |
 | [VAPI_ASSISTANTS.md](./VAPI_ASSISTANTS.md) | Bulle Vapi hybride par métier, assistants inbound bilingues, function tools, CSP |
+| [VAPI_FRONTEND_WIDGET.md](./VAPI_FRONTEND_WIDGET.md) | **Playbook réutilisable** : intégrer le widget Vapi en front-end (CSP, micro, montage, responsive mobile/tablette/desktop) — valable pour tout projet client |
 
 ## Conventions
 
