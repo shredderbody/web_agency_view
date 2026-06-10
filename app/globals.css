@@ -374,31 +374,32 @@ button { font-family: inherit; }
 }
 
 /* ── Bulle Vapi hybride (chat + appel) ────────────────────────────────────────
-   Le widget est monté via window.WidgetLoader (cf. components/VapiWidget.tsx) :
-   il rend dans le DOM normal sous `.vapi-widget-wrapper` avec des classes
-   utilitaires (largeurs/hauteurs FIXES : w-96=24rem, w-[28rem]=28rem,
-   h-[24rem]…h-[44rem]). Sur mobile ces dimensions fixes débordent l'écran.
-   On borne donc le panneau au viewport avec un padding de sécurité, sans
-   toucher le bouton-bulle. `!important` car le widget injecte sa feuille de
-   style au runtime (après le CSS de l'app). */
+   Le widget (window.WidgetLoader, cf. components/VapiWidget.tsx) rend cette
+   structure — vérifiée dans le bundle widget.umd.js :
+
+     .vapi-widget-wrapper
+       └─ div  (position:fixed; right/bottom:1.5rem)        ← ancre fixe
+            └─ div  (style INLINE "width:24rem; height:32rem")  ← panneau ouvert
+               OU
+            └─ div  (pastille compacte)                          ← bulle fermée
+
+   PIÈGE : la largeur/hauteur du panneau sont posées en style INLINE, PAS via
+   des classes utilitaires (w-96, w-[28rem]… n'apparaissent jamais dans le rendu).
+   Cibler ces classes était donc du code mort : le panneau de 24rem (384px)
+   débordait l'écran à gauche sur mobile → scroll horizontal → décalage latéral
+   au clic. On borne donc l'enfant direct de l'ancre fixe (panneau OU bulle) au
+   viewport. `max-*` uniquement : la pastille compacte (petite) n'est pas
+   étirée, seul le panneau (trop large) est ramené dans l'écran. `!important`
+   car le widget injecte ses styles inline au runtime. */
 @media (max-width: 640px) {
-  /* Largeur : ne jamais coller les bords — gouttière de 1rem de chaque côté */
-  .vapi-widget-wrapper .w-96,
-  .vapi-widget-wrapper .w-\[28rem\] {
-    width: calc(100vw - 2rem) !important;
-    max-width: calc(100vw - 2rem) !important;
+  /* Padding de sécurité sur l'ancre fixe (inline right/bottom:1.5rem) */
+  .vapi-widget-wrapper > div {
+    right: 1rem !important;
+    bottom: 1rem !important;
   }
-  /* Hauteur : bornée au viewport (laisse la place au bouton + barres système) */
-  .vapi-widget-wrapper .h-\[24rem\],
-  .vapi-widget-wrapper .h-\[32rem\],
-  .vapi-widget-wrapper .h-\[36rem\],
-  .vapi-widget-wrapper .h-\[40rem\],
-  .vapi-widget-wrapper .h-\[44rem\] {
-    height: min(32rem, calc(100dvh - 6.5rem)) !important;
+  /* Panneau OU bulle : borné au viewport, gouttière de 1rem de chaque côté */
+  .vapi-widget-wrapper > div > div {
+    max-width: calc(100vw - 2rem) !important;
     max-height: calc(100dvh - 6.5rem) !important;
   }
-  /* Padding de sécurité : décolle le panneau ET la bulle des bords de l'écran */
-  .vapi-widget-wrapper .right-6 { right: 1rem !important; }
-  .vapi-widget-wrapper .left-6 { left: 1rem !important; }
-  .vapi-widget-wrapper .bottom-6 { bottom: 1rem !important; }
 }
