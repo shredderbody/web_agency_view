@@ -70,9 +70,27 @@ function voice(voiceId) {
     },
   };
 }
+// Voix MiniMax FR (speech-02-turbo) — profil FR par défaut du catalogue
+// (cf. lib/voiceCatalog.ts → "fr-mono-minimax-journalist", VAPI_PLAYBOOK §2.A).
+// Moteur plus léger/rapide en mono-langue FR, fallback Cartesia sonic-2.
+function minimaxFr() {
+  return {
+    provider: "minimax",
+    voiceId: "French_Female Journalist",
+    model: "speech-02-turbo",
+    inputMinCharacters: 3,
+    fallbackPlan: {
+      voices: [
+        { provider: "cartesia", voiceId: "65b25c5d-ff07-4687-a04c-da2f43ef6fa9", model: "sonic-2" },
+      ],
+    },
+  };
+}
+
 const VOICE = {
   male: voice("pNInz6obpgDQGcFmaJgB"), // Adam
   female: voice("XrExE9yKIg1WjnnlVkGX"), // Matilda
+  frMinimax: minimaxFr(), // French_Female Journalist (MiniMax) — profil FR par défaut
 };
 
 // Transcriber multilingue FR + EN (même modèle que la démo Altifluence).
@@ -188,7 +206,7 @@ const METIERS = [
     tradeEn: "restaurant / bistro",
     city: "Paris 11e",
     phone: "01 43 00 00 12",
-    voice: VOICE.female,
+    voice: VOICE.frMinimax,
     hoursFr: "du mardi au samedi, le midi de 12h00 à 14h30 et le soir de 19h00 à 23h00 (fermé dimanche et lundi)",
     hoursEn: "Tuesday to Saturday, lunch 12:00–2:30pm and dinner 7:00–11:00pm (closed Sunday and Monday)",
     servicesFr: "Entrées de saison, Plats du jour, Menu déjeuner (23 €), Desserts maison, accord mets & vins",

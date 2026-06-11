@@ -11,6 +11,7 @@ PRODUCT.md
 log_tmp
 test-results
 scripts/shoot.mjs
+demo_thai_viens_express
 *.local
 Dockerfile
 .dockerignore

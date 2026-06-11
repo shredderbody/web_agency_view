@@ -42,6 +42,24 @@ export default function DemoIndex() {
           </div>
         </Reveal>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 288px), 1fr))", gap: "1.5rem" }}>
+          <Reveal>
+            <Link href="/demo/thai-viens-express" className="card card-hover" style={{ display: "block", overflow: "hidden", height: "100%", outline: "2px solid var(--vermilion)", outlineOffset: "-2px" }}>
+              <div style={{ position: "relative", aspectRatio: "16 / 9" }}>
+                <Image src="/clients/thai-viens-express/photo_00.webp" alt={lang === "en" ? "Thaï Vien Express, Thai restaurant in Courbevoie" : "Thaï Vien Express, restaurant thaïlandais à Courbevoie"} fill sizes="(max-width: 700px) 100vw, 400px" style={{ objectFit: "cover", objectPosition: "center" }} />
+                <span className="chip" style={{ position: "absolute", top: "0.9rem", left: "0.9rem", background: "var(--vermilion)", color: "#fff" }}>{lang === "en" ? "Real client" : "Client réel"}</span>
+              </div>
+              <div style={{ padding: "1.3rem 1.5rem 1.5rem" }}>
+                <h2 className="d-md" style={{ margin: "0 0 0.15rem" }}>Thaï Vien Express</h2>
+                <p style={{ color: "var(--ink-muted)", margin: "0 0 0.9rem", fontWeight: 500 }}>Courbevoie · 4,7 ★ · 424 {lang === "en" ? "reviews" : "avis"}</p>
+                <p style={{ color: "var(--ink-dim)", margin: "0 0 1.2rem" }}>
+                  {lang === "en"
+                    ? "Authentic Thai cooking. Menu, dishes, atmosphere and real Google reviews in one immersive page."
+                    : "Cuisine thaïlandaise authentique. Carte, plats, ambiance et vrais avis Google réunis dans une page immersive."}
+                </p>
+                <span className="link-arrow">{t.demoIndex.visit} <ArrowUpRight size={18} /></span>
+              </div>
+            </Link>
+          </Reveal>
           {demos.map((d, i) => (
             <Reveal key={d.slug} delay={(i % 2) * 80}>
               <Link href={`/demo/${d.slug}`} className="card card-hover" style={{ display: "block", overflow: "hidden", height: "100%" }}>

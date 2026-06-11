@@ -21,7 +21,7 @@ const ML = {
     done_title: "C'est noté !",
     titles:  { barber: "Prendre rendez-vous", onglerie: "Réserver un soin", traiteur: "Commander", resto: "Réserver une table", plombier: "Demander un devis" },
     steps:   { barber: ["Prestation","Créneau","Coordonnées"], onglerie: ["Soin","Créneau","Coordonnées"], traiteur: ["Commande","Retrait","Coordonnées"], resto: ["Date & service","Couverts","Coordonnées"], plombier: ["Votre besoin","Disponibilités","Coordonnées"] },
-    success: { barber: "Votre demande est enregistrée. Maison Brutus vous confirme votre rendez-vous par SMS.", onglerie: "Réservation prise en compte. L'Atelier Rosé vous confirme par SMS.", traiteur: "Commande enregistrée ! Maison Ferrand vous contacte pour confirmer le retrait.", resto: "Table réservée ! Le Comptoir 12 vous confirme par SMS sous peu.", plombier: "Demande reçue ! Julien Mercier vous rappelle sous 24 h avec un devis détaillé." },
+    success: { barber: "Votre demande est enregistrée. Maison Brutus vous confirme votre rendez-vous par SMS.", onglerie: "Réservation prise en compte. L'Atelier Rosé vous confirme par SMS.", traiteur: "Commande enregistrée ! Maison Ferrand vous contacte pour confirmer le retrait.", resto: "Table réservée ! {business} vous confirme par SMS sous peu.", plombier: "Demande reçue ! Julien Mercier vous rappelle sous 24 h avec un devis détaillé." },
     DAYS:   ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"],
     MONTHS: ["jan","fév","mar","avr","mai","juin","juil","août","sep","oct","nov","déc"],
     service_q: "Quelle prestation souhaitez-vous ?",
@@ -57,7 +57,7 @@ const ML = {
     done_title: "All set!",
     titles:  { barber: "Book an appointment", onglerie: "Book a treatment", traiteur: "Place an order", resto: "Book a table", plombier: "Request a quote" },
     steps:   { barber: ["Service","Slot","Details"], onglerie: ["Treatment","Slot","Details"], traiteur: ["Order","Collection","Details"], resto: ["Date & time","Guests","Details"], plombier: ["Your need","Availability","Details"] },
-    success: { barber: "Request received! Maison Brutus will confirm your appointment by SMS.", onglerie: "Booking received! L'Atelier Rosé will confirm by SMS.", traiteur: "Order placed! Maison Ferrand will contact you to confirm collection.", resto: "Table reserved! Le Comptoir 12 will confirm by SMS.", plombier: "Request received! Julien Mercier will call back within 24 h with a detailed quote." },
+    success: { barber: "Request received! Maison Brutus will confirm your appointment by SMS.", onglerie: "Booking received! L'Atelier Rosé will confirm by SMS.", traiteur: "Order placed! Maison Ferrand will contact you to confirm collection.", resto: "Table reserved! {business} will confirm by SMS.", plombier: "Request received! Julien Mercier will call back within 24 h with a detailed quote." },
     DAYS:   ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
     MONTHS: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
     service_q: "Which service would you like?",
@@ -415,7 +415,7 @@ export default function OrderModal({ vit, services, business, onClose }: {
   const ok = canAdvance(vit, step, fd);
   const stepsLabels: string[] = (l.steps as any)[vit];
   const title: string = (l.titles as any)[vit];
-  const successMsg: string = (l.success as any)[vit];
+  const successMsg: string = ((l.success as any)[vit] as string).replace("{business}", business);
   const isLast = step === TOTAL_STEPS - 1;
 
   return (

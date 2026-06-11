@@ -187,6 +187,30 @@ export default function Home() {
               </div>
             </Reveal>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 288px), 1fr))", gap: "clamp(1.1rem, 2.5vw, 1.8rem)" }}>
+              <Reveal>
+                <Link href="/demo/thai-viens-express" className="card card-hover" style={{ display: "flex", flexDirection: "column", overflow: "hidden", height: "100%", outline: "2px solid var(--vermilion)", outlineOffset: "-2px" }}>
+                  <div style={{ position: "relative", aspectRatio: "16 / 9" }}>
+                    <Image src="/clients/thai-viens-express/photo_00.webp" alt={lang === "en" ? "Thaï Vien Express, Thai restaurant in Courbevoie" : "Thaï Vien Express, restaurant thaïlandais à Courbevoie"} fill sizes="(max-width: 700px) 100vw, 380px" style={{ objectFit: "cover", objectPosition: "center" }} />
+                    <span className="chip" style={{ position: "absolute", top: "0.85rem", left: "0.85rem", display: "inline-flex", alignItems: "center", gap: "0.4rem", background: "var(--vermilion)", color: "#fff" }}>
+                      <Star size={13} strokeWidth={0} fill="currentColor" /> {lang === "en" ? "Real client" : "Client réel"}
+                    </span>
+                  </div>
+                  <div style={{ padding: "1.4rem 1.5rem 1.6rem", display: "flex", flexDirection: "column", flex: 1 }}>
+                    <h3 className="d-lg" style={{ margin: "0 0 0.35rem" }}>Thaï Vien Express</h3>
+                    <p style={{ color: "var(--ink-dim)", margin: "0 0 1.3rem", flex: 1 }}>
+                      {lang === "en"
+                        ? "An immersive site built from the restaurant's real Google data: menu, dishes, reviews and photos."
+                        : "Un site immersif bâti sur les vraies données Google du restaurant : carte, plats, avis et photos."}
+                    </p>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.8rem", flexWrap: "wrap", borderTop: "1px solid var(--border)", paddingTop: "1.05rem" }}>
+                      <span style={{ fontSize: "0.82rem", color: "var(--ink-muted)", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+                        <Star size={13} fill="var(--clay)" stroke="none" /> 4,7 · 424 {lang === "en" ? "reviews" : "avis"} · Courbevoie
+                      </span>
+                      <span className="link-arrow" style={{ fontSize: "0.95rem" }}>{t.metiers.seePage} <ArrowUpRight size={17} /></span>
+                    </div>
+                  </div>
+                </Link>
+              </Reveal>
               {demos.map((d, i) => (
                 <Reveal key={d.slug} delay={(i % 2) * 80}>
                   <Link href={`/demo/${d.slug}`} className="card card-hover" style={{ display: "flex", flexDirection: "column", overflow: "hidden", height: "100%" }}>
