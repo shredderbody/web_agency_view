@@ -224,30 +224,79 @@ for (const s of ["#dishes","#carte","#ambiance","#avis","#infos"]) {
 }
 ```
 
-## 12) Déployer
+## 12) Déployer (procédure complète)
 
-`update.sh` fait `git pull origin main` → **committez et poussez d'abord** :
+`update.sh` fait `git pull origin main` → **committez et poussez TOUT d'abord**,
+sinon le build repart sur l'ancien code.
 
 ```bash
+# 1) Tout committer + pousser
 git add -A
 git commit -m "feat(demo): <client> — démo client réel immersive"
 git push origin main
-
-# puis, sur l'hôte :
-docker stop atelier-vitrine && docker rm atelier-vitrine   # optionnel : update.sh recrée de toute façon
-bash update.sh            # pull + build + swap conteneur + health-check :3010 (mode caddy)
 ```
 
-`update.sh` : build une nouvelle image, garde une `:rollback`, recrée **uniquement**
-le conteneur `web`, recharge Caddy (domaine `receptionniste.zerocall.io`), et
-rollback automatiquement si le health-check échoue. Cf. [[docker-cloudflare-deploy]]
-et [[caddy-receptionniste-block]].
+Puis, sur l'hôte, **redéploiement propre** (stop + suppression image → rebuild
+100 % from scratch, garantit qu'aucune couche cachée ne traîne) :
+
+```bash
+# 2) Arrêter et supprimer le conteneur
+docker stop atelier-vitrine && docker rm atelier-vitrine
+
+# 3) Supprimer l'image (force un rebuild complet)
+docker rmi atelier-vitrine:latest
+
+# 4) Lancer le déploiement
+bash update.sh            # pull + build + swap conteneur + reload Caddy + health-check :3010
+```
+
+⚠️ **Effet de la suppression d'image** : `update.sh` sauve un tag `:rollback`
+à partir de l'image existante *avant* de builder — si vous l'avez supprimée, il
+n'y a **pas de rollback** possible pour ce déploiement (warning « No :rollback
+image available »). C'est le compromis du rebuild propre ; le health-check (60 s)
+protège quand même contre une image cassée. Pour garder le filet de sécurité,
+sautez l'étape 3 (`update.sh` recrée le conteneur de toute façon).
+
+`update.sh` (mode caddy par défaut) : build l'image, recrée **uniquement** le
+conteneur `web`, recharge le Caddy de l'hôte (domaine `receptionniste.zerocall.io`),
+et rollback auto si le health-check échoue. Cf. [[docker-cloudflare-deploy]] et
+[[caddy-receptionniste-block]].
 
 Vérif finale :
 ```bash
-curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3010/demo/<slug>
-curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3010/clients/<slug>/photo_00.webp
+curl -s -o /dev/null -w "local  %{http_code}\n" http://localhost:3010/demo/<slug>
+curl -s -o /dev/null -w "webp   %{http_code}\n" http://localhost:3010/clients/<slug>/photo_00.webp
+curl -s -o /dev/null -w "public %{http_code}\n" https://receptionniste.zerocall.io/demo/<slug>
 ```
+
+---
+
+## Pièges & correctifs UX (rencontrés en prod)
+
+Ces correctifs sont **génériques** (valables pour toute démo) — pensez-y dès le départ.
+
+### a) La bulle Vapi recouvre le bouton d'action d'une modale (mobile)
+La bulle Vapi est `position: fixed` en bas à droite ; une modale en bottom-sheet
+(`OrderModal`) y place son bouton « Continuer / Envoyer » → chevauchement.
+**Fix universel** (déjà en place) : `OrderModal` ajoute la classe `om-open` sur
+`<body>` à l'ouverture, et `globals.css` masque la bulle le temps de l'interaction :
+```css
+body.om-open [data-vapi-metier],
+body.om-open .vapi-widget-wrapper { display: none !important; }
+```
+(Le conteneur est créé par `VapiWidget.tsx` avec l'attribut `[data-vapi-metier]`.)
+
+### b) La carte Google Maps `output=embed` n'affiche rien (écran blanc)
+L'URL `https://www.google.com/maps?q=...&output=embed` est souvent **bloquée**
+(framing refusé / clé Maps Embed requise). **Fix** : carte **OpenStreetMap** sans
+clé, framable, avec les `lat`/`lon` réels (présents dans `place_details.json` →
+`location.latitude/longitude`, à mettre dans `FACTS`), enveloppée dans un lien vers
+les directions Google :
+```tsx
+<iframe src={`https://www.openstreetmap.org/export/embed.html?bbox=${lon-0.006}%2C${lat-0.0032}%2C${lon+0.006}%2C${lat+0.0032}&layer=mapnik&marker=${lat}%2C${lon}`} />
+// mapsUri = https://www.google.com/maps/dir/?api=1&destination=<lat>,<lon>&destination_place_id=<placeId>
+```
+Superposez une épingle `<MapPin>` dorée (le marqueur OSM natif est peu visible).
 
 ---
 
