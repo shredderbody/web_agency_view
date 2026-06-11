@@ -391,6 +391,15 @@ button { font-family: inherit; }
    viewport. `max-*` uniquement : la pastille compacte (petite) n'est pas
    étirée, seul le panneau (trop large) est ramené dans l'écran. `!important`
    car le widget injecte ses styles inline au runtime. */
+/* Modale ouverte (OrderModal ajoute .om-open sur <body>) : la bulle Vapi fixe
+   recouvrirait le bouton d'action de la modale sur mobile → on la masque le temps
+   de l'interaction. Le conteneur est créé par components/VapiWidget.tsx avec
+   l'attribut [data-vapi-metier]. */
+body.om-open [data-vapi-metier],
+body.om-open .vapi-widget-wrapper {
+  display: none !important;
+}
+
 @media (max-width: 640px) {
   /* Padding de sécurité sur l'ancre fixe (inline right/bottom:1.5rem) */
   .vapi-widget-wrapper > div {

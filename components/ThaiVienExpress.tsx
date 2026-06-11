@@ -412,15 +412,25 @@ export default function ThaiVienExpress() {
               </div>
             </Reveal>
             <Reveal delay={120}>
-              <div style={{ position: "relative", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)", minHeight: "20rem", height: "100%" }}>
+              <a
+                href={FACTS.mapsUri} target="_blank" rel="noopener noreferrer"
+                aria-label={c.mapsCta}
+                style={{ position: "relative", display: "block", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)", minHeight: "20rem", height: "100%" }}
+              >
                 <iframe
-                  title="Google Maps — Thaï Vien Express"
-                  src="https://www.google.com/maps?q=17+rue+de+l%27Abreuvoir,+92400+Courbevoie&output=embed"
-                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0, filter: "grayscale(0.2) contrast(1.05)" }}
+                  title="Carte — Thaï Vien Express"
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${FACTS.lon - 0.006}%2C${FACTS.lat - 0.0032}%2C${FACTS.lon + 0.006}%2C${FACTS.lat + 0.0032}&layer=mapnik&marker=${FACTS.lat}%2C${FACTS.lon}`}
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0, pointerEvents: "none" }}
                   loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
                 />
-              </div>
+                {/* Épingle dorée par-dessus le marqueur OSM, plus lisible */}
+                <span aria-hidden style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -100%)", color: "var(--accent)", filter: "drop-shadow(0 2px 4px oklch(0 0 0 / 0.5))" }}>
+                  <MapPin size={34} fill="currentColor" stroke="var(--bg)" strokeWidth={1.5} />
+                </span>
+                <span style={{ position: "absolute", left: "0.9rem", bottom: "0.9rem", display: "inline-flex", alignItems: "center", gap: "0.45rem", background: "color-mix(in oklch, var(--bg) 86%, transparent)", color: "var(--fg)", border: "1px solid var(--line)", borderRadius: "0.6rem", padding: "0.5rem 0.8rem", fontSize: "0.84rem", fontWeight: 600, backdropFilter: "blur(6px)" }}>
+                  <MapPin size={14} style={{ color: "var(--accent)" }} /> {c.mapsCta}
+                </span>
+              </a>
             </Reveal>
           </div>
         </div>

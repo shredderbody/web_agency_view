@@ -30,7 +30,9 @@ export const FACTS = {
   rating: "4,7",
   ratingEn: "4.7",
   reviewCount: 424,
-  mapsUri: "https://maps.google.com/?cid=11987913981564961675",
+  lat: 48.8918163,
+  lon: 2.253947,
+  mapsUri: "https://www.google.com/maps/dir/?api=1&destination=48.8918163,2.253947&destination_place_id=ChIJX93BDLdl5kcRi4GQqMHtXaY",
   placeId: "ChIJX93BDLdl5kcRi4GQqMHtXaY",
   hours: {
     fr: [

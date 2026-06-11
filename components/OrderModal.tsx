@@ -407,9 +407,17 @@ export default function OrderModal({ vit, services, business, onClose }: {
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // Masque la bulle Vapi tant que la modale est ouverte : sur mobile, la bulle
+    // fixe en bas à droite recouvre le bouton d'action de la modale (cf. CSS
+    // `body.om-open [data-vapi-metier]` dans globals.css).
+    document.body.classList.add("om-open");
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", onKey);
-    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
+    return () => {
+      document.body.style.overflow = prev;
+      document.body.classList.remove("om-open");
+      window.removeEventListener("keydown", onKey);
+    };
   }, [onClose]);
 
   const ok = canAdvance(vit, step, fd);
