@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { getDemos } from "@/lib/demos";
 import { useLang } from "@/lib/lang-context";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 export default function SiteFooter() {
   const { lang, t } = useLang();
@@ -43,7 +44,7 @@ export default function SiteFooter() {
               <li><a href="/#methode" className="foot-link">{t.footer.method}</a></li>
               <li><a href="/#tarifs" className="foot-link">{t.footer.pricing}</a></li>
               <li><a href="/#faq" className="foot-link">{t.footer.faq}</a></li>
-              <li><a href="mailto:bonjour@atelier-vitrine.fr" className="foot-link">bonjour@atelier-vitrine.fr</a></li>
+              <li><a href={`mailto:${CONTACT_EMAIL}`} className="foot-link">{CONTACT_EMAIL}</a></li>
             </ul>
           </div>
         </div>

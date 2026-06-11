@@ -17,6 +17,12 @@ RUN npm ci
 # ── Build ────────────────────────────────────────────────────────────────────
 FROM base AS builder
 ENV NEXT_TELEMETRY_DISABLED=1
+# NEXT_PUBLIC_* lues par les composants client sont inlinées AU BUILD.
+# Domaine public/SEO (cf. lib/site.ts) — overridable pour migrer de domaine.
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_SITE_EMAIL_DOMAIN
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_SITE_EMAIL_DOMAIN=$NEXT_PUBLIC_SITE_EMAIL_DOMAIN
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build

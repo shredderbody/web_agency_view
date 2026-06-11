@@ -15,6 +15,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        # NEXT_PUBLIC_* inlinées au build pour les composants client (cf. lib/site.ts)
+        NEXT_PUBLIC_SITE_URL:          ${NEXT_PUBLIC_SITE_URL:-https://atelier-vitrine.fr}
+        NEXT_PUBLIC_SITE_EMAIL_DOMAIN: ${NEXT_PUBLIC_SITE_EMAIL_DOMAIN:-}
     image: atelier-vitrine:latest
     container_name: atelier-vitrine
     restart: unless-stopped

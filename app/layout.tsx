@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Hanken_Grotesk, Anton, Marcellus } from "next/font
 import "./globals.css";
 import "flag-icons/css/flag-icons.min.css";
 import { LangProvider } from "@/lib/lang-context";
+import { SITE_URL } from "@/lib/site";
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -28,7 +29,7 @@ const marcellus = Marcellus({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://atelier-vitrine.fr"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Atelier Vitrine · Des sites web qui donnent envie de pousser la porte",
     template: "%s · Atelier Vitrine",
