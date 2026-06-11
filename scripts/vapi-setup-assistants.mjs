@@ -276,7 +276,9 @@ Ne réponds qu'aux sujets liés à ${m.business}. Reste bref.`;
 }
 
 function firstMessage(m) {
-  return `${m.greetFr} — Or would you prefer to continue in English?`;
+  // Accueil 100 % FRANÇAIS : l'anglais ne s'active que si le client parle
+  // anglais (bascule gérée par le prompt système, section « LANGUE — BILINGUE »).
+  return m.greetFr;
 }
 
 function buildTool(m) {
