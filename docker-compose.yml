@@ -35,6 +35,11 @@ services:
       - NODE_ENV=production
       - PORT=3010
       - HOSTNAME=0.0.0.0
+    # Flags lus au RUNTIME par l'app (cf. lib/runtime-config.ts). Monté en
+    # lecture seule par-dessus le /config.json baké dans l'image : éditer le
+    # fichier hôte + rafraîchir le navigateur suffit (ni rebuild ni restart).
+    volumes:
+      - ./config.json:/app/public/config.json:ro
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:3010/"]
       interval: 30s

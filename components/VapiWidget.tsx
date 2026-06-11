@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
-import { getVapiMetier, vapiPublicKey, vapiWidgetEnabled } from "@/lib/vapi";
+import { getVapiMetier, vapiPublicKey } from "@/lib/vapi";
+import { loadRuntimeConfig } from "@/lib/runtime-config";
 
 /* ════════════════════════════════════════════════════════════════════════════
    Bulle de discussion HYBRIDE Vapi (chat + appel vocal) pour les pages métier.
@@ -67,49 +68,55 @@ function ensureWidgetLoader(): Promise<WidgetLoaderCtor> {
 
 export default function VapiWidget({ slug }: { slug: string }) {
   useEffect(() => {
-    // Piloté par NEXT_PUBLIC_VAPI_WIDGET_ENABLED (false par défaut) : tant que le
-    // drapeau n'est pas explicitement activé, la bulle ne se monte pas du tout.
-    if (!vapiWidgetEnabled()) return;
     const cfg = getVapiMetier(slug);
     if (!cfg || !cfg.assistantId) return;
 
     let cancelled = false;
     let instance: WidgetLoaderInstance | null = null;
-    const container = document.createElement("div");
-    container.setAttribute("data-vapi-metier", slug);
-    document.body.appendChild(container);
+    let container: HTMLElement | null = null;
 
-    const props = {
-      publicKey: vapiPublicKey(),
-      assistantId: cfg.assistantId,
-      mode: "hybrid",
-      theme: cfg.theme,
-      position: "bottom-right",
-      size: "compact",
-      radius: "large",
-      accentColor: cfg.accent,
-      baseColor: cfg.base,
-      buttonBaseColor: cfg.accent,
-      buttonAccentColor: cfg.buttonIcon,
-      mainLabel: cfg.label,
-      startButtonText: "Appeler",
-      endButtonText: "Raccrocher",
-      emptyChatMessage: "Bonjour ! Posez votre question ou réservez en quelques mots.",
-      emptyVoiceMessage: "Touchez pour parler à notre standardiste.",
-      showTranscript: true,
-    };
+    // Drapeau lu au RUNTIME depuis /config.json (vapiWidgetEnabled), modifiable
+    // sans rebuild (cf. lib/runtime-config.ts). Tant qu'il n'est pas activé, la
+    // bulle ne se monte pas du tout.
+    loadRuntimeConfig().then(({ vapiWidgetEnabled }) => {
+      if (cancelled || !vapiWidgetEnabled) return;
 
-    ensureWidgetLoader()
-      .then((WidgetLoader) => {
-        if (cancelled) return;
-        instance = new WidgetLoader({ container, component: "VapiWidget", props });
-      })
-      .catch((e) => console.error("[VapiWidget]", e));
+      container = document.createElement("div");
+      container.setAttribute("data-vapi-metier", slug);
+      document.body.appendChild(container);
+
+      const props = {
+        publicKey: vapiPublicKey(),
+        assistantId: cfg.assistantId,
+        mode: "hybrid",
+        theme: cfg.theme,
+        position: "bottom-right",
+        size: "compact",
+        radius: "large",
+        accentColor: cfg.accent,
+        baseColor: cfg.base,
+        buttonBaseColor: cfg.accent,
+        buttonAccentColor: cfg.buttonIcon,
+        mainLabel: cfg.label,
+        startButtonText: "Appeler",
+        endButtonText: "Raccrocher",
+        emptyChatMessage: "Bonjour ! Posez votre question ou réservez en quelques mots.",
+        emptyVoiceMessage: "Touchez pour parler à notre standardiste.",
+        showTranscript: true,
+      };
+
+      ensureWidgetLoader()
+        .then((WidgetLoader) => {
+          if (cancelled || !container) return;
+          instance = new WidgetLoader({ container, component: "VapiWidget", props });
+        })
+        .catch((e) => console.error("[VapiWidget]", e));
+    });
 
     return () => {
       cancelled = true;
       instance?.destroy();
-      container.remove();
+      container?.remove();
     };
   }, [slug]);
 

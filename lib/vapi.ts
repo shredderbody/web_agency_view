@@ -45,14 +45,9 @@ export function vapiPublicKey() {
   return PUBLIC_KEY;
 }
 
-/**
- * Drapeau global pilotant l'affichage de la bulle Vapi sur les pages métier.
- * Piloté par NEXT_PUBLIC_VAPI_WIDGET_ENABLED. Par défaut FALSE : la bulle est
- * masquée et inutilisable tant que la valeur n'est pas explicitement "true".
- */
-export function vapiWidgetEnabled() {
-  return process.env.NEXT_PUBLIC_VAPI_WIDGET_ENABLED === "true";
-}
+// Le drapeau d'affichage de la bulle est désormais lu AU RUNTIME depuis
+// /config.json (cf. lib/runtime-config.ts), et non plus via
+// NEXT_PUBLIC_VAPI_WIDGET_ENABLED (qui restait figé au build).
 
 // slug (= clé d'URL /demo/[slug]) → config
 const CONFIG: Record<string, VapiMetier> = {
