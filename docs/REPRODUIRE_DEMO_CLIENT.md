@@ -168,15 +168,35 @@ et les couleurs** du client :
 },
 ```
 
-Puis `<VapiWidget slug="<slug>" />` dans la page. La bulle est gated par
-`/config.json` (`vapiWidgetEnabled`) — cf. [[vapi-frontend-widget-playbook]].
+Puis `<VapiWidget slug="<slug>" />` dans la page.
 
-**Voix MiniMax FR** : profil par défaut du catalogue `lib/voiceCatalog.ts`
-(`French_Female Journalist`, modèle `speech-02-turbo`, fallback Cartesia). Pour
-qu'un assistant l'utilise côté Vapi, mettez `voice: VOICE.frMinimax` dans
-`scripts/vapi-setup-assistants.mjs` puis poussez :
+**Disponibilité de la bulle** — elle est gated au runtime par `/config.json`
+(`vapiWidgetEnabled`), modifiable **sans rebuild** (cf. `lib/runtime-config.ts`,
+[[vapi-frontend-widget-playbook]]). Il faut `true` à 3 endroits cohérents :
+- `config.json` (racine) — bind-monté dans le conteneur (`docker-compose.yml`),
+  c'est la valeur servie en prod ;
+- `public/config.json` — valeur par défaut bakée dans l'image ;
+- vérifiez en live : `curl -s http://localhost:3010/config.json`.
+
+**Voix MiniMax FR** — profil FR par défaut. La **référence canonique** des voix
+est le projet sibling `receptionist` : `/home/amscjrb/receptionist/src/data/voiceCatalog.ts`
+(entrée `fr-mono-minimax-journalist`). Mêmes valeurs que `lib/voiceCatalog.ts` ici :
+`provider: "minimax"`, `voiceId: "French_Female Journalist"`, `model: "speech-02-turbo"`,
+fallback Cartesia `sonic-2` `65b25c5d-ff07-4687-a04c-da2f43ef6fa9`.
+
+Pour qu'un assistant l'utilise, `voice: VOICE.frMinimax` dans
+`scripts/vapi-setup-assistants.mjs`, puis **poussez sur Vapi** (la clé est dans `.env`) :
 ```bash
-node scripts/vapi-setup-assistants.mjs   # nécessite VAPI_PRIVATE_KEY
+node scripts/vapi-setup-assistants.mjs   # lit VAPI_PRIVATE_KEY depuis .env
+```
+Le script **upsert** chaque assistant : PATCH si son `NEXT_PUBLIC_VAPI_ASSISTANT_*`
+est dans `.env` (cas normal → met à jour en place), sinon POST (⚠️ créerait un
+doublon non câblé). Vérifiez le résultat :
+```bash
+KEY=$(grep '^VAPI_PRIVATE_KEY=' .env | cut -d= -f2- | tr -d '"' | xargs)
+curl -s "https://api.vapi.ai/assistant/<assistantId>" -H "Authorization: Bearer $KEY" \
+  | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const a=JSON.parse(s);console.log(a.voice?.provider,a.voice?.voiceId,a.voice?.model)})'
+# attendu : minimax French_Female Journalist speech-02-turbo
 ```
 
 ## 10) Lier la page
