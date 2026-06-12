@@ -63,6 +63,18 @@ const CONFIG: Record<string, VapiMetier> = {
       { id: "barbier", src: "/characters/barbershop-portrait.webp", alt: "Barbier de Maison Brutus" },
     ],
   },
+  // Client réel — Barbershop, Av. Marceau, Courbevoie (barbier Montassar).
+  // Assistant Vapi DÉDIÉ (données réelles), couleurs charbon/or de la page
+  // immersive (cf. components/BarberCourbevoie.tsx).
+  "barbershop-courbevoie": {
+    assistantId:
+      process.env.NEXT_PUBLIC_VAPI_ASSISTANT_BARBERSHOP_COURBEVOIE || "4cee76d9-5147-41b1-bd3b-c2c83966fdd8",
+    accent: "#d9a441",
+    base: "#241f18",
+    buttonIcon: "#17120c",
+    theme: "dark",
+    label: "Barbershop · Courbevoie",
+  },
   onglerie: {
     assistantId:
       process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ONGLERIE || "79cf70d2-266f-4315-b684-c67f5dac7004",

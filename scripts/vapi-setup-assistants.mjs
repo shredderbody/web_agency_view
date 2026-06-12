@@ -156,6 +156,28 @@ const METIERS = [
     greetFr: "Maison Brutus, bonjour ! Vous voulez prendre rendez-vous pour une coupe ou une taille de barbe ?",
   },
   {
+    // Client réel — Barbershop, 34 Av. Marceau, Courbevoie (barbier Montassar).
+    // Assistant dédié, données réelles Google Places + carte affichée en vitrine.
+    slug: "barbershop-courbevoie",
+    envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_BARBERSHOP_COURBEVOIE",
+    business: "Barbershop Courbevoie",
+    tradeFr: "barbier / coiffeur homme",
+    tradeEn: "barbershop",
+    city: "Courbevoie",
+    phone: "06 87 12 72 22",
+    voice: VOICE.male,
+    hoursFr: "tous les jours, de 10h00 à 20h00 (ouvert 7j/7)",
+    hoursEn: "every day, 10:00am to 8:00pm (open 7 days a week)",
+    servicesFr: "Coupe tondeuse & ciseaux (14 €), Coupe ciseaux (15 €), Rasage de crâne à la tondeuse (10 €), Barbe simple (5 €), Taille de barbe & contours (7 €), Taille de barbe vapeur (10 €), Barbe au henné (10 €), Soin du visage (15 €)",
+    rdvFr: "rendez-vous",
+    rdvEn: "appointment",
+    toolName: "enregistrer_rendezvous",
+    extraProps: { prestation: { type: "string", description: "Prestation choisie / chosen service (coupe, barbe, contours, soin du visage…)." } },
+    extraAskFr: "Demande aussi quelle prestation le client souhaite. Le salon prend aussi sans rendez-vous.",
+    extraAskEn: "Also ask which service the customer wants. Walk-ins are also welcome.",
+    greetFr: "Barbershop Courbevoie, bonjour ! Vous souhaitez prendre rendez-vous pour une coupe ou la barbe ?",
+  },
+  {
     slug: "onglerie",
     envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_ONGLERIE",
     business: "L'Atelier Rosé",
