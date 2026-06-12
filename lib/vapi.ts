@@ -111,12 +111,13 @@ const CONFIG: Record<string, VapiMetier> = {
       { id: "cheffe", src: "/characters/restaurant-portrait.webp", alt: "Cheffe du Comptoir 12" },
     ],
   },
-  // Client réel — Thaï Vien Express (Courbevoie). Réutilise l'assistant
-  // « restaurant » (réception FR, voix MiniMax FR) mais avec le nom et les
-  // couleurs or/teck de sa page immersive (cf. components/ThaiVienExpress.tsx).
+  // Client réel — Thaï Vien Express (Courbevoie). Assistant Vapi DÉDIÉ (données
+  // réelles : nom, horaires, carte 10,50 €, voix MiniMax FR) — il se présente
+  // bien au nom du restaurant thaï, plus du « Comptoir 12 ». Couleurs or/teck
+  // de sa page immersive (cf. components/ThaiVienExpress.tsx).
   "thai-viens-express": {
     assistantId:
-      process.env.NEXT_PUBLIC_VAPI_ASSISTANT_RESTAURANT || "07cb9db8-9944-4708-b7f8-e78f7a1ad8ec",
+      process.env.NEXT_PUBLIC_VAPI_ASSISTANT_THAI_VIENS_EXPRESS || "5fc79895-d15a-4a71-869a-186f0aa91511",
     accent: "#e0a52e",
     base: "#2a221c",
     buttonIcon: "#15110d",

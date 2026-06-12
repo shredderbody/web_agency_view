@@ -241,6 +241,28 @@ const METIERS = [
     greetFr: "Le Comptoir 12, bonjour ! Vous souhaitez réserver une table ?",
   },
   {
+    // Client réel — Thaï Vien Express, 17 rue de l'Abreuvoir, Courbevoie.
+    // Assistant DÉDIÉ (données réelles Google Places), voix MiniMax FR.
+    slug: "thai-viens-express",
+    envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_THAI_VIENS_EXPRESS",
+    business: "Thaï Vien Express",
+    tradeFr: "restaurant thaïlandais",
+    tradeEn: "Thai restaurant",
+    city: "Courbevoie",
+    phone: "09 86 71 32 70",
+    voice: VOICE.frMinimax,
+    hoursFr: "du lundi au vendredi, le midi de 11h30 à 15h00 et le soir de 18h00 à 22h00 (fermé samedi et dimanche)",
+    hoursEn: "Monday to Friday, lunch 11:30am–3:00pm and dinner 6:00pm–10:00pm (closed Saturday and Sunday)",
+    servicesFr: "Tous les plats à 10,50 € — protéine au choix (poulet, bœuf, crevettes ou végétarien) : Pad Kapao (le plus commandé, sauté au basilic thaï), Massaman (curry coco-cacahuète), Pad Thaï, Khao Pad (riz sauté), Bo Bun, Kang Dang, Lok Lak, Satay. Suppléments (œuf, riz, XL), desserts et boissons. Sur place ou à emporter",
+    rdvFr: "réservation de table",
+    rdvEn: "table reservation",
+    toolName: "enregistrer_reservation",
+    extraProps: { nombre_couverts: { type: "string", description: "Nombre de couverts / number of guests." } },
+    extraAskFr: "Demande impérativement le nombre de couverts. Précise au besoin que c'est aussi disponible à emporter.",
+    extraAskEn: "You must ask for the number of guests. Mention takeaway is available if relevant.",
+    greetFr: "Thaï Vien Express, bonjour ! Vous souhaitez réserver une table ou commander à emporter ?",
+  },
+  {
     slug: "plombier",
     envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_PLOMBIER",
     business: "Plomberie Mercier",
