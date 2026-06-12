@@ -298,6 +298,37 @@ les directions Google :
 ```
 Superposez une épingle `<MapPin>` dorée (le marqueur OSM natif est peu visible).
 
+### c) Le bord bas « mange » les boutons sur mobile (encoche / indicateur d'accueil)
+Sur mobile, la modale en bottom-sheet (`OrderModal`) et la bulle Vapi (ancre
+`position: fixed`) collent au bord bas de l'écran → le bouton d'action et la
+bulle passent **sous l'indicateur d'accueil / l'encoche**.
+**Fix universel** (déjà en place) : ajouter un padding d'espace de sécurité avec
+`env(safe-area-inset-*)`, borné par `max()` pour ne jamais réduire la marge
+existante.
+
+- `OrderModal` — footer (zone des boutons) et écran de confirmation :
+```tsx
+// footer
+padding: "0.9rem 1.25rem max(0.9rem, env(safe-area-inset-bottom))"
+// écran de succès
+padding: "2.8rem 2rem max(2.8rem, calc(env(safe-area-inset-bottom) + 1.5rem))"
+```
+- Bulle Vapi — ancre fixe dans `globals.css` (override l'inline du widget, `!important`) :
+```css
+.vapi-widget-wrapper > div {
+  right:  max(1.5rem, env(safe-area-inset-right))  !important;
+  bottom: max(1.5rem, env(safe-area-inset-bottom)) !important;
+}
+@media (max-width: 640px) {
+  .vapi-widget-wrapper > div {
+    right:  max(1rem, env(safe-area-inset-right))  !important;
+    bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+  }
+}
+```
+`max(...)` garantit qu'aucun écran sans safe-area n'est affecté : l'inset s'ajoute
+uniquement sur les appareils concernés.
+
 ---
 
 ## Récap des fichiers (exemple Thaï Vien Express)

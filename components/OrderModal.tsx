@@ -4,7 +4,7 @@ import { X, Check, ChevronLeft, Minus, Plus } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 import type { Service } from "@/lib/vitrineContent";
 
-type Vit = "barber" | "onglerie" | "traiteur" | "resto" | "plombier";
+type Vit = "barber" | "onglerie" | "traiteur" | "resto" | "plombier" | "livraison";
 type FD = Record<string, any>;
 
 // ── Time slot banks ───────────────────────────────────────────────────────────
@@ -12,6 +12,21 @@ const BARBER_SLOTS  = ["9:00","9:30","10:00","10:30","11:00","11:30","14:00","14
 const ONGL_SLOTS    = ["10:00","10:30","11:00","11:30","12:00","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"];
 const LUNCH_SLOTS   = ["12:00","12:30","13:00","13:30"];
 const DINNER_SLOTS  = ["19:00","19:30","20:00","20:30","21:00"];
+const DELIVERY_SLOTS = ["12:00","12:30","13:00","13:30","14:00","19:00","19:30","20:00","20:30","21:00"];
+
+// ── Livraison : panier ─────────────────────────────────────────────────────────
+const DELIVERY_FEE = 2.5;   // frais de livraison
+const FREE_OVER    = 25;    // livraison offerte au-delà de ce montant
+function parsePrice(s: string): number {
+  const m = (s || "").replace(",", ".").match(/[\d.]+/);
+  return m ? parseFloat(m[0]) : 0;
+}
+function fmtPrice(v: number, lang: "fr" | "en"): string {
+  return lang === "fr" ? `${v.toFixed(2).replace(".", ",")} €` : `€${v.toFixed(2)}`;
+}
+function cartCount(fd: FD): number {
+  return Object.values((fd.cart ?? {}) as Record<string, number>).reduce((a, b) => a + b, 0);
+}
 
 // ── i18n ──────────────────────────────────────────────────────────────────────
 const ML = {
@@ -19,9 +34,9 @@ const ML = {
     back: "Retour", next: "Continuer", submit: "Envoyer ma demande",
     close: "Fermer",
     done_title: "C'est noté !",
-    titles:  { barber: "Prendre rendez-vous", onglerie: "Réserver un soin", traiteur: "Commander", resto: "Réserver une table", plombier: "Demander un devis" },
-    steps:   { barber: ["Prestation","Créneau","Coordonnées"], onglerie: ["Soin","Créneau","Coordonnées"], traiteur: ["Commande","Retrait","Coordonnées"], resto: ["Date & service","Couverts","Coordonnées"], plombier: ["Votre besoin","Disponibilités","Coordonnées"] },
-    success: { barber: "Votre demande est enregistrée. Maison Brutus vous confirme votre rendez-vous par SMS.", onglerie: "Réservation prise en compte. L'Atelier Rosé vous confirme par SMS.", traiteur: "Commande enregistrée ! Maison Ferrand vous contacte pour confirmer le retrait.", resto: "Table réservée ! {business} vous confirme par SMS sous peu.", plombier: "Demande reçue ! Julien Mercier vous rappelle sous 24 h avec un devis détaillé." },
+    titles:  { barber: "Prendre rendez-vous", onglerie: "Réserver un soin", traiteur: "Commander", resto: "Réserver une table", plombier: "Demander un devis", livraison: "Commander en livraison" },
+    steps:   { barber: ["Prestation","Créneau","Coordonnées"], onglerie: ["Soin","Créneau","Coordonnées"], traiteur: ["Commande","Retrait","Coordonnées"], resto: ["Date & service","Couverts","Coordonnées"], plombier: ["Votre besoin","Disponibilités","Coordonnées"], livraison: ["Panier","Livraison","Coordonnées"] },
+    success: { barber: "Votre demande est enregistrée. Maison Brutus vous confirme votre rendez-vous par SMS.", onglerie: "Réservation prise en compte. L'Atelier Rosé vous confirme par SMS.", traiteur: "Commande enregistrée ! Maison Ferrand vous contacte pour confirmer le retrait.", resto: "Table réservée ! {business} vous confirme par SMS sous peu.", plombier: "Demande reçue ! Julien Mercier vous rappelle sous 24 h avec un devis détaillé.", livraison: "Commande envoyée ! {business} prépare votre commande — livraison estimée sous 30 à 40 min." },
     DAYS:   ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"],
     MONTHS: ["jan","fév","mar","avr","mai","juin","juil","août","sep","oct","nov","déc"],
     service_q: "Quelle prestation souhaitez-vous ?",
@@ -50,14 +65,26 @@ const ML = {
     pref_slot: "Créneau préféré pour l'intervention",
     pref_slots: ["Matin · 8h – 12h","Après-midi · 14h – 18h","Peu importe"],
     email_l: "Votre e-mail (facultatif)", email_ph: "vous@exemple.fr",
+    cart_q: "Composez votre commande",
+    cart_empty: "Ajoutez au moins un plat pour continuer.",
+    cart_add: "Ajouter",
+    subtotal_l: "Sous-total", delivery_fee_l: "Livraison", total_l: "Total",
+    delivery_free: "Offerte",
+    free_over: "Livraison offerte dès {n}",
+    addr_l: "Adresse de livraison", addr_ph: "N° et rue",
+    postal_l: "Code postal & ville", postal_ph: "92400 Courbevoie",
+    when_l: "Quand vous livrer ?",
+    asap: "Au plus vite · 30–40 min", scheduled: "Programmer",
+    when_slot_l: "Créneau de livraison",
+    dnote_l: "Précisions pour le livreur (facultatif)", dnote_ph: "Étage, code, interphone…",
   },
   en: {
     back: "Back", next: "Continue", submit: "Send my request",
     close: "Close",
     done_title: "All set!",
-    titles:  { barber: "Book an appointment", onglerie: "Book a treatment", traiteur: "Place an order", resto: "Book a table", plombier: "Request a quote" },
-    steps:   { barber: ["Service","Slot","Details"], onglerie: ["Treatment","Slot","Details"], traiteur: ["Order","Collection","Details"], resto: ["Date & time","Guests","Details"], plombier: ["Your need","Availability","Details"] },
-    success: { barber: "Request received! Maison Brutus will confirm your appointment by SMS.", onglerie: "Booking received! L'Atelier Rosé will confirm by SMS.", traiteur: "Order placed! Maison Ferrand will contact you to confirm collection.", resto: "Table reserved! {business} will confirm by SMS.", plombier: "Request received! Julien Mercier will call back within 24 h with a detailed quote." },
+    titles:  { barber: "Book an appointment", onglerie: "Book a treatment", traiteur: "Place an order", resto: "Book a table", plombier: "Request a quote", livraison: "Order for delivery" },
+    steps:   { barber: ["Service","Slot","Details"], onglerie: ["Treatment","Slot","Details"], traiteur: ["Order","Collection","Details"], resto: ["Date & time","Guests","Details"], plombier: ["Your need","Availability","Details"], livraison: ["Basket","Delivery","Details"] },
+    success: { barber: "Request received! Maison Brutus will confirm your appointment by SMS.", onglerie: "Booking received! L'Atelier Rosé will confirm by SMS.", traiteur: "Order placed! Maison Ferrand will contact you to confirm collection.", resto: "Table reserved! {business} will confirm by SMS.", plombier: "Request received! Julien Mercier will call back within 24 h with a detailed quote.", livraison: "Order placed! {business} is preparing your food — estimated delivery in 30–40 min." },
     DAYS:   ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
     MONTHS: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
     service_q: "Which service would you like?",
@@ -86,6 +113,18 @@ const ML = {
     pref_slot: "Preferred time slot for the visit",
     pref_slots: ["Morning · 8am – 12pm","Afternoon · 2pm – 6pm","Any time"],
     email_l: "Your email (optional)", email_ph: "you@example.com",
+    cart_q: "Build your order",
+    cart_empty: "Add at least one dish to continue.",
+    cart_add: "Add",
+    subtotal_l: "Subtotal", delivery_fee_l: "Delivery", total_l: "Total",
+    delivery_free: "Free",
+    free_over: "Free delivery over {n}",
+    addr_l: "Delivery address", addr_ph: "Number and street",
+    postal_l: "Postcode & city", postal_ph: "92400 Courbevoie",
+    when_l: "When should we deliver?",
+    asap: "As soon as possible · 30–40 min", scheduled: "Schedule",
+    when_slot_l: "Delivery slot",
+    dnote_l: "Notes for the courier (optional)", dnote_ph: "Floor, door code, intercom…",
   },
 };
 
@@ -109,6 +148,11 @@ function canAdvance(vit: Vit, step: number, fd: FD): boolean {
   if (vit === "plombier") {
     if (step === 0) return !!fd.workType;
     if (step === 1) return true;
+    if (step === 2) return !!(fd.name?.trim()) && !!(fd.phone?.trim());
+  }
+  if (vit === "livraison") {
+    if (step === 0) return cartCount(fd) >= 1;
+    if (step === 1) return !!(fd.addr?.trim()) && !!(fd.postal?.trim()) && (fd.when === "asap" || (fd.when === "scheduled" && !!fd.deliveryTime));
     if (step === 2) return !!(fd.name?.trim()) && !!(fd.phone?.trim());
   }
   return true;
@@ -217,9 +261,9 @@ function ServiceCard({ s, selected, onSelect }: { s: Service; selected: boolean;
 }
 
 // ── Step content (per vit, per step) ─────────────────────────────────────────
-function StepContent({ vit, step, fd, setFd, services, lang, dates }: {
+function StepContent({ vit, step, fd, setFd, services, menu, lang, dates }: {
   vit: Vit; step: number; fd: FD; setFd: (fn: (p: FD) => FD) => void;
-  services: Service[]; lang: "fr" | "en"; dates: Date[];
+  services: Service[]; menu: Service[]; lang: "fr" | "en"; dates: Date[];
 }) {
   const l = ML[lang];
   const set = (k: string, v: any) => setFd(p => ({ ...p, [k]: v }));
@@ -290,6 +334,68 @@ function StepContent({ vit, step, fd, setFd, services, lang, dates }: {
         <TArea label={l.desc_l} placeholder={l.desc_ph} value={fd.desc ?? ""} onChange={v => set("desc", v)} />
       </div>
     );
+
+    if (vit === "livraison") {
+      const cart: Record<string, number> = fd.cart ?? {};
+      const setQty = (name: string, q: number) => setFd(p => {
+        const next = { ...(p.cart ?? {}) } as Record<string, number>;
+        if (q <= 0) delete next[name]; else next[name] = q;
+        return { ...p, cart: next };
+      });
+      const subtotal = menu.reduce((sum, it) => sum + parsePrice(it.price) * (cart[it.name] ?? 0), 0);
+      const freeDelivery = subtotal >= FREE_OVER;
+      const fee = subtotal > 0 && !freeDelivery ? DELIVERY_FEE : 0;
+      const row = (label: string, value: string, strong = false) => (
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: strong ? "1rem" : "0.88rem", fontWeight: strong ? 700 : 500, color: strong ? "var(--fg)" : "var(--fg-dim)" }}>
+          <span>{label}</span><span>{value}</span>
+        </div>
+      );
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <Label text={l.cart_q} />
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.55rem" }}>
+            {menu.map(it => {
+              const qty = cart[it.name] ?? 0;
+              const on = qty > 0;
+              return (
+                <div key={it.name} style={{ display: "flex", alignItems: "center", gap: "0.85rem", padding: "0.7rem 0.9rem", borderRadius: "0.75rem", border: `1.5px solid ${on ? "var(--accent)" : "var(--line)"}`, background: on ? "var(--bg-2)" : "transparent", transition: "all 0.15s", boxShadow: on ? "inset 3px 0 0 var(--accent)" : "none" }}>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: "0.92rem", fontWeight: 600 }}>{it.name}</div>
+                    <div style={{ fontSize: "0.8rem", color: "var(--fg-dim)" }}>{it.price}</div>
+                  </div>
+                  {on ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexShrink: 0 }}>
+                      <button type="button" aria-label="−" onClick={() => setQty(it.name, qty - 1)} style={{ width: "1.95rem", height: "1.95rem", borderRadius: "0.5rem", border: "1.5px solid var(--line)", background: "transparent", cursor: "pointer", display: "grid", placeItems: "center", color: "var(--fg)" }}>
+                        <Minus size={14} />
+                      </button>
+                      <span style={{ fontSize: "1rem", fontWeight: 700, minWidth: "1.1rem", textAlign: "center" }}>{qty}</span>
+                      <button type="button" aria-label="+" onClick={() => setQty(it.name, qty + 1)} style={{ width: "1.95rem", height: "1.95rem", borderRadius: "0.5rem", border: "1.5px solid var(--accent)", background: "var(--accent)", cursor: "pointer", display: "grid", placeItems: "center", color: "var(--bg)" }}>
+                        <Plus size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => setQty(it.name, 1)} style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", gap: "0.35rem", padding: "0.45rem 0.85rem", borderRadius: "0.6rem", border: "1.5px solid var(--accent)", background: "transparent", color: "var(--accent)", fontSize: "0.84rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                      <Plus size={14} /> {l.cart_add}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          {subtotal > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", padding: "0.9rem 1rem", borderRadius: "0.75rem", background: "var(--bg-2)", border: "1px solid var(--line)" }}>
+              {row(l.subtotal_l, fmtPrice(subtotal, lang))}
+              {row(l.delivery_fee_l, freeDelivery ? l.delivery_free : fmtPrice(DELIVERY_FEE, lang))}
+              <div style={{ height: 1, background: "var(--line)", margin: "0.2rem 0" }} />
+              {row(l.total_l, fmtPrice(subtotal + fee, lang), true)}
+              {!freeDelivery && (
+                <div style={{ fontSize: "0.76rem", color: "var(--accent)", marginTop: "0.2rem" }}>{l.free_over.replace("{n}", fmtPrice(FREE_OVER, lang))}</div>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    }
   }
 
   // ── STEP 1 ────────────────────────────────────────────────────────────────
@@ -367,6 +473,27 @@ function StepContent({ vit, step, fd, setFd, services, lang, dates }: {
         </div>
       );
     }
+
+    if (vit === "livraison") return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.3rem" }}>
+        <TInput label={l.addr_l} placeholder={l.addr_ph} value={fd.addr ?? ""} onChange={v => set("addr", v)} />
+        <TInput label={l.postal_l} placeholder={l.postal_ph} value={fd.postal ?? ""} onChange={v => set("postal", v)} />
+        <div>
+          <Label text={l.when_l} />
+          <div style={{ display: "flex", gap: "0.55rem", flexWrap: "wrap" }}>
+            <PillChip label={l.asap} selected={fd.when === "asap"} onClick={() => { set("when", "asap"); set("deliveryTime", undefined); }} />
+            <PillChip label={l.scheduled} selected={fd.when === "scheduled"} onClick={() => set("when", "scheduled")} />
+          </div>
+        </div>
+        {fd.when === "scheduled" && (
+          <div>
+            <Label text={l.when_slot_l} />
+            <TimeGrid slots={DELIVERY_SLOTS} selected={fd.deliveryTime} onSelect={t => set("deliveryTime", t)} />
+          </div>
+        )}
+        <TArea label={l.dnote_l} placeholder={l.dnote_ph} value={fd.dnote ?? ""} onChange={v => set("dnote", v)} />
+      </div>
+    );
   }
 
   // ── STEP 2: Contact ───────────────────────────────────────────────────────
@@ -384,14 +511,23 @@ function StepContent({ vit, step, fd, setFd, services, lang, dates }: {
 }
 
 // ── Main modal ────────────────────────────────────────────────────────────────
-export default function OrderModal({ vit, services, business, onClose }: {
-  vit: Vit; services: Service[]; business: string; onClose: () => void;
+export default function OrderModal({ vit: vitProp, services, menu, business, modes, onClose }: {
+  vit: Vit; services: Service[]; menu?: Service[]; business: string;
+  modes?: { vit: Vit; label: string }[]; onClose: () => void;
 }) {
   const { lang } = useLang();
   const l = ML[lang];
+  const [vit, setVit] = useState<Vit>(vitProp);
   const [step, setStep] = useState(0);
   const [done, setDone] = useState(false);
-  const [fd, setFd] = useState<FD>({ covers: 2, qty: 2 });
+  const [fd, setFd] = useState<FD>({ covers: 2, qty: 2, when: "asap", cart: {} });
+
+  const menuItems = menu ?? services;
+  const switchMode = (v: Vit) => {
+    if (v === vit) return;
+    setVit(v); setStep(0); setDone(false);
+    setFd({ covers: 2, qty: 2, when: "asap", cart: {} });
+  };
 
   const TOTAL_STEPS = 3;
 
@@ -451,6 +587,20 @@ export default function OrderModal({ vit, services, business, onClose }: {
                 </button>
               </div>
 
+              {/* Sélecteur de mode (ex. Sur place / Livraison) */}
+              {modes && modes.length > 1 && (
+                <div style={{ display: "flex", gap: "0.4rem", padding: "0.85rem 1.25rem 0", flexShrink: 0 }}>
+                  {modes.map(m => {
+                    const sel = m.vit === vit;
+                    return (
+                      <button key={m.vit} type="button" onClick={() => switchMode(m.vit)} style={{ flex: 1, padding: "0.62rem 0.5rem", borderRadius: "0.6rem", border: `1.5px solid ${sel ? "var(--accent)" : "var(--line)"}`, background: sel ? "var(--accent)" : "transparent", color: sel ? "var(--bg)" : "var(--fg)", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s" }}>
+                        {m.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
               {/* Progress bar + step name */}
               <div style={{ padding: "0.85rem 1.25rem 0.5rem", flexShrink: 0, borderBottom: "1px solid var(--line)" }}>
                 <div style={{ display: "flex", gap: "0.35rem", marginBottom: "0.55rem" }}>
@@ -466,11 +616,11 @@ export default function OrderModal({ vit, services, business, onClose }: {
 
               {/* Scrollable content */}
               <div style={{ flex: 1, overflowY: "auto", padding: "1.25rem", scrollbarWidth: "thin" }}>
-                <StepContent vit={vit} step={step} fd={fd} setFd={setFd} services={services} lang={lang} dates={dates} />
+                <StepContent vit={vit} step={step} fd={fd} setFd={setFd} services={services} menu={menuItems} lang={lang} dates={dates} />
               </div>
 
-              {/* Footer */}
-              <div style={{ flexShrink: 0, borderTop: "1px solid var(--line)", padding: "0.9rem 1.25rem", display: "flex", gap: "0.65rem", background: "var(--bg-2)" }}>
+              {/* Footer — padding bas sécurisé (safe-area) pour ne pas coller au bord / passer sous l'indicateur mobile */}
+              <div style={{ flexShrink: 0, borderTop: "1px solid var(--line)", padding: "0.9rem 1.25rem max(0.9rem, env(safe-area-inset-bottom))", display: "flex", gap: "0.65rem", background: "var(--bg-2)" }}>
                 {step > 0 && (
                   <button onClick={() => setStep(s => s - 1)} style={{ display: "flex", alignItems: "center", gap: "0.35rem", padding: "0.7rem 1rem", borderRadius: "0.6rem", border: "1.5px solid var(--line)", background: "transparent", cursor: "pointer", fontSize: "0.88rem", fontWeight: 500, color: "var(--fg)", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0 }}>
                     <ChevronLeft size={15} /> {l.back}
@@ -487,7 +637,7 @@ export default function OrderModal({ vit, services, business, onClose }: {
             </>
           ) : (
             /* Success */
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2.8rem 2rem", textAlign: "center", gap: "1.3rem" }}>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2.8rem 2rem max(2.8rem, calc(env(safe-area-inset-bottom) + 1.5rem))", textAlign: "center", gap: "1.3rem" }}>
               <div style={{ width: "4.2rem", height: "4.2rem", borderRadius: "50%", background: "var(--accent)", display: "grid", placeItems: "center", color: "var(--bg)", animation: "omCheckIn 0.4s cubic-bezier(0.16,1,0.3,1) 0.12s both" }}>
                 <Check size={26} strokeWidth={2.5} />
               </div>

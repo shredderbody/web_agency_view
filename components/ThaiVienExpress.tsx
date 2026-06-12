@@ -66,16 +66,17 @@ export default function ThaiVienExpress() {
     <div
       className="tve-root"
       style={{
-        // Thème thaï immersif — teck chaud, or, piment, jade.
-        ["--bg" as string]: "oklch(0.155 0.018 50)",
-        ["--bg-2" as string]: "oklch(0.205 0.022 50)",
-        ["--surf" as string]: "oklch(0.245 0.026 52)",
-        ["--fg" as string]: "oklch(0.955 0.014 80)",
-        ["--fg-dim" as string]: "oklch(0.76 0.022 70)",
-        ["--accent" as string]: "oklch(0.81 0.13 80)",
-        ["--accent-2" as string]: "oklch(0.6 0.19 30)",
-        ["--jade" as string]: "oklch(0.68 0.09 165)",
-        ["--line" as string]: "oklch(0.92 0.02 80 / 0.14)",
+        // Thème thaï — clair, chaud et accueillant : ivoire crème, brun chaud,
+        // or terracotta, piment, vert herbe. Le héros garde sa photo immersive.
+        ["--bg" as string]: "oklch(0.976 0.016 73)",
+        ["--bg-2" as string]: "oklch(0.953 0.026 66)",
+        ["--surf" as string]: "oklch(0.995 0.009 80)",
+        ["--fg" as string]: "oklch(0.29 0.038 45)",
+        ["--fg-dim" as string]: "oklch(0.47 0.04 45)",
+        ["--accent" as string]: "oklch(0.585 0.16 48)",
+        ["--accent-2" as string]: "oklch(0.53 0.19 28)",
+        ["--jade" as string]: "oklch(0.5 0.1 158)",
+        ["--line" as string]: "oklch(0.32 0.04 45 / 0.15)",
         ["--tve-display" as string]: "var(--font-marcellus), Georgia, serif",
         ["--tve-body" as string]: "var(--font-hanken), system-ui, sans-serif",
         background: "var(--bg)",
@@ -99,7 +100,7 @@ export default function ThaiVienExpress() {
           </span>
           <nav className="tve-nav-desktop" style={{ display: "none", alignItems: "center", gap: "1.5rem", fontSize: "0.9rem" }}>
             {navLinks.map((l) => <a key={l.href} href={l.href} className="tve-navlink">{l.label}</a>)}
-            <LangSelector tone="dark" />
+            <LangSelector tone="light" />
             <button onClick={() => setModal(true)} className="tve-btn" style={{ padding: "0.55rem 1.1rem", border: "none", cursor: "pointer" }}>{c.heroPrimary}</button>
           </nav>
           <button
@@ -139,7 +140,7 @@ export default function ThaiVienExpress() {
           ))}
         </nav>
         <div style={{ marginTop: "auto", paddingTop: "1.8rem", display: "flex", flexDirection: "column", gap: "1.1rem" }}>
-          <LangSelector tone="dark" />
+          <LangSelector tone="light" />
           <button onClick={() => { setMenu(false); setModal(true); }} className="tve-btn" style={{ width: "100%", justifyContent: "center", border: "none", cursor: "pointer" }}>{c.heroPrimary}</button>
         </div>
       </aside>
@@ -153,20 +154,20 @@ export default function ThaiVienExpress() {
         <div className="wrap" style={{ position: "relative", zIndex: 2 }}>
           <Reveal>
             <div style={{ maxWidth: "46rem", paddingBlock: "clamp(4rem, 12vw, 8.5rem)" }}>
-              <span className="tve-kicker">{c.heroKicker}</span>
-              <h1 className="tve-display" style={{ fontSize: "clamp(2.4rem, 6.5vw, 5rem)", lineHeight: 1.02, letterSpacing: "-0.01em", margin: "1.1rem 0 1.3rem", textShadow: "0 2px 30px oklch(0 0 0 / 0.5)" }}>
+              <span className="tve-kicker tve-kicker-hero">{c.heroKicker}</span>
+              <h1 className="tve-display" style={{ fontSize: "clamp(2.4rem, 6.5vw, 5rem)", lineHeight: 1.02, letterSpacing: "-0.01em", margin: "1.1rem 0 1.3rem", color: "oklch(0.985 0.012 88)", textShadow: "0 2px 30px oklch(0 0 0 / 0.5)" }}>
                 {c.heroTitle}
               </h1>
-              <p style={{ fontSize: "clamp(1.04rem, 1.5vw, 1.22rem)", color: "oklch(0.94 0.01 80)", maxWidth: "44ch", margin: "0 0 2rem", textShadow: "0 1px 14px oklch(0 0 0 / 0.5)" }}>
+              <p style={{ fontSize: "clamp(1.04rem, 1.5vw, 1.22rem)", color: "oklch(0.95 0.012 82)", maxWidth: "44ch", margin: "0 0 2rem", textShadow: "0 1px 14px oklch(0 0 0 / 0.5)" }}>
                 {c.heroLead}
               </p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem", alignItems: "center" }}>
                 <button onClick={() => setModal(true)} className="tve-btn tve-btn-lg" style={{ border: "none", cursor: "pointer" }}>{c.heroPrimary}</button>
-                <a href="#dishes" className="tve-btn tve-btn-outline tve-btn-lg">{c.heroSecondary}</a>
+                <a href="#dishes" className="tve-btn tve-btn-outline tve-btn-lg" style={{ color: "oklch(0.98 0.012 85)", borderColor: "oklch(1 0 0 / 0.5)" }}>{c.heroSecondary}</a>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "1.4rem", marginTop: "2rem", flexWrap: "wrap" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-                  <div style={{ display: "flex", gap: "1px", color: "var(--accent)" }}>{Array.from({ length: 5 }).map((_, i) => <Star key={i} size={18} fill="currentColor" stroke="none" />)}</div>
+                  <div style={{ display: "flex", gap: "1px", color: "oklch(0.86 0.12 80)" }}>{Array.from({ length: 5 }).map((_, i) => <Star key={i} size={18} fill="currentColor" stroke="none" />)}</div>
                   <span style={{ fontSize: "0.95rem", color: "oklch(0.95 0.01 80)" }}><strong>{rating}/5</strong> · {c.ratingMeta}</span>
                 </div>
                 <div className="tve-hero-hours">
@@ -447,7 +448,7 @@ export default function ThaiVienExpress() {
               <div className="tve-closing-scrim" />
               <div style={{ position: "relative", zIndex: 2, textAlign: "center", maxWidth: "40ch", margin: "0 auto" }}>
                 <h2 className="tve-display" style={{ fontSize: "clamp(1.9rem, 4.5vw, 3.2rem)", letterSpacing: "-0.01em", margin: "0 0 0.8rem" }}>{c.closingTitle}</h2>
-                <p style={{ color: "oklch(0.9 0.01 80)", fontSize: "1.05rem", margin: "0 0 1.8rem" }}>{c.closingLead}</p>
+                <p style={{ color: "var(--fg-dim)", fontSize: "1.05rem", margin: "0 0 1.8rem" }}>{c.closingLead}</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem", justifyContent: "center" }}>
                   <button onClick={() => setModal(true)} className="tve-btn tve-btn-lg" style={{ border: "none", cursor: "pointer" }}>{c.closingPrimary}</button>
                   <a href={telHref} className="tve-btn tve-btn-outline tve-btn-lg"><Phone size={16} /> {c.closingSecondary}</a>
@@ -502,12 +503,17 @@ export default function ThaiVienExpress() {
         </div>
       )}
 
-      {/* Réservation de table — formulaire multi-étapes (date & service → couverts → coordonnées) */}
+      {/* Commande — réservation de table OU livraison à domicile (sélecteur dans la modale) */}
       {modal && (
         <OrderModal
           vit="resto"
           services={[]}
+          menu={c.dishes.map(d => ({ name: d.name, desc: d.desc, price: d.price }))}
           business={FACTS.name}
+          modes={[
+            { vit: "resto", label: lang === "en" ? "Dine-in" : "Sur place" },
+            { vit: "livraison", label: lang === "en" ? "Delivery" : "Livraison" },
+          ]}
           onClose={() => setModal(false)}
         />
       )}
@@ -519,6 +525,9 @@ export default function ThaiVienExpress() {
         .tve-display { font-family: var(--tve-display); }
         .tve-kicker { display: inline-flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); }
         .tve-kicker::before { content: ""; width: 1.7rem; height: 2px; background: var(--accent); }
+        /* Kicker du héros : sur la photo, version or clair pour le contraste. */
+        .tve-kicker-hero { color: oklch(0.9 0.09 78); }
+        .tve-kicker-hero::before { background: oklch(0.9 0.09 78); }
         .tve-navlink { color: var(--fg-dim); transition: color 0.18s var(--ease); }
         .tve-navlink:hover { color: var(--accent); }
 
@@ -532,9 +541,11 @@ export default function ThaiVienExpress() {
         /* HERO */
         .tve-hero { position: relative; isolation: isolate; }
         .tve-hero-bg { position: absolute; inset: 0; z-index: 0; }
+        /* Scrim chaud (brun ambré) : lisibilité du texte clair tout en gardant
+           une teinte chaleureuse plutôt qu'un noir froid. */
         .tve-hero-scrim { position: absolute; inset: 0; background:
-          linear-gradient(100deg, oklch(0.13 0.015 50 / 0.94) 0%, oklch(0.13 0.015 50 / 0.78) 38%, oklch(0.13 0.015 50 / 0.35) 72%, oklch(0.13 0.015 50 / 0.55) 100%); }
-        .tve-hero-hours { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.55rem 0.9rem; border-radius: 0.7rem; background: oklch(0.2 0.02 50 / 0.7); border: 1px solid var(--line); backdrop-filter: blur(6px); }
+          linear-gradient(100deg, oklch(0.22 0.04 48 / 0.92) 0%, oklch(0.24 0.045 46 / 0.74) 40%, oklch(0.28 0.05 45 / 0.32) 74%, oklch(0.2 0.04 42 / 0.5) 100%); }
+        .tve-hero-hours { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.55rem 0.9rem; border-radius: 0.7rem; background: oklch(0.22 0.03 45 / 0.55); color: oklch(0.96 0.012 82); border: 1px solid oklch(1 0 0 / 0.18); backdrop-filter: blur(6px); }
 
         /* MARQUEE */
         .tve-marquee { overflow: hidden; border-bottom: 1px solid var(--line); background: var(--accent); color: var(--bg); }
@@ -549,12 +560,12 @@ export default function ThaiVienExpress() {
         /* DISH GRID */
         .tve-dish-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
         .tve-dish { background: var(--surf); border: 1px solid var(--line); border-radius: 1.2rem; overflow: hidden; height: 100%; transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease); }
-        .tve-dish:hover { transform: translateY(-5px); box-shadow: 0 26px 56px oklch(0 0 0 / 0.32); }
+        .tve-dish:hover { transform: translateY(-5px); box-shadow: 0 22px 48px oklch(0.4 0.05 45 / 0.16); }
         .tve-dish-img { position: relative; aspect-ratio: 4 / 3; overflow: hidden; }
         .tve-dish-img img { transition: transform 0.5s var(--ease); }
         .tve-dish:hover .tve-dish-img img { transform: scale(1.06); }
         .tve-dish-tag { position: absolute; top: 0.8rem; left: 0.8rem; background: var(--accent-2); color: oklch(0.98 0.01 80); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; padding: 0.32rem 0.7rem; border-radius: 99px; }
-        .tve-dish-price { position: absolute; bottom: 0.8rem; right: 0.8rem; background: var(--accent); color: var(--bg); font-weight: 700; font-size: 0.95rem; padding: 0.35rem 0.7rem; border-radius: 0.6rem; box-shadow: 0 6px 18px oklch(0 0 0 / 0.35); }
+        .tve-dish-price { position: absolute; bottom: 0.8rem; right: 0.8rem; background: var(--accent); color: oklch(0.99 0.01 85); font-weight: 700; font-size: 0.95rem; padding: 0.35rem 0.7rem; border-radius: 0.6rem; box-shadow: 0 6px 16px oklch(0.4 0.08 45 / 0.35); }
         .tve-dish-body { padding: 1.2rem 1.3rem 1.4rem; }
 
         /* PRICE BADGE */
@@ -581,7 +592,8 @@ export default function ThaiVienExpress() {
 
         /* CLOSING */
         .tve-closing { position: relative; overflow: hidden; border-radius: var(--r-xl); border: 1px solid var(--line); padding: clamp(2.6rem, 7vw, 5rem) clamp(1.5rem, 5vw, 3rem); background: var(--bg-2); }
-        .tve-closing-scrim { position: absolute; inset: 0; background: radial-gradient(circle at 50% 40%, oklch(0.16 0.018 50 / 0.55), oklch(0.13 0.015 50 / 0.92)); }
+        /* Voile crème chaud : la photo reste visible en filigrane, texte sombre lisible. */
+        .tve-closing-scrim { position: absolute; inset: 0; background: radial-gradient(circle at 50% 35%, oklch(0.97 0.02 72 / 0.62), oklch(0.95 0.026 66 / 0.93)); }
 
         @keyframes avScrollPulse {
           0% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--accent) 65%, transparent); transform: translateY(0); }
