@@ -148,12 +148,23 @@ Copiez `components/ThaiVienExpress.tsx`. Points clés :
   l'optimiseur Next (qui ré-encode en **AVIF**, coûteux en CPU) ralentit le **1er
   affichage** : chaque image attend le ré-encodage serveur, surtout après un
   rebuild (cache `/_next/image` vidé). Mettez donc **`unoptimized`** sur **toutes**
-  les `<Image>` qui pointent un `.webp` local → elles sont servies en statique
-  (cache immuable 1 an), affichage quasi-instantané, zéro coût runtime. Gardez le
-  héros en `priority` (= `<link rel=preload>` du LCP injecté automatiquement).
-  ⚠️ Ne touchez **pas** au réglage global `images.formats` de `next.config.ts`
-  (l'AVIF reste utile aux images **distantes** Unsplash des autres démos) — c'est
-  un opt-out **par image**, pas global.
+  les `<Image>` qui pointent un `.webp` local → elles sont servies en statique,
+  affichage quasi-instantané, zéro coût runtime. Gardez le héros en `priority`
+  (= `<link rel=preload>` du LCP injecté automatiquement).
+  C'est **déjà fait** dans tout le projet : page client (`ThaiVienExpress.tsx`),
+  démos génériques (`DemoView.tsx`), landing (`app/page.tsx`) et index
+  (`app/demo/page.tsx`) — vérifiez juste qu'une **nouvelle** `<Image>` locale porte
+  bien `unoptimized` (`grep -c unoptimized` doit = nombre d'`<Image>` du fichier).
+  ⚠️ Ne touchez **pas** au réglage global `images.formats` de `next.config.js`
+  (l'AVIF reste utile aux images **distantes** Unsplash) — c'est un opt-out
+  **par image**, pas global.
+- ⚡ **Cache immuable des assets statiques.** `unoptimized` court-circuite
+  l'optimiseur, donc `images.minimumCacheTTL` ne s'applique plus : les fichiers de
+  `public/` repartent en `Cache-Control: max-age=0` (revalidation à chaque visite).
+  Le `headers()` de `next.config.js` force donc `public, max-age=31536000, immutable`
+  sur `/:dir(clients|characters|studio)/:path*`. **Si vous rangez les photos d'un
+  nouveau client ailleurs que dans `public/clients/`**, ajoutez son dossier à ce
+  motif, sinon ses images perdront le cache long.
 - ⚠️ **Images rognées (crop) — le piège n°1.** Avec `objectFit: "cover"`, toute
   photo dont le ratio ≠ celui du conteneur est **coupée**. Pour les images de
   contenu (galerie ambiance, **tableau du menu**, plats), le `aspectRatio` du
