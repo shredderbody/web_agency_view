@@ -28,6 +28,10 @@ des vraies données Google** d'un commerce — comme celle de **Thaï Vien Expre
 | 11 | Vérifier | `tsc`, dev server, screenshots |
 | 12 | Déployer | commit → push → `update.sh` |
 
+> **Polissage design (recommandé)** — entre la construction de la page (étape 6) et
+> la vérification (étape 11), passez la page métier au skill **Impeccable** pour
+> auditer et relever le design. Voir le § [Polir le design avec Impeccable](#polir-le-design-avec-le-skill-impeccable).
+
 Pré-requis : `GOOGLE_PLACES_API_KEY` dans `.env` (déjà présent). Le projet tourne
 sur le port **3010** ([[project-overview]]).
 
@@ -268,6 +272,48 @@ curl -s -o /dev/null -w "local  %{http_code}\n" http://localhost:3010/demo/<slug
 curl -s -o /dev/null -w "webp   %{http_code}\n" http://localhost:3010/clients/<slug>/photo_00.webp
 curl -s -o /dev/null -w "public %{http_code}\n" https://receptionniste.zerocall.io/demo/<slug>
 ```
+
+---
+
+## Polir le design avec le skill Impeccable
+
+Une fois la page métier construite (étape 6), on la fait passer par le skill
+**Impeccable** (installé dans ce projet : `.claude/skills/impeccable/`, v3.5.0) pour
+auditer puis relever le design avant de vérifier/déployer. Le skill lit le contexte
+projet déjà présent à la racine — `PRODUCT.md` (audience, métier, voix) et `DESIGN.md`
+(couleurs, type, composants) — donc ses suggestions restent cohérentes avec l'identité
+du site. Si ces fichiers manquent ou datent, lancez d'abord `/impeccable init`.
+
+Invocation : `/impeccable <commande> <cible>`. La cible d'une page métier est son
+composant immersif, p. ex. `components/<Client>.tsx`.
+
+**Workflow recommandé sur une page métier :**
+
+1. `/impeccable audit components/<Client>.tsx` — 41 règles déterministes (sans LLM) :
+   repère les tells génériques (Inter partout, dégradés violet→bleu, cartes dans des
+   cartes, gris sur fond coloré, tuile d'icône au-dessus de chaque titre…).
+2. `/impeccable critique components/<Client>.tsx` — revue qualitative (hiérarchie
+   visuelle, charge cognitive, lisibilité, accessibilité, responsive).
+3. Application ciblée selon les retours :
+   - `polish` — finitions générales ;
+   - `typeset` — échelle/typographie ; `colorize` — palette/contraste ;
+   - `layout` — composition/espacement ; `animate` — micro-interactions ;
+   - `bolder` / `quieter` — pousser ou calmer le ton.
+4. `/impeccable live components/<Client>.tsx` — itération en direct dans le navigateur
+   (utilise l'agent `impeccable-manual-edit-applier`, installé au niveau utilisateur).
+
+**Garde-fous propres à ce projet :**
+
+- Le thème de chaque page métier est **scoped** (racine `.<x>-root` + variables CSS
+  inline `--bg`/`--accent`/`--fg`…, cf. étape 6). Restez dans ce périmètre : ne laissez
+  pas Impeccable réécrire des tokens globaux ni `globals.css` — l'identité doit rester
+  propre au client sans toucher au design system partagé.
+- Conservez les composants maison (`Reveal`, `LangSelector`, `BusinessSearch`,
+  `OrderModal`, `VapiWidget`) et les correctifs UX du § suivant (safe-area, masquage
+  bulle Vapi en modale) : ce sont des invariants, pas des points à « simplifier ».
+- Gardez `<Image>` → `.webp` et le héros en `priority` (perf, étape 4/6).
+
+Après polissage, reprenez à l'étape 11 (`tsc`, dev server, screenshots).
 
 ---
 
