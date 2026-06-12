@@ -13,6 +13,19 @@ const nextConfig = {
       { protocol: "https", hostname: "randomuser.me" },
     ],
   },
+  // Les photos clients (public/clients/*) sont servies en statique via
+  // <Image unoptimized> ; on leur donne un cache long immuable pour que les
+  // visites répétées soient instantanées (sinon public/ renvoie max-age=0).
+  async headers() {
+    return [
+      {
+        source: "/clients/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
