@@ -119,6 +119,8 @@ export default function BusinessSearch() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
+  // Chargement des détails Google (fiche déjà ouverte, infos en cours d'enrichissement).
+  const [detailsLoading, setDetailsLoading] = useState(false);
 
   const boxRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -189,19 +191,23 @@ export default function BusinessSearch() {
 
   async function pick(sug: Suggestion) {
     setOpen(false);
-    setLoading(true);
     setSubmitted(false);
     setError(false);
+    // Ouvre la fiche IMMÉDIATEMENT avec les infos de base (nom + adresse) : retour
+    // visuel instantané, puis on enrichit dès que Place Details répond. Évite
+    // l'impression de « système figé » pendant l'appel réseau.
+    setSelected({ id: sug.id, name: sug.main, address: sug.secondary });
+    setDetailsLoading(true);
     try {
       const res = await fetch(`/api/places/details?id=${encodeURIComponent(sug.id)}&lang=${lang}&sessiontoken=${sessionTokenRef.current}`);
       const data = await res.json();
-      setSelected(data?.id ? (data as Place) : { id: sug.id, name: sug.main, address: sug.secondary });
+      if (data?.id) setSelected(data as Place); // sinon on garde la fiche de base
     } catch {
-      setSelected({ id: sug.id, name: sug.main, address: sug.secondary });
+      /* on conserve la fiche de base déjà affichée */
     } finally {
       // La session est consommée par ce Place Details → on en ouvre une neuve.
       sessionTokenRef.current = newToken();
-      setLoading(false);
+      setDetailsLoading(false);
     }
   }
 
@@ -222,6 +228,7 @@ export default function BusinessSearch() {
 
   function closeModal() {
     setSelected(null);
+    setDetailsLoading(false);
     setSubmitted(false);
     setError(false);
     setPopupEmail("");
@@ -450,6 +457,52 @@ export default function BusinessSearch() {
             placeholder={s.placeholder}
             style={inputBase}
           />
+
+          {/* Liste d'autocomplétion : ancrée juste sous le champ de saisie
+              (top:100%), elle recouvre l'aide/le lien en dessous au lieu de
+              s'insérer dans le flux. */}
+          {open && (suggestions.length > 0 || (searched && !loading)) && (
+            <ul
+              style={{
+                listStyle: "none",
+                margin: 0,
+                padding: "0.3rem",
+                position: "absolute",
+                top: "calc(100% + 0.4rem)",
+                left: 0,
+                zIndex: 20,
+                width: "100%",
+                background: "var(--surface)",
+                color: "var(--ink)",
+                borderRadius: "0.7rem",
+                boxShadow: "0 12px 40px oklch(0 0 0 / 0.25)",
+                maxHeight: "20rem",
+                overflowY: "auto",
+              }}
+            >
+              {suggestions.length === 0 ? (
+                <li style={{ padding: "0.7rem 0.8rem", fontSize: "0.9rem", color: "var(--ink-dim)" }}>{s.noResults}</li>
+              ) : (
+                suggestions.map((sug) => (
+                  <li key={sug.id}>
+                    <button
+                      type="button"
+                      onClick={() => pick(sug)}
+                      style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem", width: "100%", textAlign: "left", background: "transparent", border: "none", cursor: "pointer", padding: "0.6rem 0.7rem", borderRadius: "0.5rem", color: "var(--ink)", fontSize: "0.95rem" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--paper-2)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <MapPin size={16} style={{ color: "var(--vermilion)", flexShrink: 0, marginTop: "0.15rem" }} />
+                      <span style={{ minWidth: 0 }}>
+                        <span style={{ display: "block", fontWeight: 600 }}>{sug.main}</span>
+                        {sug.secondary && <span style={{ display: "block", fontSize: "0.85rem", color: "var(--ink-dim)" }}>{sug.secondary}</span>}
+                      </span>
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
+          )}
         </div>
         <p style={{ margin: "0.5rem 0 0", fontSize: "0.82rem", color: "oklch(0.96 0.02 40 / 0.85)" }}>{s.hint}</p>
         <button
@@ -462,47 +515,6 @@ export default function BusinessSearch() {
         >
           {s.cantFind}
         </button>
-
-        {open && (suggestions.length > 0 || (searched && !loading)) && (
-          <ul
-            style={{
-              listStyle: "none",
-              margin: "0.4rem 0 0",
-              padding: "0.3rem",
-              position: "absolute",
-              zIndex: 20,
-              width: "100%",
-              background: "var(--surface)",
-              color: "var(--ink)",
-              borderRadius: "0.7rem",
-              boxShadow: "0 12px 40px oklch(0 0 0 / 0.25)",
-              maxHeight: "20rem",
-              overflowY: "auto",
-            }}
-          >
-            {suggestions.length === 0 ? (
-              <li style={{ padding: "0.7rem 0.8rem", fontSize: "0.9rem", color: "var(--ink-dim)" }}>{s.noResults}</li>
-            ) : (
-              suggestions.map((sug) => (
-                <li key={sug.id}>
-                  <button
-                    type="button"
-                    onClick={() => pick(sug)}
-                    style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem", width: "100%", textAlign: "left", background: "transparent", border: "none", cursor: "pointer", padding: "0.6rem 0.7rem", borderRadius: "0.5rem", color: "var(--ink)", fontSize: "0.95rem" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "var(--paper-2)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                  >
-                    <MapPin size={16} style={{ color: "var(--vermilion)", flexShrink: 0, marginTop: "0.15rem" }} />
-                    <span style={{ minWidth: 0 }}>
-                      <span style={{ display: "block", fontWeight: 600 }}>{sug.main}</span>
-                      {sug.secondary && <span style={{ display: "block", fontSize: "0.85rem", color: "var(--ink-dim)" }}>{sug.secondary}</span>}
-                    </span>
-                  </button>
-                </li>
-              ))
-            )}
-          </ul>
-        )}
       </div>
 
       {/* ── POP-UP fiche entreprise ── */}
@@ -511,26 +523,35 @@ export default function BusinessSearch() {
           role="dialog"
           aria-modal="true"
           onClick={() => !submitting && closeModal()}
+          className="bs-overlay"
           style={{
             position: "fixed",
             inset: 0,
             zIndex: 1000,
-            background: "oklch(0.15 0.02 40 / 0.55)",
-            backdropFilter: "blur(4px)",
-            display: "grid",
-            placeItems: "center",
-            padding: "1.2rem",
+            // Voile sombre opaque, SANS backdrop-filter : le flou plein écran
+            // forçait le GPU à re-flouter tout le viewport en continu → arrière-plan
+            // figé/saccadé tant que la modale était ouverte.
+            background: "oklch(0.15 0.02 40 / 0.66)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            // Marge de sécurité tout autour + respect des encoches (safe-area).
+            padding:
+              "max(1.2rem, env(safe-area-inset-top)) max(1.2rem, env(safe-area-inset-right)) max(1.2rem, env(safe-area-inset-bottom)) max(1.2rem, env(safe-area-inset-left))",
             animation: "bs-fade 0.18s ease",
           }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
+            className="bs-panel"
             style={{
               position: "relative",
               width: "100%",
               maxWidth: "33rem",
-              maxHeight: "88vh",
+              // dvh (et non vh) → tient compte des barres mobiles ; jamais coupée.
+              maxHeight: "min(88dvh, 46rem)",
               overflowY: "auto",
+              WebkitOverflowScrolling: "touch",
               background: "var(--surface)",
               color: "var(--ink)",
               borderRadius: "1.2rem",
@@ -564,7 +585,8 @@ export default function BusinessSearch() {
                 fontWeight: 700,
               }}
             >
-              <Check size={15} /> {s.loadedFromGoogle}
+              {detailsLoading ? <Loader2 size={15} className="bs-spin" /> : <Check size={15} />}
+              {detailsLoading ? s.searching : s.loadedFromGoogle}
             </div>
 
             {/* Note + nombre d'avis (repère visuel : « c'est bien votre établissement ») */}
@@ -657,7 +679,7 @@ export default function BusinessSearch() {
             )}
 
             {/* CTA → envoi + remplissage Supabase en arrière-plan */}
-            <SubmitButton onClick={() => submitLead(googlePayload(selected))} enabled={!!gName.trim()} />
+            <SubmitButton onClick={() => submitLead(googlePayload(selected))} enabled={!!gName.trim() && !detailsLoading} />
             {statusLine}
           </div>
         </div>
@@ -668,6 +690,21 @@ export default function BusinessSearch() {
         @keyframes bs-spin { to { transform: rotate(360deg); } }
         @keyframes bs-fade { from { opacity: 0; } to { opacity: 1; } }
         @keyframes bs-pop { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: none; } }
+        @keyframes bs-pop-mobile { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: none; } }
+        /* Format mobile : la fiche devient une feuille plein écran ancrée en bas,
+           coins hauts arrondis, padding bas sécurisé (safe-area) pour ne rien couper. */
+        @media (max-width: 600px) {
+          .bs-overlay { align-items: flex-end !important; padding: 0 !important; }
+          .bs-panel {
+            max-width: 100% !important;
+            max-height: 92dvh !important;
+            border-radius: 1.2rem 1.2rem 0 0 !important;
+            padding: 1.6rem 1.25rem max(1.6rem, calc(env(safe-area-inset-bottom) + 0.8rem)) !important;
+            animation-name: bs-pop-mobile !important;
+          }
+          /* 16px mini sur les champs → empêche le zoom auto iOS à la mise au point. */
+          .bs-panel input, .bs-panel select { font-size: 1rem !important; }
+        }
       `}</style>
     </>
   );
