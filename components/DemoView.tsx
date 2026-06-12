@@ -154,7 +154,7 @@ export default function DemoView({ slug }: { slug: string }) {
             <Reveal delay={120} style={{ order: v.vit === "onglerie" ? 1 : 2 }}>
               <div style={{ position: "relative" }}>
                 <div style={{ position: "relative", aspectRatio: "16 / 9", borderRadius: "1.4rem", overflow: "hidden", border: "1px solid var(--line)", boxShadow: "0 30px 70px oklch(0 0 0 / 0.25)" }}>
-                  <Image src={v.cover} alt={`${v.business}, ${v.trade}`} fill priority sizes="(max-width: 860px) 92vw, 560px" style={{ objectFit: "cover", objectPosition: "center" }} />
+                  <Image src={v.cover} alt={`${v.business}, ${v.trade}`} fill priority unoptimized sizes="(max-width: 860px) 92vw, 560px" style={{ objectFit: "cover", objectPosition: "center" }} />
                 </div>
                 <div className="vit-card hero-badge" style={{ position: "absolute", bottom: "-1.1rem", left: v.vit === "onglerie" ? "auto" : "-1rem", right: v.vit === "onglerie" ? "-1rem" : "auto", padding: "0.75rem 1rem", display: "flex", alignItems: "center", gap: "0.6rem" }}>
                   <Clock size={18} style={{ color: "var(--accent)", flexShrink: 0 }} />
@@ -200,7 +200,7 @@ export default function DemoView({ slug }: { slug: string }) {
             </div>
             <Reveal delay={120}>
               <div style={{ position: "relative", aspectRatio: "4 / 3", borderRadius: "1.3rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                <Image src={v.detail} alt={`${v.business}`} fill sizes="(max-width: 860px) 92vw, 460px" style={{ objectFit: "cover", objectPosition: "center" }} />
+                <Image src={v.detail} alt={`${v.business}`} fill unoptimized sizes="(max-width: 860px) 92vw, 460px" style={{ objectFit: "cover", objectPosition: "center" }} />
               </div>
             </Reveal>
           </div>
@@ -220,18 +220,18 @@ export default function DemoView({ slug }: { slug: string }) {
           <div className="gallery-stack" style={{ display: "grid", gap: "1rem" }}>
             <Reveal>
               <div style={{ position: "relative", aspectRatio: "16 / 9", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                <Image src={v.scene} alt={`${v.business}`} fill sizes="(max-width: 860px) 92vw, 1180px" style={{ objectFit: "cover", objectPosition: "center" }} />
+                <Image src={v.scene} alt={`${v.business}`} fill unoptimized sizes="(max-width: 860px) 92vw, 1180px" style={{ objectFit: "cover", objectPosition: "center" }} />
               </div>
             </Reveal>
             <div className="gallery-pair" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", alignItems: "start" }}>
               <Reveal delay={80}>
                 <div style={{ position: "relative", aspectRatio: "4 / 3", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                  <Image src={v.detail} alt={`${v.business}`} fill sizes="(max-width: 860px) 46vw, 560px" style={{ objectFit: "cover", objectPosition: "center" }} />
+                  <Image src={v.detail} alt={`${v.business}`} fill unoptimized sizes="(max-width: 860px) 46vw, 560px" style={{ objectFit: "cover", objectPosition: "center" }} />
                 </div>
               </Reveal>
               <Reveal delay={140}>
                 <div style={{ position: "relative", aspectRatio: "3 / 4", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                  <Image src={v.portrait} alt={`${v.artisanName} · ${v.business}`} fill sizes="(max-width: 860px) 46vw, 420px" style={{ objectFit: "cover", objectPosition: "center top" }} />
+                  <Image src={v.portrait} alt={`${v.artisanName} · ${v.business}`} fill unoptimized sizes="(max-width: 860px) 46vw, 420px" style={{ objectFit: "cover", objectPosition: "center top" }} />
                 </div>
               </Reveal>
             </div>
@@ -245,7 +245,7 @@ export default function DemoView({ slug }: { slug: string }) {
           <div className="artisan-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1.1fr", gap: "clamp(2rem, 5vw, 4rem)", alignItems: "center" }}>
             <Reveal>
               <div style={{ position: "relative", aspectRatio: "3 / 4", borderRadius: "1.4rem", overflow: "hidden", border: "1px solid var(--line)", boxShadow: "0 24px 60px oklch(0 0 0 / 0.22)" }}>
-                <Image src={v.portrait} alt={`${v.artisanName}, ${v.artisanRole}`} fill sizes="(max-width: 860px) 92vw, 460px" style={{ objectFit: "cover" }} />
+                <Image src={v.portrait} alt={`${v.artisanName}, ${v.artisanRole}`} fill unoptimized sizes="(max-width: 860px) 92vw, 460px" style={{ objectFit: "cover" }} />
               </div>
             </Reveal>
             <Reveal delay={120}>
@@ -256,7 +256,7 @@ export default function DemoView({ slug }: { slug: string }) {
               <figure style={{ margin: "1.7rem 0 0" }}>
                 {/* Planche-contact : affichée en entier (jamais croppée) */}
                 <div style={{ borderRadius: "1rem", overflow: "hidden", border: "1px solid var(--line)", background: "var(--surf)" }}>
-                  <Image src={v.sheet} alt={`${v.artisanName}`} width={1600} height={1200} sizes="(max-width: 860px) 92vw, 540px" style={{ width: "100%", height: "auto", display: "block" }} />
+                  <Image src={v.sheet} alt={`${v.artisanName}`} width={1600} height={1200} unoptimized sizes="(max-width: 860px) 92vw, 540px" style={{ width: "100%", height: "auto", display: "block" }} />
                 </div>
                 <figcaption style={{ marginTop: "0.7rem", fontSize: "0.84rem", color: "var(--fg-dim)", fontStyle: "italic" }}>{c.sheetCaption}</figcaption>
               </figure>
