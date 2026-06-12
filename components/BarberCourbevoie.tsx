@@ -76,16 +76,17 @@ export default function BarberCourbevoie() {
     <div
       className="bcb-root demo-page"
       style={{
-        // Thème barbier — sombre, masculin et chaleureux : charbon profond,
-        // laiton/or, cuivre. L'or rappelle les capes Versace et l'enseigne dorée.
-        ["--bg" as string]: "oklch(0.17 0.008 70)",
-        ["--bg-2" as string]: "oklch(0.21 0.01 70)",
-        ["--surf" as string]: "oklch(0.245 0.012 72)",
-        ["--fg" as string]: "oklch(0.95 0.01 85)",
-        ["--fg-dim" as string]: "oklch(0.74 0.014 80)",
-        ["--accent" as string]: "oklch(0.8 0.12 82)",
-        ["--accent-2" as string]: "oklch(0.62 0.13 52)",
-        ["--line" as string]: "oklch(0.85 0.02 85 / 0.14)",
+        // Thème barbier — sombre chaleureux, masculin et luxueux : brun espresso
+        // ambré (pas charbon froid), or laiton riche, cuivre. L'or rappelle les
+        // capes Versace et l'enseigne dorée du salon.
+        ["--bg" as string]: "oklch(0.205 0.024 56)",
+        ["--bg-2" as string]: "oklch(0.245 0.029 53)",
+        ["--surf" as string]: "oklch(0.288 0.033 50)",
+        ["--fg" as string]: "oklch(0.955 0.016 82)",
+        ["--fg-dim" as string]: "oklch(0.78 0.024 74)",
+        ["--accent" as string]: "oklch(0.815 0.145 84)",
+        ["--accent-2" as string]: "oklch(0.62 0.15 46)",
+        ["--line" as string]: "oklch(0.85 0.05 82 / 0.17)",
         ["--bcb-display" as string]: "var(--font-marcellus), Georgia, serif",
         ["--bcb-body" as string]: "var(--font-hanken), system-ui, sans-serif",
         background: "var(--bg)",
@@ -164,7 +165,7 @@ export default function BarberCourbevoie() {
           <Reveal>
             <div style={{ maxWidth: "46rem", paddingBlock: "clamp(4rem, 12vw, 8.5rem)" }}>
               <span className="bcb-kicker bcb-kicker-hero">{c.heroKicker}</span>
-              <h1 className="bcb-display" style={{ fontSize: "clamp(2.4rem, 6.5vw, 5rem)", lineHeight: 1.02, letterSpacing: "-0.01em", margin: "1.1rem 0 1.3rem", color: "oklch(0.985 0.012 88)", textShadow: "0 2px 30px oklch(0 0 0 / 0.6)" }}>
+              <h1 className="bcb-display" style={{ fontSize: "clamp(2.4rem, 6.5vw, 5rem)", lineHeight: 1.02, letterSpacing: "-0.01em", margin: "1.1rem 0 1.3rem", color: "oklch(0.985 0.014 88)", textShadow: "0 2px 30px oklch(0 0 0 / 0.6), 0 0 64px oklch(0.82 0.14 86 / 0.22)" }}>
                 {c.heroTitle}
               </h1>
               <p style={{ fontSize: "clamp(1.04rem, 1.5vw, 1.22rem)", color: "oklch(0.93 0.012 82)", maxWidth: "46ch", margin: "0 0 2rem", textShadow: "0 1px 14px oklch(0 0 0 / 0.6)" }}>
@@ -544,27 +545,38 @@ export default function BarberCourbevoie() {
         .bcb-display { font-family: var(--bcb-display); }
         .bcb-kicker { display: inline-flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); }
         .bcb-kicker::before { content: ""; width: 1.7rem; height: 2px; background: var(--accent); }
-        .bcb-kicker-hero { color: oklch(0.86 0.11 84); }
-        .bcb-kicker-hero::before { background: oklch(0.86 0.11 84); }
+        .bcb-kicker-hero { color: oklch(0.88 0.13 86); }
+        .bcb-kicker-hero::before { background: oklch(0.88 0.13 86); }
         .bcb-navlink { color: var(--fg-dim); transition: color 0.18s var(--ease); }
         .bcb-navlink:hover { color: var(--accent); }
 
-        .bcb-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.4rem; border-radius: 0.7rem; font-weight: 600; background: var(--accent); color: oklch(0.18 0.01 70); border: 1px solid var(--accent); cursor: pointer; transition: transform 0.2s var(--ease), filter 0.2s var(--ease), box-shadow 0.2s var(--ease); }
-        .bcb-btn:hover { transform: translateY(-2px); filter: brightness(1.08); box-shadow: 0 14px 30px oklch(0 0 0 / 0.45); }
+        /* Bouton or laiton « métallique » : dégradé clair→cuivre + liseré et reflet */
+        .bcb-btn { position: relative; overflow: hidden; isolation: isolate; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.4rem; border-radius: 0.7rem; font-weight: 700; letter-spacing: 0.01em; color: oklch(0.21 0.035 50); cursor: pointer;
+          background: linear-gradient(143deg, color-mix(in oklch, var(--accent) 80%, white 24%) 0%, var(--accent) 50%, var(--accent-2) 128%);
+          border: 1px solid color-mix(in oklch, var(--accent) 65%, white 22%);
+          box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.35), 0 6px 16px color-mix(in oklch, var(--accent) 24%, transparent);
+          transition: transform 0.2s var(--ease), filter 0.2s var(--ease), box-shadow 0.2s var(--ease); }
+        .bcb-btn::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(110deg, transparent 32%, oklch(1 0 0 / 0.5) 50%, transparent 68%); transform: translateX(-140%); transition: transform 0.65s var(--ease); }
+        .bcb-btn:hover::after { transform: translateX(140%); }
+        .bcb-btn:hover { transform: translateY(-2px); filter: brightness(1.05); box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.4), 0 16px 34px color-mix(in oklch, var(--accent) 38%, transparent), 0 4px 12px oklch(0 0 0 / 0.5); }
         .bcb-btn:active { transform: scale(0.97); }
         .bcb-btn-lg { padding: 0.9rem 1.7rem; font-size: 1.02rem; }
-        .bcb-btn-outline { background: transparent; color: var(--fg); border-color: color-mix(in oklch, var(--fg) 32%, transparent); }
-        .bcb-btn-outline:hover { border-color: var(--accent); color: var(--accent); box-shadow: none; }
+        .bcb-btn-outline { background: transparent; color: var(--fg); border-color: color-mix(in oklch, var(--accent) 42%, transparent); box-shadow: none; }
+        .bcb-btn-outline::after { display: none; }
+        .bcb-btn-outline:hover { border-color: var(--accent); color: var(--accent); box-shadow: none; filter: none; transform: translateY(-2px); }
+        @media (prefers-reduced-motion: reduce) { .bcb-btn::after { display: none !important; } }
 
         /* HERO */
         .bcb-hero { position: relative; isolation: isolate; }
         .bcb-hero-bg { position: absolute; inset: 0; z-index: 0; }
         .bcb-hero-scrim { position: absolute; inset: 0; background:
-          linear-gradient(100deg, oklch(0.13 0.01 70 / 0.94) 0%, oklch(0.14 0.012 70 / 0.8) 42%, oklch(0.16 0.012 70 / 0.42) 74%, oklch(0.12 0.01 70 / 0.62) 100%); }
-        .bcb-hero-hours { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.55rem 0.9rem; border-radius: 0.7rem; background: oklch(0.2 0.012 70 / 0.6); color: oklch(0.96 0.012 82); border: 1px solid oklch(1 0 0 / 0.18); backdrop-filter: blur(6px); }
+          linear-gradient(100deg, oklch(0.16 0.03 54 / 0.94) 0%, oklch(0.18 0.032 52 / 0.8) 42%, oklch(0.22 0.032 52 / 0.4) 74%, oklch(0.15 0.028 54 / 0.66) 100%),
+          radial-gradient(120% 85% at 86% 8%, oklch(0.82 0.14 86 / 0.18), transparent 56%); }
+        .bcb-hero-hours { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.55rem 0.9rem; border-radius: 0.7rem; background: oklch(0.24 0.03 50 / 0.55); color: oklch(0.96 0.014 82); border: 1px solid oklch(0.82 0.1 84 / 0.32); backdrop-filter: blur(6px); }
 
         /* MARQUEE */
-        .bcb-marquee { overflow: hidden; border-bottom: 1px solid var(--line); background: var(--accent); color: oklch(0.18 0.01 70); }
+        .bcb-marquee { overflow: hidden; border-block: 1px solid color-mix(in oklch, var(--accent) 40%, transparent); color: oklch(0.21 0.04 50);
+          background: linear-gradient(100deg, color-mix(in oklch, var(--accent) 82%, white 18%), var(--accent) 55%, var(--accent-2) 140%); }
         .bcb-marquee-track { display: inline-flex; align-items: center; white-space: nowrap; padding-block: 0.7rem; animation: bcbMarquee 32s linear infinite; }
         .bcb-marquee-item { display: inline-flex; align-items: center; gap: 1.6rem; font-size: 1.05rem; font-weight: 600; }
         .bcb-marquee-item .bcb-display { padding-left: 1.6rem; }
@@ -576,7 +588,7 @@ export default function BarberCourbevoie() {
         /* SERVICE GRID */
         .bcb-service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
         .bcb-service { background: var(--surf); border: 1px solid var(--line); border-radius: 1.2rem; overflow: hidden; height: 100%; transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease); }
-        .bcb-service:hover { transform: translateY(-5px); box-shadow: 0 22px 48px oklch(0 0 0 / 0.45); }
+        .bcb-service:hover { transform: translateY(-5px); box-shadow: 0 22px 48px oklch(0 0 0 / 0.45), 0 0 0 1px color-mix(in oklch, var(--accent) 38%, transparent); border-color: color-mix(in oklch, var(--accent) 45%, var(--line)); }
         .bcb-service-img { position: relative; aspect-ratio: 4 / 3; overflow: hidden; }
         .bcb-service-img img { transition: transform 0.5s var(--ease); }
         .bcb-service:hover .bcb-service-img img { transform: scale(1.06); }
@@ -589,7 +601,7 @@ export default function BarberCourbevoie() {
 
         /* MENU */
         .bcb-menu-layout { display: grid; grid-template-columns: 1.55fr 1fr; gap: clamp(1.5rem, 4vw, 3rem); align-items: start; }
-        .bcb-menu-board { background: var(--surf); border: 1px solid var(--line); border-radius: 1.3rem; padding: clamp(1.4rem, 3vw, 2.2rem); }
+        .bcb-menu-board { background: var(--surf); border: 1px solid var(--line); border-top: 2px solid color-mix(in oklch, var(--accent) 55%, transparent); border-radius: 1.3rem; padding: clamp(1.4rem, 3vw, 2.2rem); box-shadow: 0 18px 44px oklch(0 0 0 / 0.32), inset 0 1px 0 oklch(1 0 0 / 0.04); }
         .bcb-menu-cols { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
         .bcb-price-row { display: flex; align-items: baseline; gap: 0.5rem; }
         .bcb-price-dots { flex: 1; border-bottom: 1px dotted color-mix(in oklch, var(--fg) 28%, transparent); transform: translateY(-0.2rem); }
@@ -612,7 +624,9 @@ export default function BarberCourbevoie() {
 
         /* CLOSING */
         .bcb-closing { position: relative; overflow: hidden; border-radius: var(--r-xl); border: 1px solid var(--line); padding: clamp(2.6rem, 7vw, 5rem) clamp(1.5rem, 5vw, 3rem); background: var(--bg-2); }
-        .bcb-closing-scrim { position: absolute; inset: 0; background: radial-gradient(circle at 50% 35%, oklch(0.16 0.012 70 / 0.62), oklch(0.13 0.01 70 / 0.94)); }
+        .bcb-closing-scrim { position: absolute; inset: 0; background:
+          radial-gradient(circle at 50% 30%, oklch(0.82 0.14 86 / 0.12), transparent 48%),
+          radial-gradient(circle at 50% 38%, oklch(0.21 0.032 50 / 0.5), oklch(0.15 0.026 54 / 0.94)); }
 
         @keyframes avScrollPulse {
           0% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--accent) 65%, transparent); transform: translateY(0); }
