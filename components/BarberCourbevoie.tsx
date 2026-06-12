@@ -2,12 +2,13 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ChevronDown, Clock, MapPin, Phone, Scissors, Star, Quote } from "lucide-react";
+import { ArrowLeft, ChevronDown, Clock, Home, Images, MapPin, Phone, Scissors, ScrollText, Star, Quote } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import LangSelector from "@/components/LangSelector";
 import BusinessSearch from "@/components/BusinessSearch";
 import OrderModal from "@/components/OrderModal";
 import VapiWidget from "@/components/VapiWidget";
+import DemoBottomNav, { type BottomNavItem } from "@/components/DemoBottomNav";
 import { useLang } from "@/lib/lang-context";
 import { getBarberContent, FACTS, MARQUEE, IMG } from "@/lib/barberCourbevoie";
 
@@ -62,9 +63,18 @@ export default function BarberCourbevoie() {
     { href: "#infos", label: c.navInfo },
   ];
 
+  // ── Barre de navigation rapide (mobile) — raccourcis barbier ────────────────
+  const bottomNavItems: BottomNavItem[] = [
+    { key: "home", label: lang === "en" ? "Top" : "Accueil", icon: <Home size={21} />, onClick: () => window.scrollTo({ top: 0, behavior: "smooth" }) },
+    { key: "carte", label: c.navCard, icon: <ScrollText size={21} />, href: "#carte" },
+    { key: "cta", label: lang === "en" ? "Book" : "RDV", icon: <Scissors size={25} />, onClick: () => setModal(true), primary: true },
+    { key: "salon", label: c.navGallery, icon: <Images size={21} />, href: "#salon" },
+    { key: "call", label: lang === "en" ? "Call" : "Appeler", icon: <Phone size={20} />, href: telHref },
+  ];
+
   return (
     <div
-      className="bcb-root"
+      className="bcb-root demo-page"
       style={{
         // Thème barbier — sombre, masculin et chaleureux : charbon profond,
         // laiton/or, cuivre. L'or rappelle les capes Versace et l'enseigne dorée.
@@ -198,12 +208,12 @@ export default function BarberCourbevoie() {
       <section style={{ paddingBlock: "clamp(3.4rem, 7vw, 6rem)" }}>
         <div className="wrap">
           <div className="bcb-story" style={{ display: "grid", gridTemplateColumns: "1.15fr 0.85fr", gap: "clamp(2rem, 5vw, 4rem)", alignItems: "center" }}>
-            <Reveal>
+            <Reveal variant="left">
               <Eyebrow num="01" label={c.storyKicker} />
               <h2 className="bcb-display" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", letterSpacing: "-0.01em", margin: "0 0 1.4rem" }}>{c.storyTitle}</h2>
               {c.storyBody.map((p, i) => <p key={i} style={{ color: "var(--fg-dim)", fontSize: "1.06rem", margin: "0 0 1rem", maxWidth: "54ch" }}>{p}</p>)}
             </Reveal>
-            <Reveal delay={120}>
+            <Reveal variant="right" delay={120}>
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {c.stats.map((s, i) => (
                   <div key={i} className="bcb-stat">
@@ -263,7 +273,7 @@ export default function BarberCourbevoie() {
 
           <div className="bcb-menu-layout">
             {/* Colonnes de prestations */}
-            <Reveal>
+            <Reveal variant="left">
               <div className="bcb-menu-board">
                 <div className="bcb-menu-cols">
                   {c.priceColumns.map((col) => (
@@ -290,7 +300,7 @@ export default function BarberCourbevoie() {
             </Reveal>
 
             {/* Photo de la vraie vitrine */}
-            <Reveal delay={120}>
+            <Reveal variant="right" delay={120}>
               <figure style={{ margin: 0 }}>
                 <div style={{ position: "relative", aspectRatio: "3 / 4", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)", boxShadow: "0 24px 60px oklch(0 0 0 / 0.4)" }}>
                   <Image src={`${IMG}/photo_04.webp`} alt={c.menuBoardCaption} fill unoptimized sizes="(max-width: 980px) 92vw, 380px" style={{ objectFit: "cover" }} />
@@ -306,14 +316,14 @@ export default function BarberCourbevoie() {
       <section id="barbier" style={{ paddingBlock: "clamp(3.4rem, 7vw, 6rem)", background: "var(--bg-2)", borderBlock: "1px solid var(--line)" }}>
         <div className="wrap">
           <div className="bcb-barber-layout">
-            <Reveal>
+            <Reveal variant="left">
               <figure style={{ margin: 0 }}>
                 <div style={{ position: "relative", aspectRatio: "3 / 4", borderRadius: "1.3rem", overflow: "hidden", border: "1px solid var(--line)", boxShadow: "0 24px 60px oklch(0 0 0 / 0.4)" }}>
                   <Image src={`${IMG}/photo_07.webp`} alt={c.barberCaption} fill unoptimized sizes="(max-width: 900px) 92vw, 400px" style={{ objectFit: "cover" }} />
                 </div>
               </figure>
             </Reveal>
-            <Reveal delay={120}>
+            <Reveal variant="right" delay={120}>
               <div>
                 <Eyebrow num="04" label={c.barberKicker} />
                 <h2 className="bcb-display" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", letterSpacing: "-0.01em", margin: "0 0 0.4rem" }}>{c.barberTitle}</h2>
@@ -393,7 +403,7 @@ export default function BarberCourbevoie() {
             <h2 className="bcb-display" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", letterSpacing: "-0.01em", margin: "0 0 2.2rem" }}>{c.infoTitle}</h2>
           </Reveal>
           <div className="bcb-info">
-            <Reveal>
+            <Reveal variant="left">
               <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                 <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                   <span className="bcb-info-ic"><MapPin size={18} /></span>
@@ -424,7 +434,7 @@ export default function BarberCourbevoie() {
                 </a>
               </div>
             </Reveal>
-            <Reveal delay={120}>
+            <Reveal variant="right" delay={120}>
               <a
                 href={FACTS.mapsUri} target="_blank" rel="noopener noreferrer"
                 aria-label={c.mapsCta}
@@ -506,7 +516,7 @@ export default function BarberCourbevoie() {
 
       {/* Scroll hint */}
       {showScrollHint && (
-        <div className="md:hidden" style={{ position: "fixed", bottom: "1.5rem", left: "50%", transform: "translateX(-50%)", zIndex: 50, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem", pointerEvents: "none", animation: "avScrollFadeIn 0.6s ease both" }}>
+        <div className="md:hidden" style={{ position: "fixed", bottom: "calc(var(--bottomnav-h, 4.5rem) + 1.6rem)", left: "50%", transform: "translateX(-50%)", zIndex: 51, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem", pointerEvents: "none", animation: "avScrollFadeIn 0.6s ease both" }}>
           <span style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--accent)", opacity: 0.9 }}>{t.demoCommon.scroll}</span>
           <div style={{ width: 40, height: 40, borderRadius: "999px", display: "grid", placeItems: "center", background: "var(--accent)", animation: "avScrollPulse 1.4s ease-in-out infinite" }}>
             <ChevronDown size={22} color="var(--bg)" strokeWidth={2.5} />
@@ -523,6 +533,9 @@ export default function BarberCourbevoie() {
           onClose={() => setModal(false)}
         />
       )}
+
+      {/* Barre de navigation rapide (mobile) — raccourcis barbier */}
+      <DemoBottomNav items={bottomNavItems} />
 
       {/* Bulle Vapi — réception barbier dédiée (assistant propre au salon) */}
       <VapiWidget slug="barbershop-courbevoie" />

@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Hanken_Grotesk, Anton, Marcellus } from "next/font
 import "./globals.css";
 import "flag-icons/css/flag-icons.min.css";
 import { LangProvider } from "@/lib/lang-context";
+import { ScrollProgress, PageFade } from "@/components/RouteMotion";
 import { SITE_URL } from "@/lib/site";
 
 const bricolage = Bricolage_Grotesque({
@@ -56,7 +57,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={`${bricolage.variable} ${hanken.variable} ${anton.variable} ${marcellus.variable}`}>
       <body>
-        <LangProvider>{children}</LangProvider>
+        <LangProvider>
+          <ScrollProgress />
+          <PageFade>{children}</PageFade>
+        </LangProvider>
       </body>
     </html>
   );

@@ -7,9 +7,11 @@ type Props = {
   className?: string;
   as?: keyof React.JSX.IntrinsicElements;
   style?: React.CSSProperties;
+  /** Style d'entrée : montée + léger zoom par défaut, ou latéral / zoom / fondu. */
+  variant?: "up" | "left" | "right" | "zoom" | "fade";
 };
 
-export default function Reveal({ children, delay = 0, className = "", as = "div", style }: Props) {
+export default function Reveal({ children, delay = 0, className = "", as = "div", style, variant = "up" }: Props) {
   const ref = useRef<HTMLElement>(null);
   const [shown, setShown] = useState(false);
 
@@ -40,6 +42,7 @@ export default function Reveal({ children, delay = 0, className = "", as = "div"
     <Tag
       ref={ref}
       className={`reveal ${shown ? "in" : ""} ${className}`}
+      data-variant={variant === "up" ? undefined : variant}
       style={{ animationDelay: `${delay}ms`, ...style }}
     >
       {children}

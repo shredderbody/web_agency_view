@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ChevronDown, Clock, MapPin, Phone, Star } from "lucide-react";
+import { ArrowLeft, ChevronDown, Clock, Home, MapPin, Phone, ScrollText, Scissors, Sparkles, Star, UtensilsCrossed, Wrench } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import LangSelector from "@/components/LangSelector";
 import DemoTestimonials from "@/components/DemoTestimonials";
@@ -10,6 +10,7 @@ import DemoFooter from "@/components/DemoFooter";
 import OrderModal from "@/components/OrderModal";
 import BusinessSearch from "@/components/BusinessSearch";
 import VapiWidget from "@/components/VapiWidget";
+import DemoBottomNav, { type BottomNavItem } from "@/components/DemoBottomNav";
 import { useLang } from "@/lib/lang-context";
 import { getVitrine } from "@/lib/vitrineContent";
 
@@ -64,8 +65,29 @@ export default function DemoView({ slug }: { slug: string }) {
     { href: "#artisan", label: c.navArtisan },
   ];
 
+  // ── Barre de navigation rapide (mobile) — raccourcis adaptés au métier ──────
+  const telDigits = (v.phone || "").replace(/\D/g, "").replace(/^0/, "");
+  const telHref = telDigits ? `tel:+33${telDigits}` : undefined;
+  const primaryIcon: Record<string, BottomNavItem["icon"]> = {
+    barber: <Scissors size={25} />, onglerie: <Sparkles size={25} />,
+    traiteur: <UtensilsCrossed size={25} />, resto: <UtensilsCrossed size={25} />,
+    plombier: <Wrench size={25} />,
+  };
+  const ctaShort: Record<string, string> = {
+    barber: lang === "en" ? "Book" : "RDV", onglerie: lang === "en" ? "Book" : "RDV",
+    traiteur: lang === "en" ? "Order" : "Commander", resto: lang === "en" ? "Book" : "Réserver",
+    plombier: lang === "en" ? "Quote" : "Devis",
+  };
+  const bottomNavItems: BottomNavItem[] = [
+    { key: "home", label: lang === "en" ? "Top" : "Accueil", icon: <Home size={21} />, onClick: () => window.scrollTo({ top: 0, behavior: "smooth" }) },
+    { key: "carte", label: c.navCard, icon: <ScrollText size={21} />, href: "#carte" },
+    { key: "cta", label: ctaShort[v.vit] ?? (lang === "en" ? "Book" : "Réserver"), icon: primaryIcon[v.vit] ?? <Star size={25} />, onClick: () => setModal(true), primary: true },
+    { key: "lieu", label: c.navPlace, icon: <MapPin size={21} />, href: "#lieu" },
+    ...(telHref ? [{ key: "call", label: lang === "en" ? "Call" : "Appeler", icon: <Phone size={20} />, href: telHref } as BottomNavItem] : []),
+  ];
+
   return (
-    <div data-vit={v.vit} style={{ fontFamily: "var(--vit-body)", minHeight: "100dvh" }}>
+    <div className="demo-page" data-vit={v.vit} style={{ fontFamily: "var(--vit-body)", minHeight: "100dvh" }}>
       {/* Ribbon */}
       <div className="demo-ribbon">
         <Link href="/#metiers" className="back"><ArrowLeft size={16} /> {c.allDemos}</Link>
@@ -138,7 +160,7 @@ export default function DemoView({ slug }: { slug: string }) {
       <section style={{ paddingBlock: "clamp(2.4rem, 5vw, 4.5rem)" }}>
         <div className="wrap">
           <div className="demo-hero" style={{ display: "grid", gridTemplateColumns: v.vit === "onglerie" ? "1fr 1.05fr" : "1.05fr 1fr", gap: "clamp(2rem, 5vw, 4rem)", alignItems: "center" }}>
-            <Reveal style={{ order: v.vit === "onglerie" ? 2 : 1 }}>
+            <Reveal variant="left" style={{ order: v.vit === "onglerie" ? 2 : 1 }}>
               <span className="vit-kicker" style={{ marginBottom: "1.2rem" }}>{v.kicker}</span>
               <h1 className="vit-display" style={{ fontSize: "clamp(2.2rem, 6vw, 4.4rem)", lineHeight: isBarber ? 0.96 : 1.03, letterSpacing: ls, margin: "0 0 1.3rem", textTransform: isBarber ? "uppercase" : "none" }}>{v.heroTitle}</h1>
               <p style={{ fontSize: "clamp(1.02rem, 1.4vw, 1.18rem)", color: "var(--fg-dim)", maxWidth: "46ch", margin: "0 0 2rem" }}>{v.heroLead}</p>
@@ -151,7 +173,7 @@ export default function DemoView({ slug }: { slug: string }) {
                 <span style={{ fontSize: "0.9rem", color: "var(--fg-dim)" }}><strong style={{ color: "var(--fg)" }}>{v.rating}/5</strong> · {v.ratingMeta}</span>
               </div>
             </Reveal>
-            <Reveal delay={120} style={{ order: v.vit === "onglerie" ? 1 : 2 }}>
+            <Reveal variant="right" delay={120} style={{ order: v.vit === "onglerie" ? 1 : 2 }}>
               <div style={{ position: "relative" }}>
                 <div style={{ position: "relative", aspectRatio: "16 / 9", borderRadius: "1.4rem", overflow: "hidden", border: "1px solid var(--line)", boxShadow: "0 30px 70px oklch(0 0 0 / 0.25)" }}>
                   <Image src={v.cover} alt={`${v.business}, ${v.trade}`} fill priority unoptimized sizes="(max-width: 860px) 92vw, 560px" style={{ objectFit: "cover", objectPosition: "center" }} />
@@ -198,7 +220,7 @@ export default function DemoView({ slug }: { slug: string }) {
                 </Reveal>
               ))}
             </div>
-            <Reveal delay={120}>
+            <Reveal variant="right" delay={120}>
               <div style={{ position: "relative", aspectRatio: "4 / 3", borderRadius: "1.3rem", overflow: "hidden", border: "1px solid var(--line)" }}>
                 <Image src={v.detail} alt={`${v.business}`} fill unoptimized sizes="(max-width: 860px) 92vw, 460px" style={{ objectFit: "cover", objectPosition: "center" }} />
               </div>
@@ -243,12 +265,12 @@ export default function DemoView({ slug }: { slug: string }) {
       <section id="artisan" style={{ paddingBlock: "clamp(3.2rem, 7vw, 6rem)" }}>
         <div className="wrap">
           <div className="artisan-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1.1fr", gap: "clamp(2rem, 5vw, 4rem)", alignItems: "center" }}>
-            <Reveal>
+            <Reveal variant="left">
               <div style={{ position: "relative", aspectRatio: "3 / 4", borderRadius: "1.4rem", overflow: "hidden", border: "1px solid var(--line)", boxShadow: "0 24px 60px oklch(0 0 0 / 0.22)" }}>
                 <Image src={v.portrait} alt={`${v.artisanName}, ${v.artisanRole}`} fill unoptimized sizes="(max-width: 860px) 92vw, 460px" style={{ objectFit: "cover" }} />
               </div>
             </Reveal>
-            <Reveal delay={120}>
+            <Reveal variant="right" delay={120}>
               <SectionEyebrow num="03" label={c.artisanKicker} />
               <h2 className="vit-display" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", letterSpacing: ls, margin: "0 0 0.4rem", textTransform: isBarber ? "uppercase" : "none" }}>{v.artisanName}</h2>
               <p style={{ color: "var(--accent)", fontWeight: 600, margin: "0 0 1.4rem" }}>{v.artisanRole}</p>
@@ -349,8 +371,8 @@ export default function DemoView({ slug }: { slug: string }) {
         <div
           className="md:hidden"
           style={{
-            position: "fixed", bottom: "1.5rem", left: "50%", transform: "translateX(-50%)",
-            zIndex: 55, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem",
+            position: "fixed", bottom: "calc(var(--bottomnav-h, 4.5rem) + 1.6rem)", left: "50%", transform: "translateX(-50%)",
+            zIndex: 51, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem",
             pointerEvents: "none", animation: "avScrollFadeIn 0.6s ease both",
           }}
         >
@@ -374,6 +396,9 @@ export default function DemoView({ slug }: { slug: string }) {
           onClose={() => setModal(false)}
         />
       )}
+
+      {/* Barre de navigation rapide (mobile) — raccourcis spécifiques au métier */}
+      <DemoBottomNav items={bottomNavItems} />
 
       {/* Bulle Vapi hybride (chat + appel) — assistant inbound dédié au métier,
           couleurs alignées sur la page. */}

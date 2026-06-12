@@ -233,13 +233,42 @@ button { font-family: inherit; }
 .marquee-track { display: flex; width: max-content; gap: 3rem; animation: marquee 38s linear infinite; will-change: transform; }
 .marquee:hover .marquee-track { animation-play-state: paused; }
 
+/* ─── Motion de route (toutes les pages) — components/RouteMotion.tsx ─────── */
+.scroll-progress {
+  position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 150;
+  pointer-events: none; background: transparent;
+}
+.scroll-progress-bar {
+  display: block; height: 100%; width: 100%;
+  transform-origin: 0 50%; transform: scaleX(0);
+  background: linear-gradient(90deg, var(--vermilion), var(--clay) 65%, var(--vermilion));
+  box-shadow: 0 0 10px oklch(0.605 0.2 33 / 0.5);
+  border-radius: 0 2px 2px 0;
+  will-change: transform;
+}
+/* Fond enchaîné à chaque navigation (opacity UNIQUEMENT, cf. RouteMotion.tsx) */
+@keyframes pageFade { from { opacity: 0; } to { opacity: 1; } }
+.page-fade { animation: pageFade 0.55s var(--ease) both; }
+
 /* ─── Reveal on load / scroll ────────────────────────────── */
-@keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
+/* Défaut : montée douce + léger zoom, plus vivant que le simple fade.
+   Transform-only (pas de filter) → ne casse pas les `position: fixed` enfants. */
+@keyframes rise { from { opacity: 0; transform: translateY(30px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes reveal-left  { from { opacity: 0; transform: translateX(-34px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes reveal-right { from { opacity: 0; transform: translateX(34px); }  to { opacity: 1; transform: translateX(0); } }
+@keyframes reveal-zoom  { from { opacity: 0; transform: scale(0.9); }        to { opacity: 1; transform: scale(1); } }
+@keyframes reveal-fade  { from { opacity: 0; } to { opacity: 1; } }
 .reveal { opacity: 0; }
-.reveal.in { animation: rise 0.8s var(--ease) forwards; }
+.reveal.in { animation: rise 0.85s var(--ease) forwards; }
+.reveal[data-variant="left"].in  { animation: reveal-left 0.85s var(--ease) forwards; }
+.reveal[data-variant="right"].in { animation: reveal-right 0.85s var(--ease) forwards; }
+.reveal[data-variant="zoom"].in  { animation: reveal-zoom 0.85s var(--ease) forwards; }
+.reveal[data-variant="fade"].in  { animation: reveal-fade 0.9s var(--ease) forwards; }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1 !important; animation: none !important; }
   .marquee-track { animation: none; }
+  .page-fade { animation: none !important; }
+  .scroll-progress { display: none; }
   html { scroll-behavior: auto; }
 }
 
@@ -418,4 +447,171 @@ body.om-open .vapi-widget-wrapper {
     max-width: calc(100vw - 2rem) !important;
     max-height: calc(100dvh - 6.5rem) !important;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BARRE DE NAVIGATION RAPIDE MÉTIER — components/DemoBottomNav.tsx (mobile only)
+   Pilule flottante spécifique au métier : hérite des couleurs de la page
+   (--bg / --surf / --accent / --line / --fg). Anti-superposition : réserve
+   l'espace bas (.demo-page), remonte la bulle Vapi et le hint, se masque quand
+   une modale est ouverte (body.om-open).
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root { --bottomnav-h: 4.5rem; }
+
+.demo-bottomnav {
+  position: fixed;
+  left: 0.7rem; right: 0.7rem;
+  bottom: max(0.7rem, env(safe-area-inset-bottom));
+  max-width: 32rem; margin-inline: auto;   /* centrée en pilule sur tablette */
+  z-index: 52;
+  display: flex; align-items: stretch; justify-content: space-around;
+  gap: 0.2rem;
+  padding: 0.42rem 0.45rem;
+  border-radius: 1.3rem;
+  background: color-mix(in oklch, var(--bg, oklch(0.2 0 0)) 76%, transparent);
+  border: 1px solid var(--line, oklch(1 0 0 / 0.14));
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow:
+    0 16px 40px oklch(0 0 0 / 0.30),
+    0 2px 8px oklch(0 0 0 / 0.18),
+    inset 0 1px 0 oklch(1 0 0 / 0.08);
+  transition: opacity 0.3s var(--ease), transform 0.4s var(--ease);
+  animation: bnRise 0.7s var(--ease) 0.15s backwards;
+}
+/* Filet d'accent qui respire en haut de la pilule */
+.demo-bottomnav::before {
+  content: ""; position: absolute; left: 16%; right: 16%; top: -1px; height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  animation: bnSheen 4.5s ease-in-out infinite;
+}
+
+.demo-bottomnav-it {
+  position: relative;
+  flex: 1 1 0; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.16rem;
+  padding: 0.42rem 0.15rem 0.34rem;
+  border-radius: 0.95rem;
+  background: transparent; border: none; cursor: pointer;
+  color: var(--fg-dim, oklch(0.7 0 0));
+  font-family: inherit;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.015em;
+  text-align: center;
+  transition: color 0.25s var(--ease), background 0.25s var(--ease), transform 0.18s var(--ease);
+  animation: bnItemIn 0.5s var(--ease) backwards;
+  animation-delay: calc(0.32s + var(--bn-i, 0) * 0.06s);
+  -webkit-tap-highlight-color: transparent;
+}
+.demo-bottomnav-it .demo-bottomnav-ic { display: inline-flex; transition: transform 0.3s var(--ease); }
+.demo-bottomnav-it .demo-bottomnav-ic svg { width: 21px; height: 21px; }
+.demo-bottomnav-lb { max-width: 100%; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.demo-bottomnav-dot {
+  position: absolute; left: 50%; bottom: 0.06rem;
+  width: 4px; height: 4px; border-radius: 99px; background: var(--accent);
+  opacity: 0; transform: translate(-50%, 4px) scale(0);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.demo-bottomnav-it:active { transform: scale(0.88); }
+.demo-bottomnav-it.is-active { color: var(--accent); }
+.demo-bottomnav-it.is-active .demo-bottomnav-ic { transform: translateY(-1px); }
+.demo-bottomnav-it.is-active .demo-bottomnav-dot { opacity: 1; transform: translate(-50%, 0) scale(1); }
+
+/* Action principale — pastille accent surélevée (FAB intégré à la barre) */
+.demo-bottomnav-it.is-primary {
+  flex: 0 0 auto;
+  margin-top: -1.55rem;
+  gap: 0.22rem;
+  color: var(--fg-dim);
+}
+.demo-bottomnav-it.is-primary .demo-bottomnav-ic {
+  width: 3.4rem; height: 3.4rem; border-radius: 99px;
+  display: grid; place-items: center;
+  color: var(--bg);
+  background: linear-gradient(150deg, color-mix(in oklch, var(--accent) 85%, white 15%), var(--accent));
+  box-shadow:
+    0 10px 24px color-mix(in oklch, var(--accent) 42%, transparent),
+    inset 0 1px 0 oklch(1 0 0 / 0.28);
+  animation: bnPulse 2.6s ease-in-out infinite;
+}
+.demo-bottomnav-it.is-primary .demo-bottomnav-ic svg { width: 25px; height: 25px; }
+.demo-bottomnav-it.is-primary .demo-bottomnav-lb { font-size: 0.56rem; }
+.demo-bottomnav-it.is-primary:active { transform: scale(0.92); }
+
+@keyframes bnRise { from { opacity: 0; transform: translateY(135%); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bnItemIn { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bnSheen { 0%, 100% { opacity: 0.22; } 50% { opacity: 0.85; } }
+@keyframes bnPulse {
+  0%, 100% {
+    box-shadow: 0 10px 24px color-mix(in oklch, var(--accent) 40%, transparent),
+                inset 0 1px 0 oklch(1 0 0 / 0.28),
+                0 0 0 0 color-mix(in oklch, var(--accent) 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 13px 30px color-mix(in oklch, var(--accent) 52%, transparent),
+                inset 0 1px 0 oklch(1 0 0 / 0.28),
+                0 0 0 8px color-mix(in oklch, var(--accent) 0%, transparent);
+  }
+}
+
+/* Réserve l'espace bas + remonte Vapi/hint quand la barre est présente
+   (mobile ET tablette, jusqu'à 1024px) */
+@media (max-width: 1024px) {
+  body.has-quicknav .demo-page {
+    padding-bottom: calc(var(--bottomnav-h) + env(safe-area-inset-bottom) + 1.1rem);
+  }
+  body.has-quicknav .vapi-widget-wrapper > div {
+    bottom: calc(var(--bottomnav-h) + max(0.7rem, env(safe-area-inset-bottom)) + 0.85rem) !important;
+  }
+}
+/* Desktop (≥1025px) : pas de barre rapide, la nav classique suffit */
+@media (min-width: 1025px) {
+  .demo-bottomnav { display: none !important; }
+}
+/* Modale ouverte (OrderModal pose body.om-open) : la barre glisse hors-champ */
+body.om-open .demo-bottomnav {
+  opacity: 0; transform: translateY(165%); pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-bottomnav,
+  .demo-bottomnav-it,
+  .demo-bottomnav::before,
+  .demo-bottomnav-it.is-primary .demo-bottomnav-ic { animation: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MICRO-MOTION GLOBAL — appliqué via le markup existant, donc sur toutes les
+   pages (landing + démos). Tout est GPU (transform/opacity) et désactivé sous
+   prefers-reduced-motion.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Reflet qui balaie les CTA pleins au survol */
+.btn-accent, .btn-primary, .vit-btn:not(.vit-btn-outline) { position: relative; overflow: hidden; isolation: isolate; }
+.btn-accent::after, .btn-primary::after, .vit-btn:not(.vit-btn-outline)::after {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(110deg, transparent 32%, oklch(1 0 0 / 0.32) 50%, transparent 68%);
+  transform: translateX(-140%); transition: transform 0.65s var(--ease);
+}
+.btn-accent:hover::after, .btn-primary:hover::after, .vit-btn:not(.vit-btn-outline):hover::after { transform: translateX(140%); }
+
+/* Souligné animé des liens de navigation des démos */
+.vit-navlink, .bcb-navlink, .tve-navlink { position: relative; }
+.vit-navlink::after, .bcb-navlink::after, .tve-navlink::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 2px;
+  background: var(--accent); border-radius: 2px;
+  transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform 0.3s var(--ease);
+}
+.vit-navlink:hover::after, .bcb-navlink:hover::after, .tve-navlink:hover::after { transform: scaleX(1); }
+
+/* Zoom doux des visuels en cadre (maquettes de devanture, etc.) au survol */
+.frame img { transition: transform 0.6s var(--ease); }
+.frame:hover img { transform: scale(1.045); }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-accent::after, .btn-primary::after, .vit-btn::after { display: none !important; }
+  .vit-navlink::after, .bcb-navlink::after, .tve-navlink::after { transition: none !important; }
+  .frame img { transition: none !important; }
 }

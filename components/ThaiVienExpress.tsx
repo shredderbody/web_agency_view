@@ -2,12 +2,13 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ChevronDown, Clock, MapPin, Phone, Star, UtensilsCrossed, Quote } from "lucide-react";
+import { ArrowLeft, ChevronDown, Clock, Home, MapPin, Phone, ScrollText, Star, UtensilsCrossed, Quote } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import LangSelector from "@/components/LangSelector";
 import BusinessSearch from "@/components/BusinessSearch";
 import OrderModal from "@/components/OrderModal";
 import VapiWidget from "@/components/VapiWidget";
+import DemoBottomNav, { type BottomNavItem } from "@/components/DemoBottomNav";
 import { useLang } from "@/lib/lang-context";
 import { getThaiContent, FACTS, MARQUEE, IMG } from "@/lib/thaiViens";
 
@@ -62,9 +63,18 @@ export default function ThaiVienExpress() {
     { href: "#infos", label: c.navInfo },
   ];
 
+  // ── Barre de navigation rapide (mobile) — raccourcis restaurant ─────────────
+  const bottomNavItems: BottomNavItem[] = [
+    { key: "home", label: lang === "en" ? "Top" : "Accueil", icon: <Home size={21} />, onClick: () => window.scrollTo({ top: 0, behavior: "smooth" }) },
+    { key: "carte", label: c.navCard, icon: <ScrollText size={21} />, href: "#carte" },
+    { key: "cta", label: lang === "en" ? "Order" : "Commander", icon: <UtensilsCrossed size={25} />, onClick: () => setModal(true), primary: true },
+    { key: "avis", label: c.navReviews, icon: <Star size={21} />, href: "#avis" },
+    { key: "call", label: lang === "en" ? "Call" : "Appeler", icon: <Phone size={20} />, href: telHref },
+  ];
+
   return (
     <div
-      className="tve-root"
+      className="tve-root demo-page"
       style={{
         // Thème thaï — clair, chaud et accueillant : ivoire crème, brun chaud,
         // or terracotta, piment, vert herbe. Le héros garde sa photo immersive.
@@ -199,12 +209,12 @@ export default function ThaiVienExpress() {
       <section style={{ paddingBlock: "clamp(3.4rem, 7vw, 6rem)" }}>
         <div className="wrap">
           <div className="tve-story" style={{ display: "grid", gridTemplateColumns: "1.15fr 0.85fr", gap: "clamp(2rem, 5vw, 4rem)", alignItems: "center" }}>
-            <Reveal>
+            <Reveal variant="left">
               <Eyebrow num="01" label={c.storyKicker} />
               <h2 className="tve-display" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", letterSpacing: "-0.01em", margin: "0 0 1.4rem" }}>{c.storyTitle}</h2>
               {c.storyBody.map((p, i) => <p key={i} style={{ color: "var(--fg-dim)", fontSize: "1.06rem", margin: "0 0 1rem", maxWidth: "54ch" }}>{p}</p>)}
             </Reveal>
-            <Reveal delay={120}>
+            <Reveal variant="right" delay={120}>
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {c.stats.map((s, i) => (
                   <div key={i} className="tve-stat">
@@ -267,7 +277,7 @@ export default function ThaiVienExpress() {
 
           <div className="tve-menu-layout">
             {/* Colonnes protéines */}
-            <Reveal>
+            <Reveal variant="left">
               <div className="tve-menu-board">
                 <div className="tve-menu-cols">
                   {c.menuColumns.map((col) => (
@@ -296,7 +306,7 @@ export default function ThaiVienExpress() {
             </Reveal>
 
             {/* Photo du vrai tableau */}
-            <Reveal delay={120}>
+            <Reveal variant="right" delay={120}>
               <figure style={{ margin: 0 }}>
                 <div style={{ position: "relative", aspectRatio: "16 / 9", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)", boxShadow: "0 24px 60px oklch(0 0 0 / 0.3)" }}>
                   <Image src={`${IMG}/photo_06.webp`} alt={c.menuBoardCaption} fill unoptimized sizes="(max-width: 980px) 92vw, 440px" style={{ objectFit: "cover" }} />
@@ -382,7 +392,7 @@ export default function ThaiVienExpress() {
             <h2 className="tve-display" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", letterSpacing: "-0.01em", margin: "0 0 2.2rem" }}>{c.infoTitle}</h2>
           </Reveal>
           <div className="tve-info">
-            <Reveal>
+            <Reveal variant="left">
               <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                 <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                   <span className="tve-info-ic"><MapPin size={18} /></span>
@@ -413,7 +423,7 @@ export default function ThaiVienExpress() {
                 </a>
               </div>
             </Reveal>
-            <Reveal delay={120}>
+            <Reveal variant="right" delay={120}>
               <a
                 href={FACTS.mapsUri} target="_blank" rel="noopener noreferrer"
                 aria-label={c.mapsCta}
@@ -496,7 +506,7 @@ export default function ThaiVienExpress() {
 
       {/* Scroll hint */}
       {showScrollHint && (
-        <div className="md:hidden" style={{ position: "fixed", bottom: "1.5rem", left: "50%", transform: "translateX(-50%)", zIndex: 50, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem", pointerEvents: "none", animation: "avScrollFadeIn 0.6s ease both" }}>
+        <div className="md:hidden" style={{ position: "fixed", bottom: "calc(var(--bottomnav-h, 4.5rem) + 1.6rem)", left: "50%", transform: "translateX(-50%)", zIndex: 51, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem", pointerEvents: "none", animation: "avScrollFadeIn 0.6s ease both" }}>
           <span style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--accent)", opacity: 0.9 }}>{t.demoCommon.scroll}</span>
           <div style={{ width: 40, height: 40, borderRadius: "999px", display: "grid", placeItems: "center", background: "var(--accent)", animation: "avScrollPulse 1.4s ease-in-out infinite" }}>
             <ChevronDown size={22} color="var(--bg)" strokeWidth={2.5} />
@@ -520,6 +530,9 @@ export default function ThaiVienExpress() {
       )}
 
       {/* Bulle Vapi — réception FR (voix MiniMax), couleurs & nom Thaï Vien Express */}
+      {/* Barre de navigation rapide (mobile) — raccourcis restaurant */}
+      <DemoBottomNav items={bottomNavItems} />
+
       <VapiWidget slug="thai-viens-express" />
 
       <style>{`
