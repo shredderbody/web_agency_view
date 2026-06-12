@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ArrowLeft, ArrowRight, Check, Loader2, MapPin, Search, Star, X } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 
@@ -182,9 +183,14 @@ export default function BusinessSearch() {
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // Masque la bulle Vapi tant que la fiche est ouverte : sur mobile, la bulle
+    // fixe en bas à droite recouvre le bouton d'envoi (même règle CSS que
+    // l'OrderModal — `body.om-open [data-vapi-metier]` dans globals.css).
+    document.body.classList.add("om-open");
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
+      document.body.classList.remove("om-open");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected, submitting]);
@@ -518,7 +524,11 @@ export default function BusinessSearch() {
       </div>
 
       {/* ── POP-UP fiche entreprise ── */}
-      {selected && (
+      {/* Rendue via portal sur <body> : indispensable car ce composant est rendu
+          à l'intérieur d'un <Reveal> dont l'animation laisse un `transform`, ce qui
+          ferait du conteneur (et son overflow:hidden) le bloc de référence du
+          position:fixed → modale rognée/piégée. Le portal la sort du flux. */}
+      {selected && typeof document !== "undefined" && createPortal(
         <div
           role="dialog"
           aria-modal="true"
@@ -699,7 +709,8 @@ export default function BusinessSearch() {
             {statusLine}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <style>{`
