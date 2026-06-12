@@ -176,6 +176,7 @@ const FR: Content = {
   ambianceCaptions: [
     "La salle et ses banquettes en cuir, sous les suspensions en rotin.",
     "L'enseigne Thaï Vien et ses chaises en rotin tressé.",
+    "Les bouchées vapeur, tout juste sorties du panier.",
   ],
   reviewsKicker: "Ils en parlent",
   reviewsTitle: "Ce que disent les habitués.",
@@ -262,6 +263,7 @@ const EN: Content = {
   ambianceCaptions: [
     "The room and its leather banquettes, under rattan pendant lights.",
     "The Thaï Vien sign and its woven rattan chairs.",
+    "Steamed dumplings, fresh out of the basket.",
   ],
   reviewsKicker: "Word of mouth",
   reviewsTitle: "What the regulars say.",

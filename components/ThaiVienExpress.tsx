@@ -298,7 +298,7 @@ export default function ThaiVienExpress() {
             {/* Photo du vrai tableau */}
             <Reveal delay={120}>
               <figure style={{ margin: 0 }}>
-                <div style={{ position: "relative", aspectRatio: "4 / 3", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)", boxShadow: "0 24px 60px oklch(0 0 0 / 0.3)" }}>
+                <div style={{ position: "relative", aspectRatio: "16 / 9", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)", boxShadow: "0 24px 60px oklch(0 0 0 / 0.3)" }}>
                   <Image src={`${IMG}/photo_06.webp`} alt={c.menuBoardCaption} fill sizes="(max-width: 980px) 92vw, 440px" style={{ objectFit: "cover" }} />
                 </div>
                 <figcaption style={{ marginTop: "0.7rem", fontSize: "0.84rem", color: "var(--fg-dim)", fontStyle: "italic" }}>{c.menuBoardCaption}</figcaption>
@@ -322,26 +322,27 @@ export default function ThaiVienExpress() {
             <Reveal>
               <figure style={{ margin: 0 }}>
                 <div style={{ position: "relative", aspectRatio: "3 / 4", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                  <Image src={`${IMG}/photo_00.webp`} alt={c.ambianceCaptions[0]} fill sizes="(max-width: 860px) 92vw, 420px" style={{ objectFit: "cover" }} />
+                  <Image src={`${IMG}/photo_00.webp`} alt={c.ambianceCaptions[0]} fill sizes="(max-width: 860px) 92vw, 360px" style={{ objectFit: "cover" }} />
                 </div>
                 <figcaption className="tve-cap">{c.ambianceCaptions[0]}</figcaption>
               </figure>
             </Reveal>
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <Reveal delay={80}>
-                <figure style={{ margin: 0 }}>
-                  <div style={{ position: "relative", aspectRatio: "16 / 10", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                    <Image src={`${IMG}/photo_08.webp`} alt={c.ambianceCaptions[1]} fill sizes="(max-width: 860px) 92vw, 560px" style={{ objectFit: "cover" }} />
-                  </div>
-                  <figcaption className="tve-cap">{c.ambianceCaptions[1]}</figcaption>
-                </figure>
-              </Reveal>
-              <Reveal delay={140}>
-                <div style={{ position: "relative", aspectRatio: "16 / 9", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                  <Image src={`${IMG}/photo_09.webp`} alt="Bouchées vapeur" fill sizes="(max-width: 860px) 92vw, 560px" style={{ objectFit: "cover" }} />
+            <Reveal delay={80}>
+              <figure style={{ margin: 0 }}>
+                <div style={{ position: "relative", aspectRatio: "3 / 4", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
+                  <Image src={`${IMG}/photo_08.webp`} alt={c.ambianceCaptions[1]} fill sizes="(max-width: 860px) 92vw, 360px" style={{ objectFit: "cover" }} />
                 </div>
-              </Reveal>
-            </div>
+                <figcaption className="tve-cap">{c.ambianceCaptions[1]}</figcaption>
+              </figure>
+            </Reveal>
+            <Reveal delay={140}>
+              <figure style={{ margin: 0 }}>
+                <div style={{ position: "relative", aspectRatio: "3 / 4", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
+                  <Image src={`${IMG}/photo_09.webp`} alt={c.ambianceCaptions[2] ?? c.ambianceCaptions[0]} fill sizes="(max-width: 860px) 92vw, 360px" style={{ objectFit: "cover" }} />
+                </div>
+                <figcaption className="tve-cap">{c.ambianceCaptions[2] ?? ""}</figcaption>
+              </figure>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -578,7 +579,7 @@ export default function ThaiVienExpress() {
         .tve-menu-extras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; margin-top: 1.8rem; padding-top: 1.6rem; border-top: 1px dashed var(--line); }
 
         /* GALLERY */
-        .tve-gallery { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 1rem; align-items: start; }
+        .tve-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; align-items: start; }
         .tve-cap { margin-top: 0.6rem; font-size: 0.82rem; color: var(--fg-dim); font-style: italic; }
 
         /* REVIEWS */

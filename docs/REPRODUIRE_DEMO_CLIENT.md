@@ -98,6 +98,21 @@ L'archive `demo_<client>/` (JPEG bruts + JSON) reste à la racine comme **source
 Elle est exclue de l'image Docker via `.dockerignore`. Le site sert les **WebP**
 de `public/clients/<slug>/`.
 
+➡️ **Relevez le ratio de chaque photo** avant de la placer — il détermine le
+`aspectRatio` du conteneur (voir étape 6) :
+
+```bash
+node -e '
+const sharp=require("sharp"),fs=require("fs"),p=require("path");
+const out="public/clients/<slug>";
+for(const f of fs.readdirSync(out).filter(f=>f.endsWith(".webp"))){
+  sharp(p.join(out,f)).metadata().then(m=>console.log(f,m.width+"x"+m.height,"("+(m.width/m.height).toFixed(2)+")"));
+}'
+```
+
+Les photos Google sont typiquement **portrait** (`0.75` ≈ 3:4) ou **paysage**
+(`1.33` ≈ 4:3, `1.78` ≈ 16:9). La photo du **tableau du menu** est souvent en 16:9.
+
 ## 5) Structurer les données — `lib/<client>.ts`
 
 Copiez `lib/thaiViens.ts` comme gabarit. Il exporte :
@@ -128,6 +143,20 @@ Copiez `components/ThaiVienExpress.tsx`. Points clés :
 - Réutilise les composants maison : `Reveal`, `LangSelector`, `BusinessSearch`,
   `OrderModal`, `VapiWidget`.
 - Les `<Image>` pointent les `.webp`. Le héros est `priority`.
+- ⚠️ **Images rognées (crop) — le piège n°1.** Avec `objectFit: "cover"`, toute
+  photo dont le ratio ≠ celui du conteneur est **coupée**. Pour les images de
+  contenu (galerie ambiance, **tableau du menu**, plats), le `aspectRatio` du
+  conteneur **doit correspondre au ratio réel de la photo** (relevé à l'étape 4) :
+  - portrait `0.75` → `aspectRatio: "3 / 4"`
+  - paysage `1.33` → `aspectRatio: "4 / 3"`
+  - large `1.78` (tableau du menu) → `aspectRatio: "16 / 9"`
+
+  Ne mélangez pas portrait et paysage dans une même grille à ratio fixe. Si une
+  galerie regroupe des photos portrait, faites-en un **triptyque de colonnes
+  `3 / 4`** (cf. la section ambiance de `ThaiVienExpress.tsx`). N'utilisez `cover`
+  avec un ratio arbitraire que pour les **fonds décoratifs plein cadre** (héros,
+  closing), où le crop est voulu. Pour une image qui doit rester **entièrement
+  lisible** (un menu, un document), préférez `objectFit: "contain"`.
 
 ## 7) Route + metadata — `app/demo/<slug>/page.tsx`
 
