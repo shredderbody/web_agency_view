@@ -95,7 +95,11 @@ export default function VapiWidget({ slug }: { slug: string }) {
         radius: "large",
         accentColor: cfg.accent,
         baseColor: cfg.base,
-        buttonBaseColor: cfg.accent,
+        // L'icône de la bulle fermée est dessinée dans `accentColor` : si le fond
+        // (buttonBaseColor) = accentColor aussi, l'icône devient invisible (gros
+        // vide avant le libellé). On prend donc l'opposé clair/sombre de
+        // cfg.buttonIcon (qui contraste déjà avec accentColor pour le libellé).
+        buttonBaseColor: cfg.theme === "dark" ? "#FFFFFF" : "#1A1A1A",
         buttonAccentColor: cfg.buttonIcon,
         mainLabel: cfg.label,
         startButtonText: "Appeler",
