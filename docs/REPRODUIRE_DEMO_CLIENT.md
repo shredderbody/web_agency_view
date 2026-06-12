@@ -143,6 +143,17 @@ Copiez `components/ThaiVienExpress.tsx`. Points clés :
 - Réutilise les composants maison : `Reveal`, `LangSelector`, `BusinessSearch`,
   `OrderModal`, `VapiWidget`.
 - Les `<Image>` pointent les `.webp`. Le héros est `priority`.
+- ⚡ **Perf — `unoptimized` sur les photos locales.** Les WebP de l'étape 4 sont
+  **déjà** compressées (q78) et redimensionnées (≤1600px). Les repasser dans
+  l'optimiseur Next (qui ré-encode en **AVIF**, coûteux en CPU) ralentit le **1er
+  affichage** : chaque image attend le ré-encodage serveur, surtout après un
+  rebuild (cache `/_next/image` vidé). Mettez donc **`unoptimized`** sur **toutes**
+  les `<Image>` qui pointent un `.webp` local → elles sont servies en statique
+  (cache immuable 1 an), affichage quasi-instantané, zéro coût runtime. Gardez le
+  héros en `priority` (= `<link rel=preload>` du LCP injecté automatiquement).
+  ⚠️ Ne touchez **pas** au réglage global `images.formats` de `next.config.ts`
+  (l'AVIF reste utile aux images **distantes** Unsplash des autres démos) — c'est
+  un opt-out **par image**, pas global.
 - ⚠️ **Images rognées (crop) — le piège n°1.** Avec `objectFit: "cover"`, toute
   photo dont le ratio ≠ celui du conteneur est **coupée**. Pour les images de
   contenu (galerie ambiance, **tableau du menu**, plats), le `aspectRatio` du

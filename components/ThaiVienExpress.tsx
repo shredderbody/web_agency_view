@@ -148,7 +148,7 @@ export default function ThaiVienExpress() {
       {/* ░░ HERO immersif — photo plein cadre + dégradé ░░ */}
       <section className="tve-hero">
         <div className="tve-hero-bg">
-          <Image src={`${IMG}/photo_00.webp`} alt={`${FACTS.name} — ${trade}`} fill priority sizes="100vw" style={{ objectFit: "cover", objectPosition: "center" }} />
+          <Image src={`${IMG}/photo_00.webp`} alt={`${FACTS.name} — ${trade}`} fill priority unoptimized sizes="100vw" style={{ objectFit: "cover", objectPosition: "center" }} />
           <div className="tve-hero-scrim" />
         </div>
         <div className="wrap" style={{ position: "relative", zIndex: 2 }}>
@@ -233,7 +233,7 @@ export default function ThaiVienExpress() {
               <Reveal key={d.name} delay={(i % 3) * 70}>
                 <article className="tve-dish">
                   <div className="tve-dish-img">
-                    <Image src={d.img} alt={d.name} fill sizes="(max-width: 700px) 100vw, 380px" style={{ objectFit: "cover" }} />
+                    <Image src={d.img} alt={d.name} fill unoptimized sizes="(max-width: 700px) 100vw, 380px" style={{ objectFit: "cover" }} />
                     {d.tag && <span className="tve-dish-tag">{d.tag}</span>}
                     <span className="tve-dish-price">{d.price}</span>
                   </div>
@@ -299,7 +299,7 @@ export default function ThaiVienExpress() {
             <Reveal delay={120}>
               <figure style={{ margin: 0 }}>
                 <div style={{ position: "relative", aspectRatio: "16 / 9", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)", boxShadow: "0 24px 60px oklch(0 0 0 / 0.3)" }}>
-                  <Image src={`${IMG}/photo_06.webp`} alt={c.menuBoardCaption} fill sizes="(max-width: 980px) 92vw, 440px" style={{ objectFit: "cover" }} />
+                  <Image src={`${IMG}/photo_06.webp`} alt={c.menuBoardCaption} fill unoptimized sizes="(max-width: 980px) 92vw, 440px" style={{ objectFit: "cover" }} />
                 </div>
                 <figcaption style={{ marginTop: "0.7rem", fontSize: "0.84rem", color: "var(--fg-dim)", fontStyle: "italic" }}>{c.menuBoardCaption}</figcaption>
               </figure>
@@ -322,7 +322,7 @@ export default function ThaiVienExpress() {
             <Reveal>
               <figure style={{ margin: 0 }}>
                 <div style={{ position: "relative", aspectRatio: "3 / 4", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                  <Image src={`${IMG}/photo_00.webp`} alt={c.ambianceCaptions[0]} fill sizes="(max-width: 860px) 92vw, 360px" style={{ objectFit: "cover" }} />
+                  <Image src={`${IMG}/photo_00.webp`} alt={c.ambianceCaptions[0]} fill unoptimized sizes="(max-width: 860px) 92vw, 360px" style={{ objectFit: "cover" }} />
                 </div>
                 <figcaption className="tve-cap">{c.ambianceCaptions[0]}</figcaption>
               </figure>
@@ -330,7 +330,7 @@ export default function ThaiVienExpress() {
             <Reveal delay={80}>
               <figure style={{ margin: 0 }}>
                 <div style={{ position: "relative", aspectRatio: "3 / 4", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                  <Image src={`${IMG}/photo_08.webp`} alt={c.ambianceCaptions[1]} fill sizes="(max-width: 860px) 92vw, 360px" style={{ objectFit: "cover" }} />
+                  <Image src={`${IMG}/photo_08.webp`} alt={c.ambianceCaptions[1]} fill unoptimized sizes="(max-width: 860px) 92vw, 360px" style={{ objectFit: "cover" }} />
                 </div>
                 <figcaption className="tve-cap">{c.ambianceCaptions[1]}</figcaption>
               </figure>
@@ -338,7 +338,7 @@ export default function ThaiVienExpress() {
             <Reveal delay={140}>
               <figure style={{ margin: 0 }}>
                 <div style={{ position: "relative", aspectRatio: "3 / 4", borderRadius: "1.2rem", overflow: "hidden", border: "1px solid var(--line)" }}>
-                  <Image src={`${IMG}/photo_09.webp`} alt={c.ambianceCaptions[2] ?? c.ambianceCaptions[0]} fill sizes="(max-width: 860px) 92vw, 360px" style={{ objectFit: "cover" }} />
+                  <Image src={`${IMG}/photo_09.webp`} alt={c.ambianceCaptions[2] ?? c.ambianceCaptions[0]} fill unoptimized sizes="(max-width: 860px) 92vw, 360px" style={{ objectFit: "cover" }} />
                 </div>
                 <figcaption className="tve-cap">{c.ambianceCaptions[2] ?? ""}</figcaption>
               </figure>
@@ -444,7 +444,7 @@ export default function ThaiVienExpress() {
           <Reveal>
             <div className="tve-closing">
               <div style={{ position: "absolute", inset: 0, opacity: 0.22 }}>
-                <Image src={`${IMG}/photo_07.webp`} alt="" fill sizes="100vw" style={{ objectFit: "cover" }} />
+                <Image src={`${IMG}/photo_07.webp`} alt="" fill unoptimized sizes="100vw" style={{ objectFit: "cover" }} />
               </div>
               <div className="tve-closing-scrim" />
               <div style={{ position: "relative", zIndex: 2, textAlign: "center", maxWidth: "40ch", margin: "0 auto" }}>
