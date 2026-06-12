@@ -550,25 +550,41 @@ export default function BusinessSearch() {
               maxWidth: "33rem",
               // dvh (et non vh) → tient compte des barres mobiles ; jamais coupée.
               maxHeight: "min(88dvh, 46rem)",
-              overflowY: "auto",
-              WebkitOverflowScrolling: "touch",
+              // Colonne flex : en-tête fixe + corps scrollable. Le bouton fermer
+              // reste TOUJOURS visible (avant il défilait avec le contenu → on se
+              // retrouvait piégé dans la modale sur mobile).
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
               background: "var(--surface)",
               color: "var(--ink)",
               borderRadius: "1.2rem",
-              padding: "clamp(1.5rem, 4vw, 2.4rem)",
               boxShadow: "0 30px 90px oklch(0 0 0 / 0.45)",
               animation: "bs-pop 0.22s cubic-bezier(0.2,0.8,0.2,1)",
             }}
           >
-            <button
-              type="button"
-              onClick={closeModal}
-              aria-label={s.change}
-              style={{ position: "absolute", top: "0.9rem", right: "0.9rem", background: "var(--paper-2)", border: "none", borderRadius: "50%", width: "2rem", height: "2rem", display: "grid", placeItems: "center", cursor: "pointer", color: "var(--ink-dim)" }}
+            {/* En-tête fixe (non scrollable) : poignée de glissement (mobile) +
+                bouton fermer toujours accessible. */}
+            <div
+              className="bs-panel-head"
+              style={{ flexShrink: 0, position: "relative", display: "flex", justifyContent: "flex-end", alignItems: "center", padding: "0.8rem 0.8rem 0.4rem" }}
             >
-              <X size={17} />
-            </button>
+              <span className="bs-grab" aria-hidden style={{ display: "none", position: "absolute", top: "0.5rem", left: "50%", transform: "translateX(-50%)", width: "2.6rem", height: "0.28rem", borderRadius: "99px", background: "var(--border-strong)" }} />
+              <button
+                type="button"
+                onClick={closeModal}
+                aria-label={s.change}
+                style={{ background: "var(--paper-2)", border: "none", borderRadius: "50%", width: "2rem", height: "2rem", display: "grid", placeItems: "center", cursor: "pointer", color: "var(--ink-dim)" }}
+              >
+                <X size={17} />
+              </button>
+            </div>
 
+            {/* Corps scrollable */}
+            <div
+              className="bs-panel-body"
+              style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "0.2rem clamp(1.5rem, 4vw, 2.4rem) clamp(1.5rem, 4vw, 2.4rem)" }}
+            >
             {/* Bandeau : informations pré-remplies depuis Google Places */}
             <div
               style={{
@@ -681,6 +697,7 @@ export default function BusinessSearch() {
             {/* CTA → envoi + remplissage Supabase en arrière-plan */}
             <SubmitButton onClick={() => submitLead(googlePayload(selected))} enabled={!!gName.trim() && !detailsLoading} />
             {statusLine}
+            </div>
           </div>
         </div>
       )}
@@ -699,8 +716,15 @@ export default function BusinessSearch() {
             max-width: 100% !important;
             max-height: 92dvh !important;
             border-radius: 1.2rem 1.2rem 0 0 !important;
-            padding: 1.6rem 1.25rem max(1.6rem, calc(env(safe-area-inset-bottom) + 0.8rem)) !important;
             animation-name: bs-pop-mobile !important;
+          }
+          /* Poignée de glissement visible (affordance de fermeture) + en-tête
+             un peu plus haut pour la loger. */
+          .bs-grab { display: block !important; }
+          .bs-panel-head { padding-top: 1rem !important; }
+          /* Le corps scrollable porte le padding + le bas sécurisé (safe-area). */
+          .bs-panel-body {
+            padding: 0.2rem 1.25rem max(1.6rem, calc(env(safe-area-inset-bottom) + 0.8rem)) !important;
           }
           /* 16px mini sur les champs → empêche le zoom auto iOS à la mise au point. */
           .bs-panel input, .bs-panel select { font-size: 1rem !important; }
