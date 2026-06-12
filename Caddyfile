@@ -159,13 +159,18 @@ n8n.zerocall.io {
 }
 
 # --- PROJET ATELIER VITRINE (receptionniste) ---
+# CSP — Supabase + KIE + Deepgram + Facebook + Places ET le widget vocal Vapi
+# (bundle widget.umd.js depuis unpkg, transport WebRTC via *.vapi.ai / *.daily.co /
+# *.pluot.blue, workers blob:, micro → mediastream:). Sans ces sources la bulle
+# hybride des pages métier ne se charge pas.
 (csp_receptionniste) {
     header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://connect.facebook.net https://unpkg.com https://esm.sh; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://uvpuhoyaovmztephqknq.supabase.co wss://uvpuhoyaovmztephqknq.supabase.co https://n8n.zerocall.io https://api.kie.ai https://api.deepgram.com wss://api.deepgram.com https://places.googleapis.com https://www.facebook.com https://unpkg.com https://esm.sh https://*.vapi.ai wss://*.vapi.ai https://*.daily.co wss://*.daily.co https://*.pluot.blue; media-src 'self' blob: data: mediastream: https://uvpuhoyaovmztephqknq.supabase.co https://api.deepgram.com; frame-src 'self' blob: https://*.daily.co https://www.openstreetmap.org; worker-src 'self' blob:; object-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
 }
 
-receptionniste.zerocall.io {
-    # Sécurité de base — inline (pas import base_security) car la Permissions-Policy
-    # doit autoriser microphone=(self) pour la bulle vocale Vapi des pages /demo.
+# Sécurité de base + Permissions-Policy autorisant microphone=(self) — requis par
+# l'assistant vocal Vapi (sinon getUserMedia est bloqué). base_security est partagé
+# par d'autres sites et n'inclut PAS le micro, d'où ce variant dédié.
+(base_security_mic) {
     header {
         -Server
         X-Content-Type-Options nosniff
@@ -173,6 +178,10 @@ receptionniste.zerocall.io {
         Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
         Permissions-Policy "camera=(), geolocation=(), payment=(), usb=(), bluetooth=(), microphone=(self)"
     }
+}
+
+receptionniste.zerocall.io {
+    import base_security_mic
     import csp_receptionniste
     import nextjs_optim
 
@@ -191,15 +200,7 @@ receptionniste.zerocall.io {
 
 # --- PROJET ATELIER VITRINE (webmaster) — même app que receptionniste, :3010 ---
 webmaster.zerocall.io {
-    # Sécurité de base — inline (pas import base_security) car la Permissions-Policy
-    # doit autoriser microphone=(self) pour la bulle vocale Vapi des pages /demo.
-    header {
-        -Server
-        X-Content-Type-Options nosniff
-        Referrer-Policy strict-origin-when-cross-origin
-        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
-        Permissions-Policy "camera=(), geolocation=(), payment=(), usb=(), bluetooth=(), microphone=(self)"
-    }
+    import base_security_mic
     import csp_receptionniste
     import nextjs_optim
 
