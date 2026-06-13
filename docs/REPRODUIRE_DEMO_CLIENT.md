@@ -426,6 +426,31 @@ padding: "2.8rem 2rem max(2.8rem, calc(env(safe-area-inset-bottom) + 1.5rem))"
 `max(...)` garantit qu'aucun écran sans safe-area n'est affecté : l'inset s'ajoute
 uniquement sur les appareils concernés.
 
+### d) Sur desktop : barre de nav + sélecteur de langue **invisibles**
+Le header sticky a deux navigations : `.<x>-nav-desktop` (liens + `LangSelector` +
+bouton CTA, pour desktop) et un `.<x>-burger` qui ouvre la sidebar mobile. La nav
+desktop est écrite « mobile-first » avec un **`display: none` en style _inline_** ;
+elle n'est censée réapparaître qu'au-delà de 860px. **Piège :** si on oublie la
+règle qui la réaffiche, elle reste masquée sur desktop (un style inline ne se laisse
+pas surcharger par une règle CSS sans `!important`) → **aucune barre de nav, donc
+aucun sélecteur FR/EN visible** ≥ 860px. Seul le toggle de la sidebar mobile existe ;
+un visiteur dont le cookie `av_lang=en` reste alors **bloqué en anglais** sans moyen
+visible de repasser en français (la page est pourtant bien bilingue).
+
+**Fix obligatoire** — dans le `<style>` du composant, le bloc `@media (min-width: 860px)`
+doit **réafficher** la nav desktop avec `!important` (pour battre le `display:none` inline),
+en plus de masquer le burger/sidebar :
+```css
+@media (min-width: 860px) {
+  .<x>-burger, .<x>-sidebar, .<x>-overlay { display: none !important; }
+  .<x>-nav-desktop { display: flex !important; }   /* ← indispensable */
+}
+@media (max-width: 859px) { .<x>-nav-desktop { display: none !important; } }
+```
+Vérif : à 1280px la nav et les boutons **FR / EN** doivent être visibles dans le
+header ; à < 860px c'est le burger. (Bug rencontré et corrigé sur les 3 démos
+clients le 2026-06-13 — pensez-y dès le clonage du composant.)
+
 ---
 
 ## Récap des fichiers (exemple Thaï Vien Express)
