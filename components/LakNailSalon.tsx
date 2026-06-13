@@ -99,7 +99,10 @@ export default function LakNailSalon() {
       <div className="demo-ribbon">
         <Link href="/#metiers" className="back"><ArrowLeft size={16} /> {t.demoCommon.allDemos}</Link>
         <span className="ribbon-mid" style={{ opacity: 0.78 }}>{t.demoCommon.isDemoBanner}</span>
-        <a href="#demo-request" className="cta">{t.demoCommon.wantMine}</a>
+        <span className="ribbon-end" style={{ display: "inline-flex", alignItems: "center", gap: "0.6rem", flexShrink: 0 }}>
+          <LangSelector tone="dark" />
+          <a href="#demo-request" className="cta">{t.demoCommon.wantMine}</a>
+        </span>
       </div>
 
       {/* Header local */}

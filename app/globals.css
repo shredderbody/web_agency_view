@@ -401,6 +401,11 @@ button { font-family: inherit; }
   background: var(--vermilion); color: var(--surface);
   padding: 0.4rem 1rem; border-radius: 99px; font-weight: 600;
 }
+.demo-ribbon .ribbon-end { display: inline-flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+/* Sur écrans étroits, le sélecteur de langue (ajouté au ruban, toujours visible)
+   est prioritaire : on masque le CTA du ruban — il reste dans la section
+   #demo-request et la bottom-nav mobile. */
+@media (max-width: 460px) { .demo-ribbon .ribbon-end .cta { display: none; } }
 
 /* ── Bulle Vapi hybride (chat + appel) ────────────────────────────────────────
    Le widget (window.WidgetLoader, cf. components/VapiWidget.tsx) rend cette

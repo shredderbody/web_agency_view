@@ -92,7 +92,10 @@ export default function DemoView({ slug }: { slug: string }) {
       <div className="demo-ribbon">
         <Link href="/#metiers" className="back"><ArrowLeft size={16} /> {c.allDemos}</Link>
         <span className="ribbon-mid" style={{ opacity: 0.78 }}>{c.isDemoBanner}</span>
-        <a href="#demo-request" className="cta">{c.wantMine}</a>
+        <span className="ribbon-end" style={{ display: "inline-flex", alignItems: "center", gap: "0.6rem", flexShrink: 0 }}>
+          <LangSelector tone="dark" />
+          <a href="#demo-request" className="cta">{c.wantMine}</a>
+        </span>
       </div>
 
       {/* Local header */}
