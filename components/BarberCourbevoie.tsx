@@ -635,7 +635,7 @@ export default function BarberCourbevoie() {
         }
         @keyframes avScrollFadeIn { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
-        @media (min-width: 860px) { .bcb-burger, .bcb-sidebar, .bcb-overlay { display: none !important; } }
+        @media (min-width: 860px) { .bcb-burger, .bcb-sidebar, .bcb-overlay { display: none !important; } .bcb-nav-desktop { display: flex !important; } }
         @media (max-width: 859px) { .bcb-nav-desktop { display: none !important; } }
         @media (max-width: 980px) {
           .bcb-menu-layout { grid-template-columns: 1fr; }

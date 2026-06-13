@@ -616,7 +616,7 @@ export default function ThaiVienExpress() {
         }
         @keyframes avScrollFadeIn { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
-        @media (min-width: 860px) { .tve-burger, .tve-sidebar, .tve-overlay { display: none !important; } }
+        @media (min-width: 860px) { .tve-burger, .tve-sidebar, .tve-overlay { display: none !important; } .tve-nav-desktop { display: flex !important; } }
         @media (max-width: 859px) { .tve-nav-desktop { display: none !important; } }
         @media (max-width: 980px) {
           .tve-menu-layout { grid-template-columns: 1fr; }

@@ -635,7 +635,7 @@ export default function LakNailSalon() {
         }
         @keyframes avScrollFadeIn { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
-        @media (min-width: 860px) { .lak-burger, .lak-sidebar, .lak-overlay { display: none !important; } }
+        @media (min-width: 860px) { .lak-burger, .lak-sidebar, .lak-overlay { display: none !important; } .lak-nav-desktop { display: flex !important; } }
         @media (max-width: 859px) { .lak-nav-desktop { display: none !important; } }
         @media (max-width: 980px) {
           .lak-menu-layout { grid-template-columns: 1fr; }
