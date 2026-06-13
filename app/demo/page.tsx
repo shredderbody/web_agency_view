@@ -60,6 +60,42 @@ export default function DemoIndex() {
               </div>
             </Link>
           </Reveal>
+          <Reveal delay={80}>
+            <Link href="/demo/barbershop-courbevoie" className="card card-hover" style={{ display: "block", overflow: "hidden", height: "100%", outline: "2px solid var(--vermilion)", outlineOffset: "-2px" }}>
+              <div style={{ position: "relative", aspectRatio: "16 / 9" }}>
+                <Image src="/clients/barbershop-courbevoie/photo_03.webp" alt={lang === "en" ? "Barbershop, barber in Courbevoie" : "Barbershop, barbier à Courbevoie"} fill unoptimized sizes="(max-width: 700px) 100vw, 400px" style={{ objectFit: "cover", objectPosition: "center" }} />
+                <span className="chip" style={{ position: "absolute", top: "0.9rem", left: "0.9rem", background: "var(--vermilion)", color: "#fff" }}>{lang === "en" ? "Real client" : "Client réel"}</span>
+              </div>
+              <div style={{ padding: "1.3rem 1.5rem 1.5rem" }}>
+                <h2 className="d-md" style={{ margin: "0 0 0.15rem" }}>Barbershop · Courbevoie</h2>
+                <p style={{ color: "var(--ink-muted)", margin: "0 0 0.9rem", fontWeight: 500 }}>Courbevoie · 4,3 ★ · 23 {lang === "en" ? "reviews" : "avis"}</p>
+                <p style={{ color: "var(--ink-dim)", margin: "0 0 1.2rem" }}>
+                  {lang === "en"
+                    ? "Sharp cut, tidy beard, old-school shave. Services, prices, room and real Google reviews in one immersive page."
+                    : "Coupe nette, barbe taillée, rasage à l'ancienne. Prestations, tarifs, ambiance et vrais avis Google dans une page immersive."}
+                </p>
+                <span className="link-arrow">{t.demoIndex.visit} <ArrowUpRight size={18} /></span>
+              </div>
+            </Link>
+          </Reveal>
+          <Reveal delay={120}>
+            <Link href="/demo/lak-nail-salon" className="card card-hover" style={{ display: "block", overflow: "hidden", height: "100%", outline: "2px solid var(--vermilion)", outlineOffset: "-2px" }}>
+              <div style={{ position: "relative", aspectRatio: "16 / 9" }}>
+                <Image src="/clients/lak-nail-salon/photo_00.webp" alt={lang === "en" ? "L.A.K Nail Salon, nail salon in New York" : "L.A.K Nail Salon, onglerie à New York"} fill unoptimized sizes="(max-width: 700px) 100vw, 400px" style={{ objectFit: "cover", objectPosition: "center" }} />
+                <span className="chip" style={{ position: "absolute", top: "0.9rem", left: "0.9rem", background: "var(--vermilion)", color: "#fff" }}>{lang === "en" ? "Real client" : "Client réel"}</span>
+              </div>
+              <div style={{ padding: "1.3rem 1.5rem 1.5rem" }}>
+                <h2 className="d-md" style={{ margin: "0 0 0.15rem" }}>L.A.K Nail Salon</h2>
+                <p style={{ color: "var(--ink-muted)", margin: "0 0 0.9rem", fontWeight: 500 }}>New York · 4,5 ★ · 328 {lang === "en" ? "reviews" : "avis"}</p>
+                <p style={{ color: "var(--ink-dim)", margin: "0 0 1.2rem" }}>
+                  {lang === "en"
+                    ? "Gel-X, gel polish, dip powder and custom nail art. Services, prices, designs and real Google reviews in one immersive page."
+                    : "Gel-X, vernis gel, poudre dip et nail art sur-mesure. Prestations, tarifs, créations et vrais avis Google dans une page immersive."}
+                </p>
+                <span className="link-arrow">{t.demoIndex.visit} <ArrowUpRight size={18} /></span>
+              </div>
+            </Link>
+          </Reveal>
           {demos.map((d, i) => (
             <Reveal key={d.slug} delay={(i % 2) * 80}>
               <Link href={`/demo/${d.slug}`} className="card card-hover" style={{ display: "block", overflow: "hidden", height: "100%" }}>

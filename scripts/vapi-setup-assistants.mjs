@@ -178,6 +178,28 @@ const METIERS = [
     greetFr: "Barbershop Courbevoie, bonjour ! Vous souhaitez prendre rendez-vous pour une coupe ou la barbe ?",
   },
   {
+    // Client réel — L.A.K Nail Salon, 176 Lafayette St, New York (NoLita).
+    // Assistant DÉDIÉ (données réelles Google Places), voix féminine multilingue.
+    slug: "lak-nail-salon",
+    envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_LAK_NAIL_SALON",
+    business: "L.A.K Nail Salon",
+    tradeFr: "onglerie / beauté des ongles",
+    tradeEn: "nail salon",
+    city: "New York (NoLita)",
+    phone: "(646) 755-0959",
+    voice: VOICE.female,
+    hoursFr: "tous les jours — lundi et dimanche de 10h00 à 20h00, du mardi au samedi jusqu'à 20h30 (ouvert 7j/7)",
+    hoursEn: "every day — Monday and Sunday 10:00am to 8:00pm, Tuesday to Saturday until 8:30pm (open 7 days a week)",
+    servicesFr: "Manucure classique (25 $), Pose vernis gel (40 $), Builder gel / BIAB (55 $), Poudre dip (50 $), Gel-X pose complète (75 $), Acrylique pose complète (65 $), Remplissage / fill (55 $), Pédicure spa deluxe (68 $), Dépose & soin / soak-off (15 $), Nail art / chrome / strass (dès 5 $). Tarifs indicatifs, précisés au salon selon la forme et la longueur.",
+    rdvFr: "rendez-vous",
+    rdvEn: "appointment",
+    toolName: "enregistrer_rendezvous",
+    extraProps: { prestation: { type: "string", description: "Soin choisi / chosen treatment (Gel-X, manucure gel, poudre dip, pédicure, nail art, dépose…)." } },
+    extraAskFr: "Demande aussi quel soin le client souhaite. Le salon prend aussi sans rendez-vous.",
+    extraAskEn: "Also ask which treatment the customer wants. Walk-ins are also welcome.",
+    greetFr: "L.A.K Nail Salon, bonjour ! Vous souhaitez réserver un soin — Gel-X, manucure, pédicure ?",
+  },
+  {
     slug: "onglerie",
     envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_ONGLERIE",
     business: "L'Atelier Rosé",

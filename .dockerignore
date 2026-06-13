@@ -12,6 +12,8 @@ log_tmp
 test-results
 scripts/shoot.mjs
 demo_thai_viens_express
+demo_lak_nail_salon
+demo_*
 *.local
 Dockerfile
 .dockerignore

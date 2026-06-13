@@ -1,0 +1,452 @@
+{
+  "id": "ChIJ2fQZM8hZwokR2cE3VIthTeo",
+  "types": [
+    "nail_salon",
+    "spa",
+    "beauty_salon",
+    "point_of_interest",
+    "service",
+    "establishment"
+  ],
+  "nationalPhoneNumber": "(646) 755-0959",
+  "internationalPhoneNumber": "+1 646-755-0959",
+  "formattedAddress": "176 Lafayette St, New York, NY 10013, USA",
+  "addressComponents": [
+    {
+      "longText": "176",
+      "shortText": "176",
+      "types": [
+        "street_number"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Lafayette Street",
+      "shortText": "Lafayette St",
+      "types": [
+        "route"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Manhattan",
+      "shortText": "Manhattan",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "New York",
+      "shortText": "New York",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "New York County",
+      "shortText": "New York County",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "New York",
+      "shortText": "NY",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "United States",
+      "shortText": "US",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "10013",
+      "shortText": "10013",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "en"
+    }
+  ],
+  "location": {
+    "latitude": 40.7204908,
+    "longitude": -73.99884569999999
+  },
+  "rating": 4.5,
+  "googleMapsUri": "https://maps.google.com/?cid=16883257829123146201&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAIYBCAA",
+  "websiteUri": "http://l-a-k-nailsalonnyc.com/",
+  "regularOpeningHours": {
+    "openNow": false,
+    "periods": [
+      {
+        "open": {
+          "day": 0,
+          "hour": 10,
+          "minute": 0
+        },
+        "close": {
+          "day": 0,
+          "hour": 20,
+          "minute": 0
+        }
+      },
+      {
+        "open": {
+          "day": 1,
+          "hour": 10,
+          "minute": 0
+        },
+        "close": {
+          "day": 1,
+          "hour": 20,
+          "minute": 0
+        }
+      },
+      {
+        "open": {
+          "day": 2,
+          "hour": 10,
+          "minute": 0
+        },
+        "close": {
+          "day": 2,
+          "hour": 20,
+          "minute": 30
+        }
+      },
+      {
+        "open": {
+          "day": 3,
+          "hour": 10,
+          "minute": 0
+        },
+        "close": {
+          "day": 3,
+          "hour": 20,
+          "minute": 30
+        }
+      },
+      {
+        "open": {
+          "day": 4,
+          "hour": 10,
+          "minute": 30
+        },
+        "close": {
+          "day": 4,
+          "hour": 20,
+          "minute": 30
+        }
+      },
+      {
+        "open": {
+          "day": 5,
+          "hour": 10,
+          "minute": 30
+        },
+        "close": {
+          "day": 5,
+          "hour": 20,
+          "minute": 30
+        }
+      },
+      {
+        "open": {
+          "day": 6,
+          "hour": 10,
+          "minute": 30
+        },
+        "close": {
+          "day": 6,
+          "hour": 20,
+          "minute": 30
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "Monday: 10:00 AM – 8:00 PM",
+      "Tuesday: 10:00 AM – 8:30 PM",
+      "Wednesday: 10:00 AM – 8:30 PM",
+      "Thursday: 10:30 AM – 8:30 PM",
+      "Friday: 10:30 AM – 8:30 PM",
+      "Saturday: 10:30 AM – 8:30 PM",
+      "Sunday: 10:00 AM – 8:00 PM"
+    ],
+    "nextOpenTime": "2026-06-13T14:30:00Z"
+  },
+  "businessStatus": "OPERATIONAL",
+  "userRatingCount": 328,
+  "displayName": {
+    "text": "L.A.K Nail Salon",
+    "languageCode": "en"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Nail salon",
+    "languageCode": "en"
+  },
+  "primaryType": "nail_salon",
+  "reviews": [
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/reviews/Ci9DQUlRQUNvZENodHljRjlvT21NNVpWWmFWRVY0Tm1sSE5FZGxibWMwY0VJNVNsRRAB",
+      "relativePublishTimeDescription": "5 months ago",
+      "rating": 5,
+      "text": {
+        "text": "Came to this nail salon after work today and immediately I was welcomed. Lily did an excellent job on doing a soak off and doing a new set for me. I loved the color and the almond shape. I will definitelt be back!",
+        "languageCode": "en"
+      },
+      "originalText": {
+        "text": "Came to this nail salon after work today and immediately I was welcomed. Lily did an excellent job on doing a soak off and doing a new set for me. I loved the color and the almond shape. I will definitelt be back!",
+        "languageCode": "en"
+      },
+      "authorAttribution": {
+        "displayName": "Ana Garcia",
+        "uri": "https://www.google.com/maps/contrib/109274344059250520119/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL4RgZ-hNoyGt0GeczBTyeXSPEfZ4bCAfjx26f9vuiNnu1Uww=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2026-01-10T04:03:27.854631943Z",
+      "flagContentUri": "https://www.google.com/local/content/rap/report?postId=Ci9DQUlRQUNvZENodHljRjlvT21NNVpWWmFWRVY0Tm1sSE5FZGxibWMwY0VJNVNsRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT21NNVpWWmFWRVY0Tm1sSE5FZGxibWMwY0VJNVNsRRAB!2m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    },
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/reviews/Ci9DQUlRQUNvZENodHljRjlvT2tSc2MxQTNUSHBHUzFOV2FEWkNYMjR5YzFaM2VIYxAB",
+      "relativePublishTimeDescription": "6 months ago",
+      "rating": 5,
+      "text": {
+        "text": "What a fabulous salon. And affordable too!\nI happened in there this am and was treated to an exceptional nail treatment by Co Co. My nails were in rough shape! She did a fantastic job job cleaning them up, adding tips, and an awesome dip power in “Christmas Red”. I highly recommend this salon, and will book again when I return to NYC… 👏👏👏👏👏",
+        "languageCode": "en"
+      },
+      "originalText": {
+        "text": "What a fabulous salon. And affordable too!\nI happened in there this am and was treated to an exceptional nail treatment by Co Co. My nails were in rough shape! She did a fantastic job job cleaning them up, adding tips, and an awesome dip power in “Christmas Red”. I highly recommend this salon, and will book again when I return to NYC… 👏👏👏👏👏",
+        "languageCode": "en"
+      },
+      "authorAttribution": {
+        "displayName": "Susan Clift",
+        "uri": "https://www.google.com/maps/contrib/104474784784122568118/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUlhQEd7GYcaUoFgaN54cVxVTvA9oZlzPp8Qv6E4i37_xV6JgOUpg=s128-c0x00000000-cc-rp-mo-ba3"
+      },
+      "publishTime": "2025-12-12T07:35:52.449584507Z",
+      "flagContentUri": "https://www.google.com/local/content/rap/report?postId=Ci9DQUlRQUNvZENodHljRjlvT2tSc2MxQTNUSHBHUzFOV2FEWkNYMjR5YzFaM2VIYxAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT2tSc2MxQTNUSHBHUzFOV2FEWkNYMjR5YzFaM2VIYxAB!2m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    },
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/reviews/Ci9DQUlRQUNvZENodHljRjlvT25wNE5ERllUbGRvTm5oMU5FNVFWR1ZvZEZwcU5YYxAB",
+      "relativePublishTimeDescription": "3 months ago",
+      "rating": 1,
+      "text": {
+        "text": "Within the first 3 minutes of my pedicure with Kiki I was cut so deep I bled and was offered a Red Bull (at 6pm) as a consolation. Proceeded to give me the worst French pedicure I’ve seen that I had to coach/correct through multiple times to which she seemed exasperated by. This is supposed to be a $68 pedicure. Save yourself the embarrassment of walking out when they offer you a laughable discount on an open wound and pedicure that looks like a 6 year old did it.",
+        "languageCode": "en"
+      },
+      "originalText": {
+        "text": "Within the first 3 minutes of my pedicure with Kiki I was cut so deep I bled and was offered a Red Bull (at 6pm) as a consolation. Proceeded to give me the worst French pedicure I’ve seen that I had to coach/correct through multiple times to which she seemed exasperated by. This is supposed to be a $68 pedicure. Save yourself the embarrassment of walking out when they offer you a laughable discount on an open wound and pedicure that looks like a 6 year old did it.",
+        "languageCode": "en"
+      },
+      "authorAttribution": {
+        "displayName": "Christina Rodriguez",
+        "uri": "https://www.google.com/maps/contrib/100680012239384172212/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVDTykEPCHAzurJej5oMEJd29Yd54BRCG_Cc8VibjwkVQReBqg=s128-c0x00000000-cc-rp-mo-ba2"
+      },
+      "publishTime": "2026-02-26T07:24:04.314968620Z",
+      "flagContentUri": "https://www.google.com/local/content/rap/report?postId=Ci9DQUlRQUNvZENodHljRjlvT25wNE5ERllUbGRvTm5oMU5FNVFWR1ZvZEZwcU5YYxAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT25wNE5ERllUbGRvTm5oMU5FNVFWR1ZvZEZwcU5YYxAB!2m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    },
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/reviews/Ci9DQUlRQUNvZENodHljRjlvT2s4M2RWUnhhVEpNUldOUExTMUtNV1ZwU1d4cGRGRRAB",
+      "relativePublishTimeDescription": "10 months ago",
+      "rating": 2,
+      "text": {
+        "text": "On Friday August 8th at 3:30 pm, I had a good experience at the salon.  The salon was nice and clean.  I got a regular manicure and pedicure.  I left the salon and my nails looked great!  I was very careful not to do anything that night because I didnt't want to chip my nails.  No cooking, cleaning dishes, etc..  After my shower that night, I got out of the shower and some of my nails were chipped.  Soooo disappointing since the next day was my wedding!  I was never so disappointed and upset. I wish I would have saved my $50 and went somewhere else.",
+        "languageCode": "en"
+      },
+      "originalText": {
+        "text": "On Friday August 8th at 3:30 pm, I had a good experience at the salon.  The salon was nice and clean.  I got a regular manicure and pedicure.  I left the salon and my nails looked great!  I was very careful not to do anything that night because I didnt't want to chip my nails.  No cooking, cleaning dishes, etc..  After my shower that night, I got out of the shower and some of my nails were chipped.  Soooo disappointing since the next day was my wedding!  I was never so disappointed and upset. I wish I would have saved my $50 and went somewhere else.",
+        "languageCode": "en"
+      },
+      "authorAttribution": {
+        "displayName": "Barb Fox",
+        "uri": "https://www.google.com/maps/contrib/101278103027603217501/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocKYcVjFOSuI2W1zRyI03-bDmWEfSi_3I0TvzWMUw6zuErBq7Q=s128-c0x00000000-cc-rp-mo-ba2"
+      },
+      "publishTime": "2025-08-10T13:37:05.737254619Z",
+      "flagContentUri": "https://www.google.com/local/content/rap/report?postId=Ci9DQUlRQUNvZENodHljRjlvT2s4M2RWUnhhVEpNUldOUExTMUtNV1ZwU1d4cGRGRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT2s4M2RWUnhhVEpNUldOUExTMUtNV1ZwU1d4cGRGRRAB!2m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    },
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/reviews/Ci9DQUlRQUNvZENodHljRjlvT2paYWVFWTFja1k0WkhwSlgwVkpVbk5OV1dOc05IYxAB",
+      "relativePublishTimeDescription": "5 months ago",
+      "rating": 1,
+      "text": {
+        "text": "I arrived at the salon at 4:30 PM for a Gel-X fill appointment. Upon check-in, they confirmed the service and seated me right away. However, the technician (lily) completely removed all existing product from my nails and then performed three rounds of acetone treatment with cotton balls—even though my natural nails were already fully exposed and clean.\n\nAfter sitting for an hour and a half with no progress on the actual Gel-X application, I was switched into another techs chair. At this point I was running out of time and suggested we switch to regular gel polish instead. The technician (coco) insisted she could still complete the Gel-X tips quickly. However, what she actually did was apply full-coverage tips over my entire natural nails, and then painted my nails over with regular gel polish, which is not Gel-X at all.\n\nI was charged $160 for a service that was completely different from what was confirmed and promised. Not only did I not receive the Gel-X fill I came in for, but I was misled about what was being done and overcharged for an entirely different service. I have been getting tips on my nails for 12 years and this was one of the worst experiences I have had by far. Please do not go here.",
+        "languageCode": "en"
+      },
+      "originalText": {
+        "text": "I arrived at the salon at 4:30 PM for a Gel-X fill appointment. Upon check-in, they confirmed the service and seated me right away. However, the technician (lily) completely removed all existing product from my nails and then performed three rounds of acetone treatment with cotton balls—even though my natural nails were already fully exposed and clean.\n\nAfter sitting for an hour and a half with no progress on the actual Gel-X application, I was switched into another techs chair. At this point I was running out of time and suggested we switch to regular gel polish instead. The technician (coco) insisted she could still complete the Gel-X tips quickly. However, what she actually did was apply full-coverage tips over my entire natural nails, and then painted my nails over with regular gel polish, which is not Gel-X at all.\n\nI was charged $160 for a service that was completely different from what was confirmed and promised. Not only did I not receive the Gel-X fill I came in for, but I was misled about what was being done and overcharged for an entirely different service. I have been getting tips on my nails for 12 years and this was one of the worst experiences I have had by far. Please do not go here.",
+        "languageCode": "en"
+      },
+      "authorAttribution": {
+        "displayName": "Olivia Miller",
+        "uri": "https://www.google.com/maps/contrib/113984603659745157744/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIzj06bKAtzniQ0ESrSH6kZ8l0Y39oeCDmEbxKuBPd-UBNStQ=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2025-12-16T14:03:30.290436514Z",
+      "flagContentUri": "https://www.google.com/local/content/rap/report?postId=Ci9DQUlRQUNvZENodHljRjlvT2paYWVFWTFja1k0WkhwSlgwVkpVbk5OV1dOc05IYxAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT2paYWVFWTFja1k0WkhwSlgwVkpVbk5OV1dOc05IYxAB!2m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    }
+  ],
+  "photos": [
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/photos/AaVGc3nwlB3yimZ-5JLrv7HPHVEf9kJGXW8NN0YBBF234E4_2-3fNc-B6PmWtL8z5DTUf1sfwhc6V_mKJYBoz7nMqrL13tRZKs2DXJyZMHUuRAqq0-efHG6cPregT1zND-X0dI2iWxQSgNoH2xyIWKGn_2M68Wmq7KjWw0-nMqVwNNyxl8zUx2vQR34DVjpmVr9cSBoyjj8Rn5petTItx8BKBTdwrBd07JJVwJw5MPopVGqeNvrl9hbB7nCBu8MGJ8IFn4-CVZfr3MR0DpXwxuYuKgcPjKO-37civCMfJyYX6DUAY2-hu3ZojL5lD40pG3sSZppQPYMTuVTTX2NDAXJ5U8zYlAg3QxaKkaqyy23glXGxvaibYlq8OX--Uk0xImPtUsDlLT9FCHis98HZFzSsQhBshD635suE5U1zYAdcYGwInuNS",
+      "widthPx": 1900,
+      "heightPx": 1440,
+      "authorAttributions": [
+        {
+          "displayName": "L.A.K Nail Salon",
+          "uri": "https://maps.google.com/maps/contrib/114511451473715890754",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVStxdDuyPLBS6wvmhYvkdF0b2jc1UTh-tHEyaTmomnZ3ghLwMG=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDZ0oLDjgE&hl=en",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDZ0oLDjgE!2e10!4m2!3m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    },
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/photos/AaVGc3kSfrzob6y8eMctqocBm9jkp97rQQuyoop9t0TZHxnH1aAAM2Bq2I7t3lO3HnL8Sbi4nfLYVPMfqlzlLDUBYQhZpH0-tWTBAfl7_6ghU_z1A2ietudNjR0tsOJpfoADsirasX5YZEC2ArbSM0zxKTjtcbooMpshizRe_mj74MbjvbP3e0h37ENuopFyMIMuyJ3dE4nMvdMXKkWRCP_VfQnSBrBhdAsbbnRlcPsxa7aAzJpbCgnPnqVcZqjFWvBe_seqVezWrm_rXncbaFmSVXAaJ_DqdpAHNKeXHgb7FYSgcHZDSmgiD8GYeF6MhF2Q16r9IXfqYfsDWoUxDl4tCExsmOBYXTY9N2WAZ3kxKJRcBESA_C2IgNVg0svs1GevtuPLpXlckVxNYpF2uTKSJAxQfEIbrkeBjaa_2H3E_34",
+      "widthPx": 2880,
+      "heightPx": 3840,
+      "authorAttributions": [
+        {
+          "displayName": "L.A.K Nail Salon",
+          "uri": "https://maps.google.com/maps/contrib/114511451473715890754",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVStxdDuyPLBS6wvmhYvkdF0b2jc1UTh-tHEyaTmomnZ3ghLwMG=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICd-fqbaQ&hl=en",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICd-fqbaQ!2e10!4m2!3m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    },
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/photos/AaVGc3kL-nBLf0DtxEVnIpUtcnBD0c-eg5l_lGlPGTDNYI01T44-O_GVia9tO7n3lIfc9oOCtbsqJISLoUs_wH1aVvI-GmIMhDvOJ_9r0SRO1lVtIGEQwdBhcKOwCRySWwL3mKWqOQf3mmBGCwmk8-RKvMLhcXNTTYZ-Sgm3qSkXX_KwDLUjkvldyMglVu4U9klqyWsz8zWB8akwcWAIgSIhYQnAcizKWqQFtznlXU89w9lxdSnmq3Ay032XshFffB_gkAA1wTpwt668zhDLmov5UHc6iOZT6nvlWd9zjSQM748mu6E1uXSgABNVQJK5kAwRpIAwQySs34werztQGa19NVdJzbcQoC__8ZUSSe3D01NgUQCh8Kx4eitBMX8SLxk-DzwDT6IGUy4EwSEXz0o65ywtbxNdLfmgAichiyu1J2JFsRgDP8p1un7bad8QPDvP",
+      "widthPx": 2880,
+      "heightPx": 3840,
+      "authorAttributions": [
+        {
+          "displayName": "L.A.K Nail Salon",
+          "uri": "https://maps.google.com/maps/contrib/114511451473715890754",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVStxdDuyPLBS6wvmhYvkdF0b2jc1UTh-tHEyaTmomnZ3ghLwMG=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhBnDyLO1wVvp_k3JXPIpveA&hl=en",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhBnDyLO1wVvp_k3JXPIpveA!2e10!4m2!3m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    },
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/photos/AaVGc3nFrg-79t_Nw0mup3SjrlbQJA_ItmiSFkFwNjw92RaM82kuJbtRpBla4wbYj3zdN5JZCdBcy7l4FFMM4Bl5nRR2ywDhqG9EJ49UiKoLEcl60KR37O4gijf7jGNeMjgROrLDMABuawMHv_IZcnPAs5xmsW9JbtFaEKdyJDvPw0OG0A7vLeAsINakh2o0yVJ2tsFTSrWIpp6Rq8pW-HSTgkvVP5imbm-R3PcE4Fh6Q4R40OZ4Hym1B-Q0bwEzowjzhmct4RePT8UtD7uX6DwiU0WVeiAYgWA_Ez53G0h1p9Ppu5zQIL_XK6viCsmWQLw9xD6YdQPnWNbG-7VT0IvdSu9LdYXsTcTf0whiu6eA26A_IS4o5W_-apPnnKjhnEJtBzKpwAc_tmTcklLB_Tz7_liQ-vhWFEhMnEVJenZjxhxxQi7mwTfIwCM_Y6H53Sjs",
+      "widthPx": 2880,
+      "heightPx": 3840,
+      "authorAttributions": [
+        {
+          "displayName": "L.A.K Nail Salon",
+          "uri": "https://maps.google.com/maps/contrib/114511451473715890754",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVStxdDuyPLBS6wvmhYvkdF0b2jc1UTh-tHEyaTmomnZ3ghLwMG=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhDDJS02DoWD-Su-Gxsv4_K7&hl=en",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhDDJS02DoWD-Su-Gxsv4_K7!2e10!4m2!3m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    },
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/photos/AaVGc3kgHyL-H_VCRNUPVugTPqvISGlHAh1NpaJX8vC0oOexKwavE9W1IvxluHWwZwARo8rDL6A_qXVi_f_aAID7esMH-fsH0WldfbVVYzGE1EcEaw4Jm0zcfKj6yBNPjBljQtFxkRI2HySVcpNxL6D9abgBMI3ftdb9mzQGf57wKqZ62CNGxAIE-NkpoKxS37wtoSehrxNFH6xV78B3dgVaPdf45OufGnbaZYokT61LNbbJ9RpF0Cg1HSEO0oeiHJ5tL7uLUN_yZLiDkfRhLDeETPPhQTXokBsvV_UW89Uc9D-V9Cl95DdD8FGy3i92Y4xHhQemEv-9UXKe3rfycik8Tn1QCQcVSxIJoFcIelWF1r717iZ9lWXa9XFSh8zB41KptHOuvoKXM4axbYEVCsucA6h2KzBKIovBXr94ThWPTlhQQ3frLOlfNXM0zMETypJF",
+      "widthPx": 2880,
+      "heightPx": 3840,
+      "authorAttributions": [
+        {
+          "displayName": "cathy suo",
+          "uri": "https://maps.google.com/maps/contrib/116565388121557884050",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIiyXY7rXcXpTSSSgXJypmxX-3YYUHfu_ikP9e2cJ4tZakVAA=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhBJ0mLcJQcOanOSwhVYwenQ&hl=en",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhBJ0mLcJQcOanOSwhVYwenQ!2e10!4m2!3m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    },
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/photos/AaVGc3ndbZ3-wKVCVuZSC_WUDdGbYJ9OHVpWZ8RJiDx66euorwFcVk5Zf3PeB0LALkXSYsMy7Ru43iY67AIwnT_RaOA_pJPwXxN4prBCm6Yebn0r3EldNOr5pNWuKKwpj0-Gbaz5atM28j6aE3eVQGD5t3WH8LGK1Zs_V1xuWgWgzfkNHLtqRu42G_5Ty7RkdaeyGhT5NA4nQL7YeyTdG4gIQkOY4cogI5y8gxsgpn0yaGlhVFjHuDxSIIno6im5vEquga-N9Duw0-S8ipKooQ0W_jaIuIi8vWETNQst5H-02L3Csl4XWYoVNES57aw1Nt5IzxFt0AJ7IB1CUaynpy5R8w3cdvDQjK2F8C--pwK2z6QCWh83czp8ktwIQ3ozIDvssSL_JyepCnCajsRBOljvl7cnsXvOiejS0TNHMacvS7FwlVWRP_7e_Rv_QUvLk3KK",
+      "widthPx": 3024,
+      "heightPx": 4032,
+      "authorAttributions": [
+        {
+          "displayName": "L.A.K Nail Salon",
+          "uri": "https://maps.google.com/maps/contrib/114511451473715890754",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVStxdDuyPLBS6wvmhYvkdF0b2jc1UTh-tHEyaTmomnZ3ghLwMG=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhADycKztDDvo2f0ZCYAD0BQ&hl=en",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhADycKztDDvo2f0ZCYAD0BQ!2e10!4m2!3m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    },
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/photos/AaVGc3k32ph9SzSUQ5uJ8VW9eEFhAviNrhg1UXj_lV4tKgM73BKaQLgH1uPP95bRRjquYYkVb1k2w1oBMglXjXdy1SnM8_JdV7CdlNvD_vYJaZBNe8hUrbTPrcidsgvWVV9hzxhix72TEOaMwYOjTvn97epoQqfYewuNVMhbi00AdXqgY6fUFztXmhbzfPBKE1Xv91OG4yNmHc2Tyz6sSyjbtTl6eEkIj89Oqq-0T17vLbp4ThtKW2J7P7w-ovwMI9YA-WCbfyayTnsmbh2tgfgqyQP_CmSSbQEQ0HdV7GSPRRKQPuuiUvqpfdB7T_TekWT2uZcHbJF0Wu6vuCd9ZVT0pCtI0qlSDY7zU-NQsK7y5o0dcYe7QLP82k7TEtK6IsuwBxmfh3L3AnXxN1PN6NFw-GiPyCcaTLfnYwEWQTVCRHx-pGHe-f-xfIhUN1HfobYc",
+      "widthPx": 3024,
+      "heightPx": 4032,
+      "authorAttributions": [
+        {
+          "displayName": "Susan Clift",
+          "uri": "https://maps.google.com/maps/contrib/104474784784122568118",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUlhQEd7GYcaUoFgaN54cVxVTvA9oZlzPp8Qv6E4i37_xV6JgOUpg=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhBYSL2wDE0TGVqsB2IptOMn&hl=en",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhBYSL2wDE0TGVqsB2IptOMn!2e10!4m2!3m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    },
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/photos/AaVGc3npfOS9vgjoTD97hR_9BE9hr8AjV4Ougfmd9wYEbAH5BBbi4XlKwRe7TeB_NXvEdA80CmHZtptHMYtCphZzbmcWzUFV0AzbxvGzh_QzQ6TNHkgQDmo2cqQrt0Hn3O03eAW7RPoUpOGYOGcBzsIFLM7snr0DfkJN17a17HBVHuDalmCXNnuNGRZ2OtvTmkY4_R_EZc41VgYpkxa4ePDsLXBOyRuIxvaHBLmiWu3fI_LGl5ZFOHp7Cy-LM__a_OAJe94m-UAIff2LztFb-a6XoT9F12YWKhq4hVcveWZEZIXnjiJxCY03_uJG_5ICXB7rg83UJUUTmeaAXybxm7AgrJuhCMNIWJdC7-HpGHa9D1PWENabXRXTHLngpUbp-yJefdenloUTmjtZVpa_qTkVaFuUJrfGdojVBFumMR4y1ttcaaPGH8bp-MsaOIgm8A",
+      "widthPx": 3840,
+      "heightPx": 2880,
+      "authorAttributions": [
+        {
+          "displayName": "L.A.K Nail Salon",
+          "uri": "https://maps.google.com/maps/contrib/114511451473715890754",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVStxdDuyPLBS6wvmhYvkdF0b2jc1UTh-tHEyaTmomnZ3ghLwMG=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhB_ps5gDvz-LcCPSambAAxi&hl=en",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhB_ps5gDvz-LcCPSambAAxi!2e10!4m2!3m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    },
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/photos/AaVGc3nX6otfk7n6Qy2Tvw_jz2MqQHqa5oeNdmzcaea2ox1iqMz2kOVJN4iFB-kRosndTDlkJRvV9-1oASwtW5NduavUufAAur8QJe2gBpz4rJlcaApv6t0JteZpdwJduwnH7t7NknbfuwAZ9dm04NS6jWIviaQ78EsPBvEouWmlOUKRwAZbrL2pSuvssw-Ibg_mB8muclF8BLhAfBZq8SJJkVofIY2AHD0RlUoxu_YI4ZlxiKbkgEMzaJpnmDOiF5FoMgCnOdEw_noXXrLqjPe0NU5FAMOVVKGHE_Q8Ein6j43jpbm0min-yiXJGs6sBrIOrWFaaL65yHo5qALeyR0LnzYoT60YHcpreD2eVNXCyRlzSrwHFyZVvQtfLt7pdyldlTQCZWJ1MaPMMyzHbgOrsXMpbTI_DiJ19h6h8k1s0idzqPWWaxfxdtQ-tXuSieRg",
+      "widthPx": 3024,
+      "heightPx": 4032,
+      "authorAttributions": [
+        {
+          "displayName": "L.A.K Nail Salon",
+          "uri": "https://maps.google.com/maps/contrib/114511451473715890754",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVStxdDuyPLBS6wvmhYvkdF0b2jc1UTh-tHEyaTmomnZ3ghLwMG=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhBTqKpKx9OCw9kSeMac3dWa&hl=en",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhBTqKpKx9OCw9kSeMac3dWa!2e10!4m2!3m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    },
+    {
+      "name": "places/ChIJ2fQZM8hZwokR2cE3VIthTeo/photos/AaVGc3nfOtNDxT9wCrOxckvbIRnppzx98FIZCPRwJlQp9I9RvqrJl0e7lGCN43UAUtJaDtiojnCAhnMmwcnKWfjMpiuBz1FAcdAaktACZ_X5mKEcwwrvmOFsf-oRTSYBEcSDytsC2QfqF9DSSae8KUNW45m4VHd-aO7Nb8HwDSV1fsrzMco13Tw0yLzou8RkCq8H7tTG5GLfzd2jWE9gcssKHDDtjMQe30ckBWLcxD6qoMmwa5evjgz4jEvbqrJajfxOMT7lmzH_Gf3xgYQmEfS1RadlQ8GsIJCFRy8x3Yb0b-Apmr3oYbJ5T8fc36HHtEX_LOce5pZ4-SbJyHOqsj1gi2LNLA5yTbIAQFZCXe55RHD4zznT3YLa7QoYWeAidFE7kc4rCglmPo2HCReufqssgNFTXX6Pw2RfOBuwslPq6rbOw_na1JmodmDO4ZjO15um",
+      "widthPx": 1253,
+      "heightPx": 940,
+      "authorAttributions": [
+        {
+          "displayName": "L.A.K Nail Salon",
+          "uri": "https://maps.google.com/maps/contrib/114511451473715890754",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVStxdDuyPLBS6wvmhYvkdF0b2jc1UTh-tHEyaTmomnZ3ghLwMG=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhAiDaT9fjwc12nMvjMQ0BZg&hl=en",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhAiDaT9fjwc12nMvjMQ0BZg!2e10!4m2!3m1!1s0x89c259c83319f4d9:0xea4d618b5437c1d9"
+    }
+  ]
+}

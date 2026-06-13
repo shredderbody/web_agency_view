@@ -75,6 +75,18 @@ const CONFIG: Record<string, VapiMetier> = {
     theme: "dark",
     label: "Barbershop · Courbevoie",
   },
+  // Client réel — L.A.K Nail Salon, 176 Lafayette St, New York (NoLita).
+  // Assistant Vapi DÉDIÉ (données réelles Google Places), couleurs blush/plum
+  // de la page immersive (cf. components/LakNailSalon.tsx).
+  "lak-nail-salon": {
+    assistantId:
+      process.env.NEXT_PUBLIC_VAPI_ASSISTANT_LAK_NAIL_SALON || "e3f0641a-8860-49ae-b649-34fa8825cc72",
+    accent: "#c43e7a",
+    base: "#fefbfc",
+    buttonIcon: "#ffffff",
+    theme: "light",
+    label: "L.A.K Nail Salon",
+  },
   onglerie: {
     assistantId:
       process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ONGLERIE || "79cf70d2-266f-4315-b684-c67f5dac7004",
