@@ -200,6 +200,33 @@ const METIERS = [
     greetFr: "L.A.K Nail Salon, bonjour ! Vous souhaitez réserver un soin — Gel-X, manucure, pédicure ?",
   },
   {
+    // Démo concept — Maison Éphémère, wedding & event planner (Le Marais, Paris).
+    // Assistant DÉDIÉ : prend des « rendez-vous découverte » et qualifie le projet
+    // (type d'événement, nombre d'invités, date envisagée). Voix féminine bilingue.
+    slug: "maison-ephemere",
+    envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_MAISON_EPHEMERE",
+    business: "Maison Éphémère",
+    tradeFr: "wedding & event planner (organisation de mariages et d'événements)",
+    tradeEn: "wedding & event planner",
+    city: "Paris (Le Marais)",
+    phone: "01 84 80 00 14",
+    voice: VOICE.female,
+    hoursFr: "du lundi au vendredi de 10h00 à 19h00, et le samedi sur rendez-vous (fermé le dimanche)",
+    hoursEn: "Monday to Friday 10:00am to 7:00pm, and Saturday by appointment (closed Sunday)",
+    servicesFr: "Formules : Rendez-vous découverte (offert), Coordination jour J (dès 1 200 €), Cérémonie laïque (dès 900 €), Organisation partielle (dès 2 800 €), Mariage clé en main (dès 4 900 €). À la carte : recherche de lieu d'exception (dès 600 €), décoration & scénographie florale (dès 2 500 €), sélection traiteur & accords, papeterie & faire-part (dès 350 €), logistique invités. Mariages, fiançailles, baby showers et événements d'entreprise. Tarifs indicatifs, devis sur-mesure.",
+    rdvFr: "rendez-vous découverte",
+    rdvEn: "discovery consultation",
+    toolName: "enregistrer_rendezvous",
+    extraProps: {
+      type_evenement: { type: "string", description: "Type d'événement / event type (mariage, fiançailles, baby shower, événement d'entreprise…)." },
+      nombre_invites: { type: "string", description: "Nombre d'invités estimé / estimated number of guests." },
+      date_evenement: { type: "string", description: "Date ou période envisagée pour l'événement / planned date or period for the event (distincte du rendez-vous découverte)." },
+    },
+    extraAskFr: "Demande le type d'événement, le nombre d'invités estimé et la date ou période envisagée pour l'événement. La date et l'heure collectées correspondent au RENDEZ-VOUS DÉCOUVERTE (en visio ou à l'atelier du Marais), pas à l'événement lui-même. Le rendez-vous découverte est offert et sans engagement.",
+    extraAskEn: "Ask the event type, the estimated number of guests and the planned date or period for the event. The collected date and time are for the DISCOVERY CONSULTATION (video call or at the Marais studio), not the event itself. The discovery consultation is free and no-strings.",
+    greetFr: "Maison Éphémère, bonjour ! Vous préparez un mariage ou un événement ? Je peux vous proposer un rendez-vous découverte offert.",
+  },
+  {
     slug: "onglerie",
     envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_ONGLERIE",
     business: "L'Atelier Rosé",

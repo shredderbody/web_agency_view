@@ -96,6 +96,24 @@ export default function DemoIndex() {
               </div>
             </Link>
           </Reveal>
+          <Reveal delay={160}>
+            <Link href="/demo/maison-ephemere" className="card card-hover" style={{ display: "block", overflow: "hidden", height: "100%", outline: "2px solid var(--vermilion)", outlineOffset: "-2px" }}>
+              <div style={{ position: "relative", aspectRatio: "16 / 9" }}>
+                <Image src="/clients/maison-ephemere/photo_00.webp" alt={lang === "en" ? "Maison Éphémère, wedding & event planner in Paris" : "Maison Éphémère, wedding & event planner à Paris"} fill unoptimized sizes="(max-width: 700px) 100vw, 400px" style={{ objectFit: "cover", objectPosition: "center" }} />
+                <span className="chip" style={{ position: "absolute", top: "0.9rem", left: "0.9rem", background: "var(--vermilion)", color: "#fff" }}>{lang === "en" ? "New · Weddings" : "Nouveau · Mariage"}</span>
+              </div>
+              <div style={{ padding: "1.3rem 1.5rem 1.5rem" }}>
+                <h2 className="d-md" style={{ margin: "0 0 0.15rem" }}>Maison Éphémère</h2>
+                <p style={{ color: "var(--ink-muted)", margin: "0 0 0.9rem", fontWeight: 500 }}>Paris · {lang === "en" ? "Wedding & event planner" : "Wedding & event planner"}</p>
+                <p style={{ color: "var(--ink-dim)", margin: "0 0 1.2rem" }}>
+                  {lang === "en"
+                    ? "Turnkey weddings, floral design and day-of coordination. Services, packages, work and a voice assistant that books consultations — in one immersive page."
+                    : "Mariages clé en main, décoration florale et coordination jour J. Prestations, formules, réalisations et un assistant vocal qui prend les rendez-vous — dans une page immersive."}
+                </p>
+                <span className="link-arrow">{t.demoIndex.visit} <ArrowUpRight size={18} /></span>
+              </div>
+            </Link>
+          </Reveal>
           {demos.map((d, i) => (
             <Reveal key={d.slug} delay={(i % 2) * 80}>
               <Link href={`/demo/${d.slug}`} className="card card-hover" style={{ display: "block", overflow: "hidden", height: "100%" }}>

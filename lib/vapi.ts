@@ -87,6 +87,19 @@ const CONFIG: Record<string, VapiMetier> = {
     theme: "light",
     label: "L.A.K Nail Salon",
   },
+  // Démo concept — Maison Éphémère, wedding & event planner (Le Marais, Paris).
+  // Assistant Vapi DÉDIÉ (rendez-vous découverte + qualification du projet), voix
+  // féminine multilingue. Couleurs ivoire/eucalyptus de la page immersive
+  // (cf. components/MaisonEphemere.tsx).
+  "maison-ephemere": {
+    assistantId:
+      process.env.NEXT_PUBLIC_VAPI_ASSISTANT_MAISON_EPHEMERE || "84f52726-b480-4fc4-800e-2b8f759aa0ec",
+    accent: "#5b7d65",
+    base: "#fbfaf6",
+    buttonIcon: "#ffffff",
+    theme: "light",
+    label: "Maison Éphémère",
+  },
   onglerie: {
     assistantId:
       process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ONGLERIE || "79cf70d2-266f-4315-b684-c67f5dac7004",

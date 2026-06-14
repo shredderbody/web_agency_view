@@ -4,7 +4,7 @@ import { X, Check, ChevronLeft, Minus, Plus } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 import type { Service } from "@/lib/vitrineContent";
 
-type Vit = "barber" | "onglerie" | "traiteur" | "resto" | "plombier" | "livraison";
+type Vit = "barber" | "onglerie" | "traiteur" | "resto" | "plombier" | "livraison" | "evenementiel";
 type FD = Record<string, any>;
 
 // ── Time slot banks ───────────────────────────────────────────────────────────
@@ -13,6 +13,7 @@ const ONGL_SLOTS    = ["10:00","10:30","11:00","11:30","12:00","14:00","14:30","
 const LUNCH_SLOTS   = ["12:00","12:30","13:00","13:30"];
 const DINNER_SLOTS  = ["19:00","19:30","20:00","20:30","21:00"];
 const DELIVERY_SLOTS = ["12:00","12:30","13:00","13:30","14:00","19:00","19:30","20:00","20:30","21:00"];
+const EVENT_SLOTS    = ["10:00","10:30","11:00","11:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00"];
 
 // ── Livraison : panier ─────────────────────────────────────────────────────────
 const DELIVERY_FEE = 2.5;   // frais de livraison
@@ -34,9 +35,9 @@ const ML = {
     back: "Retour", next: "Continuer", submit: "Envoyer ma demande",
     close: "Fermer",
     done_title: "C'est noté !",
-    titles:  { barber: "Prendre rendez-vous", onglerie: "Réserver un soin", traiteur: "Commander", resto: "Réserver une table", plombier: "Demander un devis", livraison: "Commander en livraison" },
-    steps:   { barber: ["Prestation","Créneau","Coordonnées"], onglerie: ["Soin","Créneau","Coordonnées"], traiteur: ["Commande","Retrait","Coordonnées"], resto: ["Date & service","Couverts","Coordonnées"], plombier: ["Votre besoin","Disponibilités","Coordonnées"], livraison: ["Panier","Livraison","Coordonnées"] },
-    success: { barber: "Votre demande est enregistrée. Maison Brutus vous confirme votre rendez-vous par SMS.", onglerie: "Réservation prise en compte. {business} vous confirme par SMS.", traiteur: "Commande enregistrée ! Maison Ferrand vous contacte pour confirmer le retrait.", resto: "Table réservée ! {business} vous confirme par SMS sous peu.", plombier: "Demande reçue ! Julien Mercier vous rappelle sous 24 h avec un devis détaillé.", livraison: "Commande envoyée ! {business} prépare votre commande — livraison estimée sous 30 à 40 min." },
+    titles:  { barber: "Prendre rendez-vous", onglerie: "Réserver un soin", traiteur: "Commander", resto: "Réserver une table", plombier: "Demander un devis", livraison: "Commander en livraison", evenementiel: "Rendez-vous découverte" },
+    steps:   { barber: ["Prestation","Créneau","Coordonnées"], onglerie: ["Soin","Créneau","Coordonnées"], traiteur: ["Commande","Retrait","Coordonnées"], resto: ["Date & service","Couverts","Coordonnées"], plombier: ["Votre besoin","Disponibilités","Coordonnées"], livraison: ["Panier","Livraison","Coordonnées"], evenementiel: ["Votre projet","Rendez-vous","Coordonnées"] },
+    success: { barber: "Votre demande est enregistrée. Maison Brutus vous confirme votre rendez-vous par SMS.", onglerie: "Réservation prise en compte. {business} vous confirme par SMS.", traiteur: "Commande enregistrée ! Maison Ferrand vous contacte pour confirmer le retrait.", resto: "Table réservée ! {business} vous confirme par SMS sous peu.", plombier: "Demande reçue ! Julien Mercier vous rappelle sous 24 h avec un devis détaillé.", livraison: "Commande envoyée ! {business} prépare votre commande — livraison estimée sous 30 à 40 min.", evenementiel: "Demande reçue ! {business} vous recontacte sous 24 h pour votre rendez-vous découverte — sans engagement." },
     DAYS:   ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"],
     MONTHS: ["jan","fév","mar","avr","mai","juin","juil","août","sep","oct","nov","déc"],
     service_q: "Quelle prestation souhaitez-vous ?",
@@ -57,6 +58,13 @@ const ML = {
     covers_l: "Nombre de couverts",
     occasion_resto: "Occasion particulière ?",
     occ_opts: ["Aucune","Anniversaire","Professionnel","Romantique","Autre"],
+    event_q: "Quel événement organisez-vous ?",
+    guests_l: "Nombre d'invités (estimé)",
+    guests_opts: ["Moins de 30","30 à 80","80 à 150","Plus de 150"],
+    period_l: "Date ou période envisagée",
+    period_ph: "Ex : juin 2027, été prochain, à définir…",
+    rdv_date_l: "Choisissez un jour pour votre rendez-vous",
+    rdv_time_l: "Heure du rendez-vous",
     type_l: "Type de prestation",
     desc_l: "Décrivez votre besoin", desc_ph: "Ex : fuite sous l'évier, remplacement du chauffe-eau…",
     urgency_l: "Est-ce urgent ?",
@@ -105,6 +113,13 @@ const ML = {
     covers_l: "Number of guests",
     occasion_resto: "Special occasion?",
     occ_opts: ["None","Birthday","Business","Romantic","Other"],
+    event_q: "What event are you planning?",
+    guests_l: "Number of guests (estimate)",
+    guests_opts: ["Under 30","30 to 80","80 to 150","Over 150"],
+    period_l: "Planned date or period",
+    period_ph: "E.g. June 2027, next summer, to be defined…",
+    rdv_date_l: "Pick a day for your consultation",
+    rdv_time_l: "Consultation time",
     type_l: "Type of work",
     desc_l: "Describe your need", desc_ph: "E.g. leak under sink, water heater replacement…",
     urgency_l: "Is it urgent?",
@@ -153,6 +168,11 @@ function canAdvance(vit: Vit, step: number, fd: FD): boolean {
   if (vit === "livraison") {
     if (step === 0) return cartCount(fd) >= 1;
     if (step === 1) return !!(fd.addr?.trim()) && !!(fd.postal?.trim()) && (fd.when === "asap" || (fd.when === "scheduled" && !!fd.deliveryTime));
+    if (step === 2) return !!(fd.name?.trim()) && !!(fd.phone?.trim());
+  }
+  if (vit === "evenementiel") {
+    if (step === 0) return !!fd.service;
+    if (step === 1) return !!fd.date && !!fd.time;
     if (step === 2) return !!(fd.name?.trim()) && !!(fd.phone?.trim());
   }
   return true;
@@ -396,6 +416,27 @@ function StepContent({ vit, step, fd, setFd, services, menu, lang, dates }: {
         </div>
       );
     }
+
+    if (vit === "evenementiel") {
+      const guestOpts: string[] = l.guests_opts as string[];
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.3rem" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.55rem" }}>
+            <Label text={l.event_q} />
+            {services.map(s => <ServiceCard key={s.name} s={s} selected={fd.service === s.name} onSelect={() => set("service", s.name)} />)}
+          </div>
+          <div>
+            <Label text={l.guests_l} />
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+              {guestOpts.map(o => (
+                <PillChip key={o} label={o} selected={(fd.guests ?? guestOpts[1]) === o} onClick={() => set("guests", o)} />
+              ))}
+            </div>
+          </div>
+          <TInput label={l.period_l} placeholder={l.period_ph} value={fd.period ?? ""} onChange={v => set("period", v)} />
+        </div>
+      );
+    }
   }
 
   // ── STEP 1 ────────────────────────────────────────────────────────────────
@@ -492,6 +533,21 @@ function StepContent({ vit, step, fd, setFd, services, menu, lang, dates }: {
           </div>
         )}
         <TArea label={l.dnote_l} placeholder={l.dnote_ph} value={fd.dnote ?? ""} onChange={v => set("dnote", v)} />
+      </div>
+    );
+
+    if (vit === "evenementiel") return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.3rem" }}>
+        <div>
+          <Label text={l.rdv_date_l} />
+          <DateChipRow dates={dates} selectedDate={fd.date} onSelect={d => { set("date", d); set("time", undefined); }} lang={lang} />
+        </div>
+        {fd.date && (
+          <div>
+            <Label text={l.rdv_time_l} />
+            <TimeGrid slots={EVENT_SLOTS} selected={fd.time} onSelect={t => set("time", t)} />
+          </div>
+        )}
       </div>
     );
   }

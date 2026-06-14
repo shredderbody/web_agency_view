@@ -259,6 +259,30 @@ export default function Home() {
                   </div>
                 </Link>
               </Reveal>
+              <Reveal delay={240}>
+                <Link href="/demo/maison-ephemere" className="card card-hover" style={{ display: "flex", flexDirection: "column", overflow: "hidden", height: "100%", outline: "2px solid var(--vermilion)", outlineOffset: "-2px" }}>
+                  <div style={{ position: "relative", aspectRatio: "16 / 9" }}>
+                    <Image src="/clients/maison-ephemere/photo_00.webp" alt={lang === "en" ? "Maison Éphémère, wedding & event planner in Paris" : "Maison Éphémère, wedding & event planner à Paris"} fill unoptimized sizes="(max-width: 700px) 100vw, 380px" style={{ objectFit: "cover", objectPosition: "center" }} />
+                    <span className="chip" style={{ position: "absolute", top: "0.85rem", left: "0.85rem", display: "inline-flex", alignItems: "center", gap: "0.4rem", background: "var(--vermilion)", color: "#fff" }}>
+                      <Star size={13} strokeWidth={0} fill="currentColor" /> {lang === "en" ? "New · Weddings" : "Nouveau · Mariage"}
+                    </span>
+                  </div>
+                  <div style={{ padding: "1.4rem 1.5rem 1.6rem", display: "flex", flexDirection: "column", flex: 1 }}>
+                    <h3 className="d-lg" style={{ margin: "0 0 0.35rem" }}>Maison Éphémère</h3>
+                    <p style={{ color: "var(--ink-dim)", margin: "0 0 1.3rem", flex: 1 }}>
+                      {lang === "en"
+                        ? "An immersive site for a wedding & event planner: turnkey weddings, floral design, day-of coordination — and a voice assistant that books discovery consultations."
+                        : "Une vitrine immersive pour wedding planner : mariages clé en main, décoration florale, coordination jour J — et un assistant vocal qui prend les rendez-vous découverte."}
+                    </p>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.8rem", flexWrap: "wrap", borderTop: "1px solid var(--border)", paddingTop: "1.05rem" }}>
+                      <span style={{ fontSize: "0.82rem", color: "var(--ink-muted)", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+                        <Star size={13} fill="var(--clay)" stroke="none" /> {lang === "en" ? "Wedding & event planner · Paris" : "Wedding & event planner · Paris"}
+                      </span>
+                      <span className="link-arrow" style={{ fontSize: "0.95rem" }}>{t.metiers.seePage} <ArrowUpRight size={17} /></span>
+                    </div>
+                  </div>
+                </Link>
+              </Reveal>
               {demos.map((d, i) => (
                 <Reveal key={d.slug} delay={(i % 2) * 80}>
                   <Link href={`/demo/${d.slug}`} className="card card-hover" style={{ display: "flex", flexDirection: "column", overflow: "hidden", height: "100%" }}>
