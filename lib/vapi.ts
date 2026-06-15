@@ -31,6 +31,13 @@ export type VapiMetier = {
   /** Titre affiché en haut de la fenêtre de chat. */
   label: string;
   /**
+   * Message d'accueil affiché dans la partie conversation tant qu'aucun échange
+   * n'a eu lieu : présente le commerce et ce que le standardiste peut faire.
+   * BILINGUE (FR/EN) — la langue active de la page est choisie dans VapiWidget.
+   * Branché sur `emptyHybridMessage`/`emptyChatMessage` du widget.
+   */
+  greeting: { fr: string; en: string };
+  /**
    * Avatar(s) affiché(s) au-dessus de la bulle Vapi pour incarner l'assistant.
    * Le premier élément est l'avatar actif. Le tableau permet à un client de
    * proposer plusieurs avatars (ex: équipe, choix client) sans changer le type.
@@ -59,6 +66,10 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#18130e",
     theme: "dark",
     label: "Maison Brutus",
+    greeting: {
+      fr: "Bienvenue chez Maison Brutus 💈 Je suis le standardiste du salon : je peux présenter nos prestations, nos horaires et prendre votre rendez-vous. Que puis-je faire pour vous ?",
+      en: "Welcome to Maison Brutus 💈 I'm the shop's receptionist — I can go over our services, opening hours and book your appointment. How can I help?",
+    },
     avatars: [
       { id: "barbier", src: "/characters/barbershop-portrait.webp", alt: "Barbier de Maison Brutus" },
     ],
@@ -74,6 +85,10 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#17120c",
     theme: "dark",
     label: "Barbershop · Courbevoie",
+    greeting: {
+      fr: "Bienvenue au Barbershop de Courbevoie 💈 Je peux présenter nos prestations, nos horaires et prendre votre rendez-vous. Que puis-je faire pour vous ?",
+      en: "Welcome to the Courbevoie Barbershop 💈 I can go over our services, hours and book your appointment. How can I help?",
+    },
   },
   // Client réel — L.A.K Nail Salon, 176 Lafayette St, New York (NoLita).
   // Assistant Vapi DÉDIÉ (données réelles Google Places), couleurs blush/plum
@@ -86,6 +101,10 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#ffffff",
     theme: "light",
     label: "L.A.K Nail Salon",
+    greeting: {
+      fr: "Bienvenue au L.A.K Nail Salon 💅 Je peux présenter nos soins, nos horaires et réserver votre rendez-vous. Comment puis-je vous aider ?",
+      en: "Welcome to L.A.K Nail Salon 💅 I can walk you through our services, hours and book your appointment. How can I help?",
+    },
   },
   // Démo concept — Maison Éphémère, wedding & event planner (Le Marais, Paris).
   // Assistant Vapi DÉDIÉ (rendez-vous découverte + qualification du projet), voix
@@ -99,6 +118,10 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#ffffff",
     theme: "light",
     label: "Maison Éphémère",
+    greeting: {
+      fr: "Bienvenue chez Maison Éphémère ✨ wedding & event planner. Je peux présenter nos prestations et organiser un rendez-vous découverte. Parlez-moi de votre projet.",
+      en: "Welcome to Maison Éphémère ✨ wedding & event planner. I can introduce our services and set up a discovery call. Tell me about your project.",
+    },
   },
   onglerie: {
     assistantId:
@@ -108,6 +131,10 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#ffffff",
     theme: "light",
     label: "L'Atelier Rosé",
+    greeting: {
+      fr: "Bienvenue à L'Atelier Rosé 💅 Je peux présenter nos soins, vérifier nos disponibilités et réserver votre créneau. Comment puis-je vous aider ?",
+      en: "Welcome to L'Atelier Rosé 💅 I can go over our treatments, check availability and book your slot. How can I help?",
+    },
     avatars: [
       { id: "prothesiste", src: "/characters/onglerie-portrait.webp", alt: "Prothésiste ongulaire de L'Atelier Rosé" },
     ],
@@ -120,6 +147,10 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#ffffff",
     theme: "light",
     label: "Maison Ferrand",
+    greeting: {
+      fr: "Bonjour, ici Maison Ferrand, votre traiteur 🍽️ Je peux détailler nos plateaux, prendre une commande ou organiser un retrait. Que souhaitez-vous ?",
+      en: "Hello, this is Maison Ferrand, your caterer 🍽️ I can detail our platters, take an order or arrange a pickup. What would you like?",
+    },
     avatars: [
       { id: "traiteur", src: "/characters/traiteur-portrait.webp", alt: "Traiteur de Maison Ferrand" },
     ],
@@ -132,6 +163,10 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#141d16",
     theme: "dark",
     label: "Le Comptoir 12",
+    greeting: {
+      fr: "Bienvenue au Comptoir 12 🍷 Je peux présenter la carte, nos horaires et réserver votre table. Comment puis-je vous aider ?",
+      en: "Welcome to Le Comptoir 12 🍷 I can go over the menu, our hours and book your table. How can I help?",
+    },
     avatars: [
       { id: "cheffe", src: "/characters/restaurant-portrait.webp", alt: "Cheffe du Comptoir 12" },
     ],
@@ -148,6 +183,10 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#15110d",
     theme: "dark",
     label: "Thaï Vien Express",
+    greeting: {
+      fr: "Bienvenue chez Thaï Vien Express 🌶️ Je peux présenter nos plats, nos horaires et réserver votre table. Comment puis-je vous aider ?",
+      en: "Welcome to Thaï Vien Express 🌶️ I can go over our dishes, our hours and book your table. How can I help?",
+    },
   },
   plombier: {
     assistantId:
@@ -157,6 +196,10 @@ const CONFIG: Record<string, VapiMetier> = {
     buttonIcon: "#ffffff",
     theme: "light",
     label: "Plomberie Mercier",
+    greeting: {
+      fr: "Bonjour, ici Plomberie Mercier 🔧 Je peux qualifier votre besoin, estimer un délai et planifier une intervention. Que se passe-t-il ?",
+      en: "Hello, this is Plomberie Mercier 🔧 I can assess your issue, estimate a timeframe and schedule a visit. What's going on?",
+    },
     avatars: [
       { id: "plombier", src: "/characters/plombier-portrait.webp", alt: "Plombier de Plomberie Mercier" },
     ],

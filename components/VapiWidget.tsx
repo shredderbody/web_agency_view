@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { getVapiMetier, vapiPublicKey } from "@/lib/vapi";
 import { loadRuntimeConfig } from "@/lib/runtime-config";
+import { useLang } from "@/lib/lang-context";
 
 /* ════════════════════════════════════════════════════════════════════════════
    Bulle de discussion HYBRIDE Vapi (chat + appel vocal) pour les pages métier.
@@ -67,6 +68,11 @@ function ensureWidgetLoader(): Promise<WidgetLoaderCtor> {
 }
 
 export default function VapiWidget({ slug }: { slug: string }) {
+  // Langue active de la page (sélecteur FR/EN) : pilote le message d'accueil et
+  // les libellés du widget. Un changement de langue ré-instancie la bulle (cf.
+  // dépendances de l'effet) pour rafraîchir le texte d'accueil.
+  const { lang } = useLang();
+
   useEffect(() => {
     const cfg = getVapiMetier(slug);
     if (!cfg || !cfg.assistantId) return;
@@ -102,10 +108,17 @@ export default function VapiWidget({ slug }: { slug: string }) {
         buttonBaseColor: cfg.theme === "dark" ? "#FFFFFF" : "#1A1A1A",
         buttonAccentColor: cfg.buttonIcon,
         mainLabel: cfg.label,
-        startButtonText: "Appeler",
-        endButtonText: "Raccrocher",
-        emptyChatMessage: "Bonjour ! Posez votre question ou réservez en quelques mots.",
-        emptyVoiceMessage: "Touchez pour parler à notre standardiste.",
+        startButtonText: lang === "en" ? "Call" : "Appeler",
+        endButtonText: lang === "en" ? "Hang up" : "Raccrocher",
+        // Message d'accueil de la conversation = présentation du commerce, dans
+        // la langue active. `emptyHybridMessage` est celui rendu en mode hybride
+        // (chat + appel) ; on renseigne aussi `emptyChatMessage` en repli.
+        emptyHybridMessage: cfg.greeting[lang],
+        emptyChatMessage: cfg.greeting[lang],
+        emptyVoiceMessage:
+          lang === "en"
+            ? "Tap to talk to our receptionist."
+            : "Touchez pour parler à notre standardiste.",
         showTranscript: true,
       };
 
@@ -122,7 +135,7 @@ export default function VapiWidget({ slug }: { slug: string }) {
       instance?.destroy();
       container?.remove();
     };
-  }, [slug]);
+  }, [slug, lang]);
 
   // On ne rend qu'une seule bulle : celle du widget Vapi hybride monté ci-dessus.
   // Le bundle officiel (shadow DOM) n'expose aucune prop pour intégrer une image
