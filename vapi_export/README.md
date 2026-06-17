@@ -23,7 +23,7 @@ privée `VAPI_PRIVATE_KEY` du `.env`, à réutiliser comme modèles.
 ### Convention de nommage des fichiers
 
 - Assistants : `<nom-slug>__<id8>.json`
-  ex. `demo-vitrine-texas-plumbing-pros__fc5b038f.json`
+  ex. `demo-vitrine-barbershop-courbevoie__4cee76d9.json`
 - Fonctions : `<type>__<nom-fonction>__<id8>.json`
   ex. `function__enregistrer-intervention__458bb2cf.json`
 
@@ -36,13 +36,12 @@ fonction **inline**, un hash SHA‑1 du contenu (les tools de démo n'ont PAS de
 Contrairement aux assistants « receptionist » (qui référencent des tools par
 `model.toolIds`), les assistants de démo embarquent leurs tools **en inline**
 dans `model.tools`. Chaque assistant porte donc déjà la définition complète de
-son tool (`enregistrer_rendezvous`, `enregistrer_commande`,
-`enregistrer_reservation` ou `enregistrer_intervention`).
+son tool.
 
 ```bash
 # le(s) tool(s) inline d'un assistant
 jq -r '.model.tools[].function.name' \
-  assistants/demo-vitrine-texas-plumbing-pros__fc5b038f.json
+  assistants/demo-vitrine-barbershop-courbevoie__4cee76d9.json
 
 # quels assistants utilisent un tool donné
 jq -r '.[] | select(.name=="enregistrer_intervention") | .usedBy[]' functions/_index.json
@@ -52,10 +51,10 @@ jq -r '.[] | select(.name=="enregistrer_intervention") | .usedBy[]' functions/_i
 
 | Fonction | Rôle | Métiers |
 |----------|------|---------|
-| `enregistrer_rendezvous` | Prise de RDV (démo) | barbershop, barbershop-courbevoie, lak-nail-salon, maison-ephemere, onglerie |
-| `enregistrer_commande` | Commande à retirer (démo) | traiteur |
-| `enregistrer_reservation` | Réservation de table (démo) | restaurant, thai-viens-express |
-| `enregistrer_intervention` | Demande d'intervention (démo) | plombier, texas-plumbing-pros |
+| `enregistrer_commande` | enregistrer commande | traiteur |
+| `enregistrer_intervention` | enregistrer intervention | plombier, texas-plumbing-pros |
+| `enregistrer_rendezvous` | enregistrer rendezvous | barbershop, barbershop-courbevoie, lak-nail-salon, maison-ephemere, onglerie |
+| `enregistrer_reservation` | enregistrer reservation | restaurant, thai-viens-express |
 
 Toutes POSTent vers `server.url = <APP_URL>/api/vapi/booking` (le booking n'est
 PAS réel : démo). La source de vérité reste `scripts/vapi-setup-assistants.mjs`.
@@ -65,13 +64,13 @@ PAS réel : démo). La source de vérité reste `scripts/vapi-setup-assistants.m
 - **Recréer / patcher** les assistants de démo : `node scripts/vapi-setup-assistants.mjs`
   (crée si absent, PATCH si l'ID est déjà dans `.env`).
 - **Ré-exporter ce dossier** : `node scripts/vapi-export.mjs`
-  (refetch l'API, filtre `project=web_agency_view`, réécrit `vapi_export/`).
+  (refetch l'API, filtre `project=web_agency_view`, réécrit `vapi_export/` + ce README).
 
 ```bash
 # recréer un tool standalone à partir d'un export inline nettoyé
 jq 'del(.messages)' functions/function__enregistrer-intervention__458bb2cf.json > /tmp/new_tool.json
 curl -s -X POST https://api.vapi.ai/tool \
-  -H "Authorization: Bearer $VAPI_API_KEY" \
+  -H "Authorization: Bearer \$VAPI_API_KEY" \
   -H "Content-Type: application/json" \
   --data @/tmp/new_tool.json
 ```

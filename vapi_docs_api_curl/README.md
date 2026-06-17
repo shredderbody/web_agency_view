@@ -85,8 +85,10 @@ Tous les `GET` de liste acceptent :
   `scripts/vapi-setup-assistants.mjs` ; l'export réel est dans `../vapi_export/`.
 - Clé privée lue dans `.env` → `VAPI_PRIVATE_KEY`. Filtre des assistants du projet :
   `metadata.project === "web_agency_view"` (le compte est partagé avec `receptionist`).
-- Transcriber **bilingue FR + EN** : `deepgram` / `flux-general-multi`
+- Transcriber **bilingue FR + EN** (`bilingual` par défaut) : `deepgram` / `flux-general-multi`
   (`languages: ["fr","en"]`), fallback `nova-2` / `language: "multi"`.
+- Transcriber **monolingue FR** (`bilingual: false`, ex. Thaï Vien Express) :
+  `deepgram` / `nova-2` / `language: "fr"`, fallback `nova-3` / `language: "fr"`.
 - Voix : `11labs` `eleven_multilingual_v2` (FR + EN) pour la plupart, `minimax`
   `speech-02-turbo` (FR) pour restaurant / thaï — voir `assistants/` et
   `lib/voiceCatalog.ts`.
