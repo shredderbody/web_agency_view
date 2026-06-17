@@ -1,0 +1,82 @@
+# vapi_export — assistants & fonctions du projet (source d'inspiration)
+
+Export **réel** des assistants Vapi DE CE PROJET (`web_agency_view`), via la clé
+privée `VAPI_PRIVATE_KEY` du `.env`, à réutiliser comme modèles.
+
+> Le compte Vapi est **partagé** avec le projet `receptionist`. Cet export ne
+> contient QUE les assistants `metadata.project === "web_agency_view"` (les
+> « Démo vitrine · … » d'`/demo/[slug]`). Les assistants du projet receptionist
+> sont, eux, exportés dans `~/receptionist/vapi_export/`.
+
+> Pour la doc des endpoints API (cURL create/update/delete), voir `../vapi_docs_api_curl/`.
+
+## Contenu
+
+| Dossier | Quoi | Nb |
+|---------|------|----|
+| `assistants/` | tous les assistants de démo (un fichier JSON par assistant) | 10 |
+| `functions/`  | les tools **inline** extraits des assistants (un par nom) | 4 |
+
+- `assistants/_index.md` — table récap (nom, model, voice, transcriber, #tools, slug)
+- `functions/_index.md` / `_index.json` — table `id8 → type → nom → utilisé par`
+
+### Convention de nommage des fichiers
+
+- Assistants : `<nom-slug>__<id8>.json`
+  ex. `demo-vitrine-texas-plumbing-pros__fc5b038f.json`
+- Fonctions : `<type>__<nom-fonction>__<id8>.json`
+  ex. `function__enregistrer-intervention__458bb2cf.json`
+
+`id8` = pour un assistant, les 8 premiers caractères de l'`id` Vapi ; pour une
+fonction **inline**, un hash SHA‑1 du contenu (les tools de démo n'ont PAS de
+`toolId` Vapi, ils sont définis directement dans `model.tools`).
+
+## Lien assistant → fonctions
+
+Contrairement aux assistants « receptionist » (qui référencent des tools par
+`model.toolIds`), les assistants de démo embarquent leurs tools **en inline**
+dans `model.tools`. Chaque assistant porte donc déjà la définition complète de
+son tool (`enregistrer_rendezvous`, `enregistrer_commande`,
+`enregistrer_reservation` ou `enregistrer_intervention`).
+
+```bash
+# le(s) tool(s) inline d'un assistant
+jq -r '.model.tools[].function.name' \
+  assistants/demo-vitrine-texas-plumbing-pros__fc5b038f.json
+
+# quels assistants utilisent un tool donné
+jq -r '.[] | select(.name=="enregistrer_intervention") | .usedBy[]' functions/_index.json
+```
+
+## Fonctions disponibles (vue métier)
+
+| Fonction | Rôle | Métiers |
+|----------|------|---------|
+| `enregistrer_rendezvous` | Prise de RDV (démo) | barbershop, barbershop-courbevoie, lak-nail-salon, maison-ephemere, onglerie |
+| `enregistrer_commande` | Commande à retirer (démo) | traiteur |
+| `enregistrer_reservation` | Réservation de table (démo) | restaurant, thai-viens-express |
+| `enregistrer_intervention` | Demande d'intervention (démo) | plombier, texas-plumbing-pros |
+
+Toutes POSTent vers `server.url = <APP_URL>/api/vapi/booking` (le booking n'est
+PAS réel : démo). La source de vérité reste `scripts/vapi-setup-assistants.mjs`.
+
+## Recréer / mettre à jour
+
+- **Recréer / patcher** les assistants de démo : `node scripts/vapi-setup-assistants.mjs`
+  (crée si absent, PATCH si l'ID est déjà dans `.env`).
+- **Ré-exporter ce dossier** : `node scripts/vapi-export.mjs`
+  (refetch l'API, filtre `project=web_agency_view`, réécrit `vapi_export/`).
+
+```bash
+# recréer un tool standalone à partir d'un export inline nettoyé
+jq 'del(.messages)' functions/function__enregistrer-intervention__458bb2cf.json > /tmp/new_tool.json
+curl -s -X POST https://api.vapi.ai/tool \
+  -H "Authorization: Bearer $VAPI_API_KEY" \
+  -H "Content-Type: application/json" \
+  --data @/tmp/new_tool.json
+```
+
+> ⚠️ Ces fichiers contiennent les prompts système et l'URL de webhook interne
+> (`receptionniste.zerocall.io/api/vapi/booking`). Ne pas exposer publiquement.
+> Aucune clé API n'est stockée dedans (`isServerUrlSecretSet` indique juste qu'un
+> secret existe côté Vapi).

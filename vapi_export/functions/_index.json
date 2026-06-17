@@ -1,0 +1,44 @@
+[
+  {
+    "id8": "51bddc22",
+    "type": "function",
+    "name": "enregistrer_commande",
+    "inline": true,
+    "usedBy": [
+      "traiteur"
+    ]
+  },
+  {
+    "id8": "458bb2cf",
+    "type": "function",
+    "name": "enregistrer_intervention",
+    "inline": true,
+    "usedBy": [
+      "plombier",
+      "texas-plumbing-pros"
+    ]
+  },
+  {
+    "id8": "b28b8df0",
+    "type": "function",
+    "name": "enregistrer_rendezvous",
+    "inline": true,
+    "usedBy": [
+      "barbershop",
+      "barbershop-courbevoie",
+      "lak-nail-salon",
+      "maison-ephemere",
+      "onglerie"
+    ]
+  },
+  {
+    "id8": "a5588ea6",
+    "type": "function",
+    "name": "enregistrer_reservation",
+    "inline": true,
+    "usedBy": [
+      "restaurant",
+      "thai-viens-express"
+    ]
+  }
+]

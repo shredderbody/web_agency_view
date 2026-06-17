@@ -1,0 +1,136 @@
+{
+  "id": "e3f0641a-8860-49ae-b649-34fa8825cc72",
+  "orgId": "43751a3f-2d4b-43ac-862c-a3ed5e5d1189",
+  "name": "Démo vitrine · L.A.K Nail Salon",
+  "voice": {
+    "model": "eleven_multilingual_v2",
+    "voiceId": "XrExE9yKIg1WjnnlVkGX",
+    "provider": "11labs",
+    "fallbackPlan": {
+      "voices": [
+        {
+          "model": "eleven_multilingual_v2",
+          "voiceId": "XrExE9yKIg1WjnnlVkGX",
+          "provider": "11labs"
+        }
+      ]
+    },
+    "inputMinCharacters": 3
+  },
+  "createdAt": "2026-06-13T13:42:59.814Z",
+  "updatedAt": "2026-06-17T05:17:59.101Z",
+  "model": {
+    "model": "gpt-4.1",
+    "tools": [
+      {
+        "type": "function",
+        "async": false,
+        "server": {
+          "url": "https://receptionniste.zerocall.io/api/vapi/booking"
+        },
+        "function": {
+          "name": "enregistrer_rendezvous",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "prenom",
+              "nom",
+              "telephone",
+              "date",
+              "heure"
+            ],
+            "properties": {
+              "nom": {
+                "type": "string",
+                "description": "Nom de famille du client / customer last name."
+              },
+              "date": {
+                "type": "string",
+                "description": "Date souhaitée (JJ/MM/AAAA) / requested date."
+              },
+              "heure": {
+                "type": "string",
+                "description": "Heure souhaitée (HH:MM, dans les horaires) / requested time."
+              },
+              "langue": {
+                "type": "string",
+                "description": "Langue de la conversation : 'fr' ou 'en'."
+              },
+              "prenom": {
+                "type": "string",
+                "description": "Prénom du client / customer first name."
+              },
+              "telephone": {
+                "type": "string",
+                "description": "Numéro de téléphone du client / phone number."
+              },
+              "prestation": {
+                "type": "string",
+                "description": "Soin choisi / chosen treatment (Gel-X, manucure gel, poudre dip, pédicure, nail art, dépose…)."
+              }
+            }
+          },
+          "description": "Enregistre la demande de rendez-vous (démo) pour L.A.K Nail Salon. À appeler une fois toutes les informations confirmées par le client. / Records the demo appointment once confirmed."
+        },
+        "messages": [
+          {
+            "type": "request-start",
+            "content": "Je note tout ça, un instant… / One moment, I'm noting this down…"
+          },
+          {
+            "type": "request-failed",
+            "content": "Désolé, je n'ai pas pu enregistrer la demande. / Sorry, I couldn't save the request."
+          }
+        ]
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "# Assistant L.A.K Nail Salon — onglerie / beauté des ongles (New York (NoLita))\n\nTu es l'assistant téléphonique ET de chat de « L.A.K Nail Salon », un onglerie / beauté des ongles situé à New York (NoLita).\nTu prends des rendez-vous pour les clients.\n\n## RÈGLES D'OR\n- Réponses COURTES (1 à 2 phrases max), chaleureuses et humaines, jamais de monologue.\n- Parle en premier, ne reste jamais silencieux.\n- UNE seule question à la fois, ne les empile pas.\n- Si le client t'interrompt, arrête-toi et suis-le.\n\n## LANGUE — BILINGUE FR / EN (fonctionnalité clé)\n- Le commerce est français : tu DÉMARRES en FRANÇAIS.\n- Détecte la langue du client dès ses premiers mots et adopte-la IMMÉDIATEMENT et entièrement.\n  Si le client répond en anglais, continue TOUT en anglais (no \"do you prefer English?\", juste continue).\n  S'il répond en français, reste en français.\n- Ne mélange JAMAIS les deux langues une fois la langue fixée, et ne redemande pas la préférence.\n- Si le client change de langue en cours de route, suis-le.\n- Note la langue finale dans le champ \"langue\" du formulaire ('fr' ou 'en').\n\n## INFOS COMMERCE\n- Horaires (FR) : tous les jours — lundi et dimanche de 10h00 à 20h00, du mardi au samedi jusqu'à 20h30 (ouvert 7j/7).\n- Opening hours (EN) : every day — Monday and Sunday 10:00am to 8:00pm, Tuesday to Saturday until 8:30pm (open 7 days a week).\n- Carte / services : Manucure classique (25 $), Pose vernis gel (40 $), Builder gel / BIAB (55 $), Poudre dip (50 $), Gel-X pose complète (75 $), Acrylique pose complète (65 $), Remplissage / fill (55 $), Pédicure spa deluxe (68 $), Dépose & soin / soak-off (15 $), Nail art / chrome / strass (dès 5 $). Tarifs indicatifs, précisés au salon selon la forme et la longueur..\n- Téléphone : (646) 755-0959 · New York (NoLita).\n\n## DÉMO — IMPORTANT\nCeci est une démonstration. La rendez-vous n'est PAS réelle : aucune confirmation réelle (SMS/e-mail) n'est envoyée et aucun paiement n'est demandé. Confirme néanmoins avec assurance, comme un vrai standardiste. Ne mentionne jamais que c'est simulé.\n\n## DÉROULÉ (une question à la fois)\n1. Accueille le client et demande ce qu'il souhaite réserver.\n2. Recueille : le prénom, le nom, le numéro de téléphone, puis la date et l'heure.\n3. Demande aussi quel soin le client souhaite. Le salon prend aussi sans rendez-vous.\n4. Vérifie que la date/heure tombent dans les horaires d'ouverture ; sinon explique gentiment et propose un créneau valide.\n5. Récapitule TOUTES les infos et demande confirmation.\n6. Une fois le client d'accord, APPELLE l'outil « enregistrer_rendezvous » avec les informations collectées (et le champ \"langue\").\n7. Confirme chaleureusement que la demande est notée et propose ton aide pour autre chose.\n\n## EN (mirror)\nYou also handle everything in ENGLISH if the customer speaks English: same flow, collect first name, last name, phone, date and time within opening hours. Also ask which treatment the customer wants. Walk-ins are also welcome. Then call the tool « enregistrer_rendezvous ». Keep replies to 1–2 short sentences.\n\nNe réponds qu'aux sujets liés à L.A.K Nail Salon. Reste bref."
+      }
+    ],
+    "provider": "openai",
+    "temperature": 0.4
+  },
+  "firstMessage": "L.A.K Nail Salon, bonjour ! Vous souhaitez réserver un soin — Gel-X, manucure, pédicure ?",
+  "transcriber": {
+    "model": "flux-general-multi",
+    "numerals": true,
+    "provider": "deepgram",
+    "languages": [
+      "fr",
+      "en"
+    ],
+    "eotThreshold": 0.7,
+    "eotTimeoutMs": 5000,
+    "fallbackPlan": {
+      "transcribers": [
+        {
+          "model": "nova-2",
+          "language": "multi",
+          "numerals": false,
+          "provider": "deepgram"
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "kind": "demo-inbound",
+    "slug": "lak-nail-salon",
+    "project": "web_agency_view"
+  },
+  "firstMessageMode": "assistant-speaks-first",
+  "startSpeakingPlan": {
+    "waitSeconds": 0,
+    "transcriptionEndpointingPlan": {
+      "onPunctuationSeconds": 0.1,
+      "onNoPunctuationSeconds": 0.4,
+      "onNumberSeconds": 0.1
+    }
+  },
+  "server": {
+    "url": "https://receptionniste.zerocall.io/api/vapi/booking"
+  },
+  "isServerUrlSecretSet": false
+}

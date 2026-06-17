@@ -1,0 +1,61 @@
+{
+  "type": "function",
+  "async": false,
+  "server": {
+    "url": "https://receptionniste.zerocall.io/api/vapi/booking"
+  },
+  "function": {
+    "name": "enregistrer_rendezvous",
+    "parameters": {
+      "type": "object",
+      "required": [
+        "prenom",
+        "nom",
+        "telephone",
+        "date",
+        "heure"
+      ],
+      "properties": {
+        "nom": {
+          "type": "string",
+          "description": "Nom de famille du client / customer last name."
+        },
+        "date": {
+          "type": "string",
+          "description": "Date souhaitée (JJ/MM/AAAA) / requested date."
+        },
+        "heure": {
+          "type": "string",
+          "description": "Heure souhaitée (HH:MM, dans les horaires) / requested time."
+        },
+        "langue": {
+          "type": "string",
+          "description": "Langue de la conversation : 'fr' ou 'en'."
+        },
+        "prenom": {
+          "type": "string",
+          "description": "Prénom du client / customer first name."
+        },
+        "telephone": {
+          "type": "string",
+          "description": "Numéro de téléphone du client / phone number."
+        },
+        "prestation": {
+          "type": "string",
+          "description": "Prestation choisie / chosen service (coupe, barbe, contours, soin du visage…)."
+        }
+      }
+    },
+    "description": "Enregistre la demande de rendez-vous (démo) pour Barbershop Courbevoie. À appeler une fois toutes les informations confirmées par le client. / Records the demo appointment once confirmed."
+  },
+  "messages": [
+    {
+      "type": "request-start",
+      "content": "Je note tout ça, un instant… / One moment, I'm noting this down…"
+    },
+    {
+      "type": "request-failed",
+      "content": "Désolé, je n'ai pas pu enregistrer la demande. / Sorry, I couldn't save the request."
+    }
+  ]
+}

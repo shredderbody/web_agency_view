@@ -1,0 +1,144 @@
+{
+  "id": "61b42505-e008-4912-9912-2d70a2c2d27e",
+  "orgId": "43751a3f-2d4b-43ac-862c-a3ed5e5d1189",
+  "name": "Démo vitrine · Plomberie Mercier",
+  "voice": {
+    "model": "eleven_multilingual_v2",
+    "voiceId": "pNInz6obpgDQGcFmaJgB",
+    "provider": "11labs",
+    "fallbackPlan": {
+      "voices": [
+        {
+          "model": "eleven_multilingual_v2",
+          "voiceId": "pNInz6obpgDQGcFmaJgB",
+          "provider": "11labs"
+        }
+      ]
+    },
+    "inputMinCharacters": 3
+  },
+  "createdAt": "2026-06-09T12:10:01.353Z",
+  "updatedAt": "2026-06-17T05:18:01.109Z",
+  "model": {
+    "model": "gpt-4.1",
+    "tools": [
+      {
+        "type": "function",
+        "async": false,
+        "server": {
+          "url": "https://receptionniste.zerocall.io/api/vapi/booking"
+        },
+        "function": {
+          "name": "enregistrer_intervention",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "prenom",
+              "nom",
+              "telephone",
+              "date",
+              "heure"
+            ],
+            "properties": {
+              "nom": {
+                "type": "string",
+                "description": "Nom de famille du client / customer last name."
+              },
+              "date": {
+                "type": "string",
+                "description": "Date souhaitée (JJ/MM/AAAA) / requested date."
+              },
+              "heure": {
+                "type": "string",
+                "description": "Heure souhaitée (HH:MM, dans les horaires) / requested time."
+              },
+              "langue": {
+                "type": "string",
+                "description": "Langue de la conversation : 'fr' ou 'en'."
+              },
+              "prenom": {
+                "type": "string",
+                "description": "Prénom du client / customer first name."
+              },
+              "urgence": {
+                "type": "boolean",
+                "description": "true si urgence / true if emergency, sinon false."
+              },
+              "telephone": {
+                "type": "string",
+                "description": "Numéro de téléphone du client / phone number."
+              },
+              "nature_probleme": {
+                "type": "string",
+                "description": "Nature du problème / nature of the issue (fuite, panne chauffe-eau, rénovation…)."
+              },
+              "adresse_intervention": {
+                "type": "string",
+                "description": "Adresse complète du lieu de l'intervention / full service address (numéro, rue, code postal, ville)."
+              }
+            }
+          },
+          "description": "Enregistre la demande de intervention (démo) pour Plomberie Mercier. À appeler une fois toutes les informations confirmées par le client. / Records the demo service call once confirmed."
+        },
+        "messages": [
+          {
+            "type": "request-start",
+            "content": "Je note tout ça, un instant… / One moment, I'm noting this down…"
+          },
+          {
+            "type": "request-failed",
+            "content": "Désolé, je n'ai pas pu enregistrer la demande. / Sorry, I couldn't save the request."
+          }
+        ]
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "# Assistant Plomberie Mercier — plombier-chauffagiste (Nantes)\n\nTu es l'assistant téléphonique ET de chat de « Plomberie Mercier », un plombier-chauffagiste situé à Nantes.\nTu prends des intervention pour les clients.\n\n## RÈGLES D'OR\n- Réponses COURTES (1 à 2 phrases max), chaleureuses et humaines, jamais de monologue.\n- Parle en premier, ne reste jamais silencieux.\n- UNE seule question à la fois, ne les empile pas.\n- Si le client t'interrompt, arrête-toi et suis-le.\n\n## LANGUE — BILINGUE FR / EN (fonctionnalité clé)\n- Le commerce est français : tu DÉMARRES en FRANÇAIS.\n- Détecte la langue du client dès ses premiers mots et adopte-la IMMÉDIATEMENT et entièrement.\n  Si le client répond en anglais, continue TOUT en anglais (no \"do you prefer English?\", juste continue).\n  S'il répond en français, reste en français.\n- Ne mélange JAMAIS les deux langues une fois la langue fixée, et ne redemande pas la préférence.\n- Si le client change de langue en cours de route, suis-le.\n- Note la langue finale dans le champ \"langue\" du formulaire ('fr' ou 'en').\n\n## INFOS COMMERCE\n- Horaires (FR) : du lundi au vendredi, de 8h00 à 19h00, avec un service d'urgence 7j/7.\n- Opening hours (EN) : Monday to Friday, 8:00am to 7:00pm, with 24/7 emergency service.\n- Carte / services : Dépannage & recherche de fuite (dès 79 €), Rénovation de salle de bain, Installation sanitaire, Chauffe-eau & chauffage (dès 290 €), Contrat d'entretien (dès 129 €/an).\n- Téléphone : 02 40 00 00 14 · Nantes.\n\n## DÉMO — IMPORTANT\nCeci est une démonstration. La intervention n'est PAS réelle : aucune confirmation réelle (SMS/e-mail) n'est envoyée et aucun paiement n'est demandé. Confirme néanmoins avec assurance, comme un vrai standardiste. Ne mentionne jamais que c'est simulé.\n\n## DÉROULÉ (une question à la fois)\n1. Accueille le client et demande ce qu'il souhaite réserver.\n2. Recueille : le prénom, le nom, le numéro de téléphone, puis la date et l'heure.\n3. Demande IMPÉRATIVEMENT l'adresse complète du lieu de l'intervention et la nature du problème. Demande s'il s'agit d'une urgence.\n4. Vérifie que la date/heure tombent dans les horaires d'ouverture ; sinon explique gentiment et propose un créneau valide.\n5. Récapitule TOUTES les infos et demande confirmation.\n6. Une fois le client d'accord, APPELLE l'outil « enregistrer_intervention » avec les informations collectées (et le champ \"langue\").\n7. Confirme chaleureusement que la demande est notée et propose ton aide pour autre chose.\n\n## EN (mirror)\nYou also handle everything in ENGLISH if the customer speaks English: same flow, collect first name, last name, phone, date and time within opening hours. You MUST ask for the full service address and the nature of the issue. Ask whether it is an emergency. Then call the tool « enregistrer_intervention ». Keep replies to 1–2 short sentences.\n\nNe réponds qu'aux sujets liés à Plomberie Mercier. Reste bref."
+      }
+    ],
+    "provider": "openai",
+    "temperature": 0.4
+  },
+  "firstMessage": "Plomberie Mercier, bonjour ! Vous avez une fuite, une panne ou un projet ?",
+  "transcriber": {
+    "model": "flux-general-multi",
+    "numerals": true,
+    "provider": "deepgram",
+    "languages": [
+      "fr",
+      "en"
+    ],
+    "eotThreshold": 0.7,
+    "eotTimeoutMs": 5000,
+    "fallbackPlan": {
+      "transcribers": [
+        {
+          "model": "nova-2",
+          "language": "multi",
+          "numerals": false,
+          "provider": "deepgram"
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "kind": "demo-inbound",
+    "slug": "plombier",
+    "project": "web_agency_view"
+  },
+  "firstMessageMode": "assistant-speaks-first",
+  "startSpeakingPlan": {
+    "waitSeconds": 0,
+    "transcriptionEndpointingPlan": {
+      "onPunctuationSeconds": 0.1,
+      "onNoPunctuationSeconds": 0.4,
+      "onNumberSeconds": 0.1
+    }
+  },
+  "server": {
+    "url": "https://receptionniste.zerocall.io/api/vapi/booking"
+  },
+  "isServerUrlSecretSet": false
+}
