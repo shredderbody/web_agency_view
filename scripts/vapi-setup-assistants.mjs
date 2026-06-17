@@ -114,6 +114,17 @@ const TRANSCRIBER = {
   },
 };
 
+// Transcriber MONOLINGUE FR (assistants sans bascule de langue, ex. Thaï Vien Express).
+const TRANSCRIBER_FR = {
+  provider: "deepgram",
+  model: "nova-2",
+  language: "fr",
+  numerals: true,
+  fallbackPlan: {
+    transcribers: [{ provider: "deepgram", model: "nova-3", language: "fr" }],
+  },
+};
+
 const START_SPEAKING_PLAN = {
   waitSeconds: 0,
   transcriptionEndpointingPlan: {
@@ -292,8 +303,10 @@ const METIERS = [
   {
     // Client réel — Thaï Vien Express, 17 rue de l'Abreuvoir, Courbevoie.
     // Assistant DÉDIÉ (données réelles Google Places), voix MiniMax FR.
+    // Assistant MONOLINGUE FRANÇAIS (pas de bascule EN) — demande client.
     slug: "thai-viens-express",
     envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_THAI_VIENS_EXPRESS",
+    bilingual: false,
     business: "Thaï Vien Express",
     tradeFr: "restaurant thaïlandais",
     tradeEn: "Thai restaurant",
@@ -370,6 +383,40 @@ function systemPrompt(m) {
     m.slug === "traiteur"
       ? "le prénom, le nom, le numéro de téléphone, puis la date et l'heure de RETRAIT"
       : "le prénom, le nom, le numéro de téléphone, puis la date et l'heure";
+
+  if (m.bilingual === false) {
+    return `# Assistant ${m.business} — ${m.tradeFr} (${m.city})
+
+Tu es l'assistant téléphonique ET de chat de « ${m.business} », un ${m.tradeFr} situé à ${m.city}.
+Tu prends des ${m.rdvFr} pour les clients.
+
+## RÈGLES D'OR
+- Tu parles UNIQUEMENT en français, quelle que soit la langue utilisée par le client. Ne bascule jamais vers une autre langue.
+- Réponses COURTES (1 à 2 phrases max), chaleureuses et humaines, jamais de monologue.
+- Parle en premier, ne reste jamais silencieux.
+- UNE seule question à la fois, ne les empile pas.
+- Si le client t'interrompt, arrête-toi et suis-le.
+
+## INFOS COMMERCE
+- Horaires : ${m.hoursFr}.
+- Carte / services : ${m.servicesFr}.
+- Téléphone : ${m.phone} · ${m.city}.
+
+## DÉMO — IMPORTANT
+Ceci est une démonstration. La ${m.rdvFr} n'est PAS réelle : aucune confirmation réelle (SMS/e-mail) n'est envoyée et aucun paiement n'est demandé. Confirme néanmoins avec assurance, comme un vrai standardiste. Ne mentionne jamais que c'est simulé.
+
+## DÉROULÉ (une question à la fois)
+1. Accueille le client et demande ce qu'il souhaite réserver.
+2. Recueille : ${baseFields}.
+3. ${m.extraAskFr}
+4. Vérifie que la date/heure tombent dans les horaires d'ouverture ; sinon explique gentiment et propose un créneau valide.
+5. Récapitule TOUTES les infos et demande confirmation.
+6. Une fois le client d'accord, APPELLE l'outil « ${m.toolName} » avec les informations collectées.
+7. Confirme chaleureusement que la demande est notée et propose ton aide pour autre chose.
+
+Ne réponds qu'aux sujets liés à ${m.business}. Reste bref.`;
+  }
+
   return `# Assistant ${m.business} — ${m.tradeFr} (${m.city})
 
 Tu es l'assistant téléphonique ET de chat de « ${m.business} », un ${m.tradeFr} situé à ${m.city}.
@@ -421,8 +468,25 @@ function firstMessage(m) {
 }
 
 function buildTool(m) {
-  const properties = { ...baseProps, ...m.extraProps };
+  const { langue, ...restProps } = baseProps;
+  const properties = m.bilingual === false ? { ...restProps, ...m.extraProps } : { ...baseProps, ...m.extraProps };
   const required = ["prenom", "nom", "telephone", "date", "heure"];
+  if (m.bilingual === false) {
+    return {
+      type: "function",
+      async: false,
+      function: {
+        name: m.toolName,
+        description: `Enregistre la demande de ${m.rdvFr} (démo) pour ${m.business}. À appeler une fois toutes les informations confirmées par le client.`,
+        parameters: { type: "object", properties, required },
+      },
+      server: { url: TOOL_URL },
+      messages: [
+        { type: "request-start", content: "Je note tout ça, un instant…" },
+        { type: "request-failed", content: "Désolé, je n'ai pas pu enregistrer la demande." },
+      ],
+    };
+  }
   return {
     type: "function",
     async: false,
@@ -444,7 +508,7 @@ function payload(m) {
     name: `Démo vitrine · ${m.business}`.slice(0, 40),
     firstMessage: firstMessage(m),
     firstMessageMode: "assistant-speaks-first",
-    transcriber: TRANSCRIBER,
+    transcriber: m.bilingual === false ? TRANSCRIBER_FR : TRANSCRIBER,
     voice: m.voice,
     startSpeakingPlan: START_SPEAKING_PLAN,
     model: {
@@ -476,8 +540,13 @@ async function upsert(m) {
   return { id: data.id, method };
 }
 
+// Filtre optionnel : `node scripts/vapi-setup-assistants.mjs <slug1> <slug2> ...`
+// pour ne mettre à jour qu'un sous-ensemble d'assistants.
+const slugFilter = process.argv.slice(2);
+const targets = slugFilter.length ? METIERS.filter((m) => slugFilter.includes(m.slug)) : METIERS;
+
 const results = {};
-for (const m of METIERS) {
+for (const m of targets) {
   try {
     const { id, method } = await upsert(m);
     results[m.slug] = id;
@@ -489,6 +558,6 @@ for (const m of METIERS) {
 
 console.log("\n# ── IDs assistants Vapi (à coller dans .env si nouveaux) ──");
 console.log(`# Tool server URL : ${TOOL_URL}`);
-for (const m of METIERS) {
+for (const m of targets) {
   if (results[m.slug]) console.log(`${m.envKey}=${results[m.slug]}`);
 }
