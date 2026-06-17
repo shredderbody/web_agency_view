@@ -312,6 +312,34 @@ const METIERS = [
     greetFr: "Thaï Vien Express, bonjour ! Vous souhaitez réserver une table ou commander à emporter ?",
   },
   {
+    // Client réel — Texas Plumbing Pros, 322 N Gun Barrel Ln, Gun Barrel City, TX
+    // (Cedar Creek Lake). Assistant DÉDIÉ (données réelles Google Places + site
+    // officiel txplumbingpros.com), voix masculine multilingue. Entreprise
+    // familiale depuis 2014, licence RMP #41426, urgences 24/7.
+    slug: "texas-plumbing-pros",
+    envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_TEXAS_PLUMBING_PROS",
+    business: "Texas Plumbing Pros",
+    tradeFr: "plombier (entreprise familiale depuis 2014, licence RMP #41426)",
+    tradeEn: "plumber (family-owned since 2014, license RMP #41426)",
+    city: "Gun Barrel City, Texas (Cedar Creek Lake)",
+    phone: "(903) 802-9839",
+    voice: VOICE.male,
+    hoursFr: "bureau du lundi au vendredi de 8h00 à 17h00, avec un service d'urgence 24h/24, 7j/7",
+    hoursEn: "office Monday to Friday, 8:00am to 5:00pm, with 24/7 emergency service",
+    servicesFr: "Plomberie résidentielle et commerciale : réparation et remplacement de chauffe-eau, détection et réparation de fuites (robinetterie, sous dalle, fondation), débouchage et curage d'égout, réparation de canalisation d'égout, WC et sanitaires, détection de fuite de gaz. Zone : Gun Barrel City, Mabank, Athens, Kaufman, Canton, Corsicana et tout le Cedar Creek Lake. Devis gratuit avant travaux, urgences 24/7",
+    rdvFr: "intervention",
+    rdvEn: "service call",
+    toolName: "enregistrer_intervention",
+    extraProps: {
+      adresse_intervention: { type: "string", description: "Adresse complète du lieu de l'intervention / full service address (number, street, city, ZIP)." },
+      nature_probleme: { type: "string", description: "Nature du problème / nature of the issue (water heater, leak, clogged drain, sewer line, gas…)." },
+      urgence: { type: "boolean", description: "true si urgence / true if emergency, sinon false." },
+    },
+    extraAskFr: "Demande IMPÉRATIVEMENT l'adresse complète du lieu de l'intervention et la nature du problème (chauffe-eau, fuite, égout bouché, gaz…). Demande s'il s'agit d'une urgence : si oui, rappelle que le service d'urgence est disponible 24/7.",
+    extraAskEn: "You MUST ask for the full service address and the nature of the issue (water heater, leak, clogged drain, gas…). Ask whether it is an emergency: if so, remind them emergency service is available 24/7.",
+    greetFr: "Texas Plumbing Pros, bonjour ! Une fuite, un chauffe-eau ou une urgence ? Je peux organiser une intervention. — Hi, this is Texas Plumbing Pros, how can I help?",
+  },
+  {
     slug: "plombier",
     envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_PLOMBIER",
     business: "Plomberie Mercier",

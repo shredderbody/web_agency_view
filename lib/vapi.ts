@@ -188,6 +188,23 @@ const CONFIG: Record<string, VapiMetier> = {
       en: "Welcome to Thaï Vien Express 🌶️ I can go over our dishes, our hours and book your table. How can I help?",
     },
   },
+  // Client réel — Texas Plumbing Pros, 322 N Gun Barrel Ln, Gun Barrel City, TX
+  // (Cedar Creek Lake). Assistant Vapi DÉDIÉ (données réelles Google Places + site
+  // officiel : entreprise familiale depuis 2014, licence RMP #41426, urgences 24/7).
+  // Couleurs bleu/rouge Texas de sa page immersive (cf. components/TexasPlumbing.tsx).
+  "texas-plumbing-pros": {
+    assistantId:
+      process.env.NEXT_PUBLIC_VAPI_ASSISTANT_TEXAS_PLUMBING_PROS || "fc5b038f-ac4e-4ac8-a75f-fdca2364c2ca",
+    accent: "#2a5fb0",
+    base: "#f8fbff",
+    buttonIcon: "#ffffff",
+    theme: "light",
+    label: "Texas Plumbing Pros",
+    greeting: {
+      fr: "Bonjour, ici Texas Plumbing Pros 🔧 votre plombier à Gun Barrel City. Je peux qualifier votre besoin, estimer un délai et planifier une intervention — même en urgence 24/7. Que se passe-t-il ?",
+      en: "Hi, this is Texas Plumbing Pros 🔧 your Gun Barrel City plumber. I can assess your issue, estimate a timeframe and schedule a visit — even 24/7 emergencies. What's going on?",
+    },
+  },
   plombier: {
     assistantId:
       process.env.NEXT_PUBLIC_VAPI_ASSISTANT_PLOMBIER || "61b42505-e008-4912-9912-2d70a2c2d27e",
