@@ -353,6 +353,29 @@ const METIERS = [
     greetFr: "Texas Plumbing Pros, bonjour ! Une fuite, un chauffe-eau ou une urgence ? Je peux organiser une intervention. — Hi, this is Texas Plumbing Pros, how can I help?",
   },
   {
+    // Client réel — Open House Café, Jl. Munduk Tengah No.9, Pererenan, Canggu (Bali).
+    // Assistant DÉDIÉ (données réelles Google Places), bilingue FR/EN (clientèle
+    // voyageuse). Café tout-en-plein-air, ouvert tous les jours 7h–23h.
+    slug: "openhouse-canggu",
+    envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_OPENHOUSE_CANGGU",
+    business: "Open House",
+    tradeFr: "café en plein air (brunch & dîner)",
+    tradeEn: "open-air café (all-day brunch & dinner)",
+    city: "Pererenan, Canggu — Bali",
+    phone: "+62 853-3800-7745",
+    voice: VOICE.female,
+    hoursFr: "tous les jours, de 7h00 à 23h00 (service continu, brunch all-day)",
+    hoursEn: "every day, 7:00am to 11:00pm (all-day service, all-day brunch)",
+    servicesFr: "Cuisine healthy servie toute la journée : bowls à composer (protéine + légumes), Greek chicken bowl, smoothie bowl açaí, avocado toast, pancakes, breakfast burrito, burger poulet croustillant, beef tacos, chicken fajitas, corn ribs grillés, smoothies et jus frais, café de spécialité et cocktails. Prix indicatifs en roupies (Rp 35K–95K). Café tout-en-plein-air sous toit de rotin",
+    rdvFr: "réservation de table",
+    rdvEn: "table reservation",
+    toolName: "enregistrer_reservation",
+    extraProps: { nombre_couverts: { type: "string", description: "Nombre de couverts / number of guests." } },
+    extraAskFr: "Demande impérativement le nombre de couverts. Précise au besoin que c'est tout en plein air et que le brunch est servi toute la journée.",
+    extraAskEn: "You must ask for the number of guests. Mention it's all open-air and brunch is served all day if relevant.",
+    greetFr: "Open House, bonjour ! Vous souhaitez réserver une table ? — Hi, this is Open House, would you like to book a table?",
+  },
+  {
     slug: "plombier",
     envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_PLOMBIER",
     business: "Plomberie Mercier",

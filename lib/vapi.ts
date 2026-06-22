@@ -205,6 +205,23 @@ const CONFIG: Record<string, VapiMetier> = {
       en: "Hi, this is Texas Plumbing Pros 🔧 your Gun Barrel City plumber. I can assess your issue, estimate a timeframe and schedule a visit — even 24/7 emergencies. What's going on?",
     },
   },
+  // Client réel — Open House Café, Jl. Munduk Tengah No.9, Pererenan, Canggu (Bali).
+  // Assistant Vapi DÉDIÉ (données réelles Google Places : café tout-en-plein-air,
+  // ouvert 7j/7 7h–23h, 4,6/5 sur 1 053 avis). Bilingue FR/EN (clientèle voyageuse).
+  // Couleurs vert jungle/crème de sa page immersive (cf. components/OpenHouseCanggu.tsx).
+  "openhouse-canggu": {
+    assistantId:
+      process.env.NEXT_PUBLIC_VAPI_ASSISTANT_OPENHOUSE_CANGGU || "da471536-e59a-4435-bfbe-ba35975f3913",
+    accent: "#3c8159",
+    base: "#fbfaf3",
+    buttonIcon: "#ffffff",
+    theme: "light",
+    label: "Open House · Canggu",
+    greeting: {
+      fr: "Bienvenue chez Open House 🌿 le café en plein air de Pererenan, Canggu. Je peux présenter la carte, nos horaires et réserver votre table. Comment puis-je vous aider ?",
+      en: "Welcome to Open House 🌿 the open-air café in Pererenan, Canggu. I can go over the menu, our hours and book your table. How can I help?",
+    },
+  },
   plombier: {
     assistantId:
       process.env.NEXT_PUBLIC_VAPI_ASSISTANT_PLOMBIER || "61b42505-e008-4912-9912-2d70a2c2d27e",
