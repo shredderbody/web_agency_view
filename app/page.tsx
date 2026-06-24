@@ -331,6 +331,30 @@ export default function Home() {
                   </div>
                 </Link>
               </Reveal>
+              <Reveal delay={360}>
+                <Link href="/demo/ines-garden" className="card card-hover" style={{ display: "flex", flexDirection: "column", overflow: "hidden", height: "100%", outline: "2px solid var(--vermilion)", outlineOffset: "-2px" }}>
+                  <div style={{ position: "relative", aspectRatio: "16 / 9" }}>
+                    <Image src="/clients/ines-garden/photo_00.webp" alt={lang === "en" ? "Ines Garden, cast-iron Medici garden ornaments near Besançon" : "Ines Garden, ornements de jardin en fonte style Médicis près de Besançon"} fill unoptimized sizes="(max-width: 700px) 100vw, 380px" style={{ objectFit: "cover", objectPosition: "center" }} />
+                    <span className="chip" style={{ position: "absolute", top: "0.85rem", left: "0.85rem", display: "inline-flex", alignItems: "center", gap: "0.4rem", background: "var(--vermilion)", color: "#fff" }}>
+                      <Star size={13} strokeWidth={0} fill="currentColor" /> {lang === "en" ? "Real client" : "Client réel"}
+                    </span>
+                  </div>
+                  <div style={{ padding: "1.4rem 1.5rem 1.6rem", display: "flex", flexDirection: "column", flex: 1 }}>
+                    <h3 className="d-lg" style={{ margin: "0 0 0.35rem" }}>Ines Garden</h3>
+                    <p style={{ color: "var(--ink-dim)", margin: "0 0 1.3rem", flex: 1 }}>
+                      {lang === "en"
+                        ? "An immersive shop built from the brand's real Google data and catalogue: cast-iron Medici vases, fountains and statues, real prices and reviews — plus a bilingual voice assistant that takes orders with free delivery."
+                        : "Une boutique immersive bâtie sur les vraies données Google et le catalogue de la marque : vases Médicis, fontaines et statues en fonte, vrais prix et avis — avec un assistant vocal bilingue qui prend les commandes en livraison offerte."}
+                    </p>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.8rem", flexWrap: "wrap", borderTop: "1px solid var(--border)", paddingTop: "1.05rem" }}>
+                      <span style={{ fontSize: "0.82rem", color: "var(--ink-muted)", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+                        <Star size={13} fill="var(--clay)" stroke="none" /> 5,0 · Chalezeule, {lang === "en" ? "France" : "France"}
+                      </span>
+                      <span className="link-arrow" style={{ fontSize: "0.95rem" }}>{t.metiers.seePage} <ArrowUpRight size={17} /></span>
+                    </div>
+                  </div>
+                </Link>
+              </Reveal>
               {demos.map((d, i) => (
                 <Reveal key={d.slug} delay={(i % 2) * 80}>
                   <Link href={`/demo/${d.slug}`} className="card card-hover" style={{ display: "flex", flexDirection: "column", overflow: "hidden", height: "100%" }}>

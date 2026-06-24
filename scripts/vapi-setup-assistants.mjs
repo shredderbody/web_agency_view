@@ -376,6 +376,33 @@ const METIERS = [
     greetFr: "Open House, bonjour ! Vous souhaitez réserver une table ? — Hi, this is Open House, would you like to book a table?",
   },
   {
+    // Client réel — Ines Garden / Les Jardins d'Inès, 10 Chem. du Rond Buisson,
+    // 25220 Chalezeule (près de Besançon). Assistant DÉDIÉ (données réelles
+    // Google Places + site ines-garden.com), bilingue FR/EN. Boutique en ligne
+    // d'ornements de jardin en fonte (style Médicis), livraison offerte.
+    slug: "ines-garden",
+    envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_INES_GARDEN",
+    business: "Ines Garden",
+    tradeFr: "spécialiste des ornements de jardin en fonte de fer (style Médicis)",
+    tradeEn: "cast-iron garden ornament specialist (Medici style)",
+    city: "Chalezeule, près de Besançon",
+    phone: "+33 6 75 63 55 28",
+    voice: VOICE.female,
+    hoursFr: "boutique en ligne ouverte 24h/24, 7j/7 ; livraison offerte partout en France, sur rendez-vous selon la pièce",
+    hoursEn: "online shop open 24/7; free delivery across France, scheduled depending on the piece",
+    servicesFr: "Ornements de jardin en fonte de fer, reproductions style Médicis : vases Médicis (24 à 155 cm, finitions bronze-vert, pierre, gris ou noir mat, dès 60 €), vasques Médicis (dès 175 €) et vasques sur colonne (dès 900 €), jardinières (dès 50 €), bacs à oranger / caisses (dès 510 €), fontaines en fonte de 1 à 3 étages jusqu'à 3,60 m (dès 1 100 €), statues 4 saisons de 150 à 233 cm (dès 3 500 €), têtes de cheval (570 €), salons de jardin (dès 1 900 €). Livraison OFFERTE partout en France. Prix indicatifs",
+    rdvFr: "commande",
+    rdvEn: "order",
+    toolName: "enregistrer_commande",
+    extraProps: {
+      pieces_souhaitees: { type: "string", description: "Pièces souhaitées avec taille et finition / desired pieces with size and finish (ex : vase Médicis 86 cm bronze-vert)." },
+      adresse_livraison: { type: "string", description: "Adresse complète de livraison / full delivery address (numéro, rue, code postal, ville)." },
+    },
+    extraAskFr: "Demande IMPÉRATIVEMENT quelles pièces l'intéressent (type, taille, finition : bronze-vert, pierre, gris, noir mat) et l'adresse complète de livraison. La date et l'heure correspondent au créneau de livraison souhaité. Rappelle que la livraison est offerte partout en France.",
+    extraAskEn: "You MUST ask which pieces they want (type, size, finish: bronze-green, stone, grey, matte black) and the full delivery address. The date and time refer to the preferred delivery slot. Remind them delivery is free across France.",
+    greetFr: "Ines Garden, bonjour ! Vous cherchez un vase Médicis, une fontaine ou une autre pièce en fonte ? — Hi, this is Ines Garden, are you looking for a Medici vase, a fountain or another cast-iron piece?",
+  },
+  {
     slug: "plombier",
     envKey: "NEXT_PUBLIC_VAPI_ASSISTANT_PLOMBIER",
     business: "Plomberie Mercier",

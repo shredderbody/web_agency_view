@@ -222,6 +222,19 @@ const CONFIG: Record<string, VapiMetier> = {
       en: "Welcome to Open House 🌿 the open-air café in Pererenan, Canggu. I can go over the menu, our hours and book your table. How can I help?",
     },
   },
+  "ines-garden": {
+    assistantId:
+      process.env.NEXT_PUBLIC_VAPI_ASSISTANT_INES_GARDEN || "ec3f1db3-457a-4461-908b-0b8f065d7ec8",
+    accent: "#3f5f53",
+    base: "#f6f4ee",
+    buttonIcon: "#ffffff",
+    theme: "light",
+    label: "Ines Garden",
+    greeting: {
+      fr: "Bonjour, ici Ines Garden 🏛️ vases Médicis, fontaines et statues en fonte de fer. Je peux vous conseiller une pièce, une taille et organiser la livraison offerte. Que recherchez-vous ?",
+      en: "Hello, this is Ines Garden 🏛️ cast-iron Medici vases, fountains and statues. I can help you pick a piece and size, and arrange free delivery. What are you looking for?",
+    },
+  },
   plombier: {
     assistantId:
       process.env.NEXT_PUBLIC_VAPI_ASSISTANT_PLOMBIER || "61b42505-e008-4912-9912-2d70a2c2d27e",

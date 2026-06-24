@@ -4,7 +4,7 @@ import { X, Check, ChevronLeft, Minus, Plus } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 import type { Service } from "@/lib/vitrineContent";
 
-type Vit = "barber" | "onglerie" | "traiteur" | "resto" | "plombier" | "livraison" | "evenementiel";
+type Vit = "barber" | "onglerie" | "traiteur" | "resto" | "plombier" | "livraison" | "evenementiel" | "boutique";
 type FD = Record<string, any>;
 
 // ── Time slot banks ───────────────────────────────────────────────────────────
@@ -35,9 +35,9 @@ const ML = {
     back: "Retour", next: "Continuer", submit: "Envoyer ma demande",
     close: "Fermer",
     done_title: "C'est noté !",
-    titles:  { barber: "Prendre rendez-vous", onglerie: "Réserver un soin", traiteur: "Commander", resto: "Réserver une table", plombier: "Demander un devis", livraison: "Commander en livraison", evenementiel: "Rendez-vous découverte" },
-    steps:   { barber: ["Prestation","Créneau","Coordonnées"], onglerie: ["Soin","Créneau","Coordonnées"], traiteur: ["Commande","Retrait","Coordonnées"], resto: ["Date & service","Couverts","Coordonnées"], plombier: ["Votre besoin","Disponibilités","Coordonnées"], livraison: ["Panier","Livraison","Coordonnées"], evenementiel: ["Votre projet","Rendez-vous","Coordonnées"] },
-    success: { barber: "Votre demande est enregistrée. Maison Brutus vous confirme votre rendez-vous par SMS.", onglerie: "Réservation prise en compte. {business} vous confirme par SMS.", traiteur: "Commande enregistrée ! Maison Ferrand vous contacte pour confirmer le retrait.", resto: "Table réservée ! {business} vous confirme par SMS sous peu.", plombier: "Demande reçue ! {business} vous rappelle sous 24 h avec un devis détaillé.", livraison: "Commande envoyée ! {business} prépare votre commande — livraison estimée sous 30 à 40 min.", evenementiel: "Demande reçue ! {business} vous recontacte sous 24 h pour votre rendez-vous découverte — sans engagement." },
+    titles:  { barber: "Prendre rendez-vous", onglerie: "Réserver un soin", traiteur: "Commander", resto: "Réserver une table", plombier: "Demander un devis", livraison: "Commander en livraison", evenementiel: "Rendez-vous découverte", boutique: "Commander mes pièces" },
+    steps:   { barber: ["Prestation","Créneau","Coordonnées"], onglerie: ["Soin","Créneau","Coordonnées"], traiteur: ["Commande","Retrait","Coordonnées"], resto: ["Date & service","Couverts","Coordonnées"], plombier: ["Votre besoin","Disponibilités","Coordonnées"], livraison: ["Panier","Livraison","Coordonnées"], evenementiel: ["Votre projet","Rendez-vous","Coordonnées"], boutique: ["Panier","Livraison","Coordonnées"] },
+    success: { barber: "Votre demande est enregistrée. Maison Brutus vous confirme votre rendez-vous par SMS.", onglerie: "Réservation prise en compte. {business} vous confirme par SMS.", traiteur: "Commande enregistrée ! Maison Ferrand vous contacte pour confirmer le retrait.", resto: "Table réservée ! {business} vous confirme par SMS sous peu.", plombier: "Demande reçue ! {business} vous rappelle sous 24 h avec un devis détaillé.", livraison: "Commande envoyée ! {business} prépare votre commande — livraison estimée sous 30 à 40 min.", evenementiel: "Demande reçue ! {business} vous recontacte sous 24 h pour votre rendez-vous découverte — sans engagement.", boutique: "Commande enregistrée ! {business} vous recontacte pour confirmer votre commande et organiser la livraison offerte de vos pièces en fonte." },
     DAYS:   ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"],
     MONTHS: ["jan","fév","mar","avr","mai","juin","juil","août","sep","oct","nov","déc"],
     service_q: "Quelle prestation souhaitez-vous ?",
@@ -85,6 +85,8 @@ const ML = {
     asap: "Au plus vite · 30–40 min", scheduled: "Programmer",
     when_slot_l: "Créneau de livraison",
     dnote_l: "Précisions pour le livreur (facultatif)", dnote_ph: "Étage, code, interphone…",
+    boutique_free: "Livraison offerte sur l'ensemble de la commande, partout en France.",
+    boutique_note_l: "Une question ou une finition souhaitée ? (facultatif)", boutique_note_ph: "Ex : finition bronze-vert, livraison à l'étage, délai souhaité…",
   },
   en: {
     back: "Back", next: "Continue", submit: "Send my request",
@@ -140,6 +142,8 @@ const ML = {
     asap: "As soon as possible · 30–40 min", scheduled: "Schedule",
     when_slot_l: "Delivery slot",
     dnote_l: "Notes for the courier (optional)", dnote_ph: "Floor, door code, intercom…",
+    boutique_free: "Free delivery on the whole order, across France.",
+    boutique_note_l: "A question or a preferred finish? (optional)", boutique_note_ph: "E.g. bronze-green finish, delivery upstairs, preferred timeframe…",
   },
 };
 
@@ -173,6 +177,11 @@ function canAdvance(vit: Vit, step: number, fd: FD): boolean {
   if (vit === "evenementiel") {
     if (step === 0) return !!fd.service;
     if (step === 1) return !!fd.date && !!fd.time;
+    if (step === 2) return !!(fd.name?.trim()) && !!(fd.phone?.trim());
+  }
+  if (vit === "boutique") {
+    if (step === 0) return cartCount(fd) >= 1;
+    if (step === 1) return !!(fd.addr?.trim()) && !!(fd.postal?.trim());
     if (step === 2) return !!(fd.name?.trim()) && !!(fd.phone?.trim());
   }
   return true;
@@ -355,7 +364,7 @@ function StepContent({ vit, step, fd, setFd, services, menu, lang, dates }: {
       </div>
     );
 
-    if (vit === "livraison") {
+    if (vit === "livraison" || vit === "boutique") {
       const cart: Record<string, number> = fd.cart ?? {};
       const setQty = (name: string, q: number) => setFd(p => {
         const next = { ...(p.cart ?? {}) } as Record<string, number>;
@@ -363,7 +372,7 @@ function StepContent({ vit, step, fd, setFd, services, menu, lang, dates }: {
         return { ...p, cart: next };
       });
       const subtotal = menu.reduce((sum, it) => sum + parsePrice(it.price) * (cart[it.name] ?? 0), 0);
-      const freeDelivery = subtotal >= FREE_OVER;
+      const freeDelivery = vit === "boutique" || subtotal >= FREE_OVER;
       const fee = subtotal > 0 && !freeDelivery ? DELIVERY_FEE : 0;
       const row = (label: string, value: string, strong = false) => (
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: strong ? "1rem" : "0.88rem", fontWeight: strong ? 700 : 500, color: strong ? "var(--fg)" : "var(--fg-dim)" }}>
@@ -411,6 +420,11 @@ function StepContent({ vit, step, fd, setFd, services, menu, lang, dates }: {
               {!freeDelivery && (
                 <div style={{ fontSize: "0.76rem", color: "var(--accent)", marginTop: "0.2rem" }}>{l.free_over.replace("{n}", fmtPrice(FREE_OVER, lang))}</div>
               )}
+            </div>
+          )}
+          {vit === "boutique" && (
+            <div style={{ fontSize: "0.8rem", color: "var(--accent)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <Check size={15} /> {l.boutique_free}
             </div>
           )}
         </div>
@@ -514,6 +528,17 @@ function StepContent({ vit, step, fd, setFd, services, menu, lang, dates }: {
         </div>
       );
     }
+
+    if (vit === "boutique") return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.3rem" }}>
+        <TInput label={l.addr_l} placeholder={l.addr_ph} value={fd.addr ?? ""} onChange={v => set("addr", v)} />
+        <TInput label={l.postal_l} placeholder={l.postal_ph} value={fd.postal ?? ""} onChange={v => set("postal", v)} />
+        <TArea label={l.boutique_note_l} placeholder={l.boutique_note_ph} value={fd.dnote ?? ""} onChange={v => set("dnote", v)} />
+        <div style={{ fontSize: "0.82rem", color: "var(--accent)", display: "flex", alignItems: "center", gap: "0.45rem" }}>
+          <Check size={15} /> {l.boutique_free}
+        </div>
+      </div>
+    );
 
     if (vit === "livraison") return (
       <div style={{ display: "flex", flexDirection: "column", gap: "1.3rem" }}>
