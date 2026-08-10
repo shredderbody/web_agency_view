@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import InesGarden from "@/components/InesGarden";
+import ShopHome from "@/components/shop/ShopHome";
 
 export const metadata: Metadata = {
   title: "Ines Garden · Ornements de jardin en fonte, style Médicis (Chalezeule)",
@@ -14,5 +14,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <InesGarden />;
+  return <ShopHome />;
 }

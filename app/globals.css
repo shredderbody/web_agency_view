@@ -434,6 +434,14 @@ body.om-open .vapi-widget-wrapper {
   display: none !important;
 }
 
+/* Même logique pour le panier de la boutique Ines Garden (components/shop/
+   CartDrawer.tsx pose .cart-open sur <body>) : la bulle recouvrait le bouton
+   « continuer mes achats » en bas du tiroir sur mobile. */
+body.cart-open [data-vapi-metier],
+body.cart-open .vapi-widget-wrapper {
+  display: none !important;
+}
+
 /* Espace de sécurité (safe-area) sur l'ancre fixe — évite que la bulle colle au
    bord / passe sous l'indicateur d'accueil. `max()` garde la marge inline mini. */
 .vapi-widget-wrapper > div {
