@@ -22,7 +22,7 @@ bascule automatique en anglais), prennent des **rendez-vous de démonstration**
 | Composant bulle (web-component `<vapi-widget>`) | `components/VapiWidget.tsx` |
 | Câblage dans la page métier | `components/DemoView.tsx` (`<VapiWidget slug={slug} />`) |
 | Config par métier (IDs + couleurs) | `lib/vapi.ts` |
-| Endpoint des function tools (démo) | `app/api/vapi/booking/route.ts` |
+| Endpoint des function tools (démo) | webhook n8n (`VAPI_TOOL_URL`) — legacy : `app/api/vapi/booking/route.ts` |
 | Provisioning / mise à jour des assistants | `scripts/vapi-setup-assistants.mjs` |
 | Variables d'environnement | `.env` (section `── Vapi ──`) |
 | CSP (production) | `Caddyfile` → snippet `csp_receptionniste` |
@@ -36,7 +36,7 @@ Visiteur ──(chat ou voix)──▶ <vapi-widget> ──▶ Vapi (assistant d
                                                    ├─ LLM gpt-4.1 (prompt FR/EN)
                                                    ├─ STT Deepgram flux-general-multi (fr+en)
                                                    ├─ TTS ElevenLabs eleven_multilingual_v2
-                                                   └─ function tool ──POST──▶ /api/vapi/booking
+                                                   └─ function tool ──POST──▶ n8n (webhook)
                                                                                   └─ confirme (démo)
 ```
 
@@ -85,7 +85,9 @@ propose un créneau valide.
 ## 3. Function tools (inbound)
 
 Chaque assistant expose **un** function tool, appelé une fois que le client a
-confirmé. Tous pointent vers `POST {NEXT_PUBLIC_APP_URL}/api/vapi/booking`.
+confirmé. Tous pointent vers le **webhook n8n** :
+`POST https://n8n.zerocall.io/webhook/00000000-1234-0000-4321-000000000000`
+(surchargeable via `VAPI_TOOL_URL`). C'est aussi le `server.url` de l'assistant.
 
 ### Champs communs (tous les métiers)
 
@@ -110,7 +112,58 @@ confirmé. Tous pointent vers `POST {NEXT_PUBLIC_APP_URL}/api/vapi/booking`.
 > **Le plombier demande systématiquement l'adresse complète du lieu
 > d'intervention** et la nature du problème — c'est imposé dans son prompt.
 
-### Endpoint `/api/vapi/booking`
+### Traitement côté n8n (câblage actuel)
+
+Workflow **`DEV - WebAgencyView - 01 - Receptionist - MultiTenant - Demo`**
+(`DXijRdXTdTKVGXE8`, projet `SU61xL4G7FcslHvZ`) — le même que le projet
+*receptionist*, avec une branche dédiée aux démos ajoutée en fin de `Switch1` :
+
+```
+Webhook1 → Edit Fields1 → Get row(s)3 → Code in JavaScript16 → Code in JavaScript
+        → Switch1 ─[10] demoBooking ─▶ Code - Demo Lead
+                                        → Supabase - Demo Booking
+                                        → Respond to Webhook - Demo
+                  └[11] fallback ─────▶ Respond to Webhook - Fallback
+```
+
+- `Switch1` route sur `function_tool` *startsWith* `enregistrer_` : **aucun**
+  nouveau tool n'est à déclarer côté workflow quand on ajoute un métier.
+- `Get row(s)3` (lookup tenant *receptionist*) est en `alwaysOutputData` : les
+  assistants de démo, absents de `practitioner_initialization`, traversent quand
+  même la chaîne.
+- La sortie `fallback` garantit qu'aucun POST ne reste sans réponse (tool inconnu
+  → `result: "OK"` ; événement sans `toolCalls` → `{ received: true }`).
+- `Supabase - Demo Booking` est en `onError: continueRegularOutput` : une panne
+  Supabase **n'empêche jamais** l'assistant de confirmer au client.
+- Réponse renvoyée à Vapi : `{ "results": [ { "toolCallId", "result" } ] }`, avec
+  une phrase de confirmation **FR ou EN** selon l'argument `langue`.
+
+**Persistance — multi-tenant par `assistant_id`.** Les leads partent dans
+`public.demo_bookings` du projet Supabase **GritUnited** `bbxwezoscjuwsoflponx`
+(credential n8n `GritUnited Supabase account`), *pas* dans le projet du `.env` de
+ce repo. La clé de tenant est l'**`assistant_id` Vapi** : un seul workflow sert
+tous les clients de démo, et en ajouter un ne demande aucune modification.
+
+| Colonne | Contenu |
+|---|---|
+| `assistant_id` | **clé de tenant** — `message.assistant.id` |
+| `assistant_name` | ex. `Démo vitrine · Le Comptoir 12` |
+| `tool` | `enregistrer_rendezvous` \| `_reservation` \| `_commande` \| `_intervention` |
+| `payload` | jsonb — les arguments du tool |
+| `meta` | jsonb — `{ slug, env, ts, workflow }` |
+| `call_id` / `tool_call_id` | ids Vapi ; `tool_call_id` est **unique** → un rejeu ne duplique pas |
+| `source` | `n8n` (ou `api` pour l'ancienne route) |
+
+Migration : **`supabase/migrations/003_demo_bookings_n8n.sql`** (autonome et
+idempotente — elle crée la table si besoin, 002 n'a pas à être jouée avant).
+Test de remplissage rejouable : `scripts/n8n-demo-fill-test.mjs`.
+Suivi détaillé du chantier : `docs/SUIVI_N8N_VAPI_DEMO.md`.
+
+### Endpoint `/api/vapi/booking` (legacy)
+
+> ⚠️ Depuis 2026-08, les assistants ne pointent **plus** vers cet endpoint mais
+> vers le webhook n8n ci-dessus. La route reste en place et fonctionnelle ; le
+> comportement décrit ci-dessous est celui de l'ancien câblage.
 
 - Lit le format tool-call de Vapi (`message.toolCalls[]`) et **répond au format
   attendu** : `{ "results": [ { "toolCallId", "result" } ] }`, où `result` est

@@ -55,3 +55,4 @@ Thumbs.db
 # Nulled/premium themes kept locally only, never versioned
 themes_shop/
 
+.n8n_backup/
