@@ -14,7 +14,7 @@
  *   - collecte : prénom, nom, téléphone, date + heure (dans les horaires)
  *     + champs spécifiques (adresse d'intervention plombier, couverts resto,
  *       type de commande traiteur),
- *   - expose un FUNCTION TOOL qui POST vers /api/vapi/booking.
+ *   - expose un FUNCTION TOOL qui POST vers le webhook n8n (VAPI_TOOL_URL).
  *
  * Si un ID d'assistant est déjà présent dans .env (NEXT_PUBLIC_VAPI_ASSISTANT_*),
  * le script fait un PATCH (mêmes IDs conservés) ; sinon il crée l'assistant.
@@ -49,9 +49,13 @@ const env = readEnv();
 
 const PRIVATE_KEY =
   process.env.VAPI_PRIVATE_KEY || env.VAPI_PRIVATE_KEY || env.VITE_VAPI_PRIVATE_KEY;
-const APP_URL =
-  process.env.NEXT_PUBLIC_APP_URL || env.NEXT_PUBLIC_APP_URL || "https://receptionniste.zerocall.io";
-const TOOL_URL = `${APP_URL.replace(/\/$/, "")}/api/vapi/booking`;
+// URL appelée par Vapi (server de l'assistant + server du function tool).
+// Depuis 2026-08 elle pointe vers le workflow n8n, plus vers /api/vapi/booking.
+// Surchargeable par VAPI_TOOL_URL (env ou .env).
+const TOOL_URL =
+  process.env.VAPI_TOOL_URL ||
+  env.VAPI_TOOL_URL ||
+  "https://n8n.zerocall.io/webhook/00000000-1234-0000-4321-000000000000";
 
 if (!PRIVATE_KEY) {
   console.error("✗ VAPI_PRIVATE_KEY manquante (ni en env, ni dans .env).");

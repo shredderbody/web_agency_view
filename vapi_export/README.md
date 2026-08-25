@@ -14,7 +14,7 @@ privée `VAPI_PRIVATE_KEY` du `.env`, à réutiliser comme modèles.
 
 | Dossier | Quoi | Nb |
 |---------|------|----|
-| `assistants/` | tous les assistants de démo (un fichier JSON par assistant) | 10 |
+| `assistants/` | tous les assistants de démo (un fichier JSON par assistant) | 12 |
 | `functions/`  | les tools **inline** extraits des assistants (un par nom) | 4 |
 
 - `assistants/_index.md` — table récap (nom, model, voice, transcriber, #tools, slug)
@@ -51,13 +51,14 @@ jq -r '.[] | select(.name=="enregistrer_intervention") | .usedBy[]' functions/_i
 
 | Fonction | Rôle | Métiers |
 |----------|------|---------|
-| `enregistrer_commande` | enregistrer commande | traiteur |
+| `enregistrer_commande` | enregistrer commande | ines-garden, traiteur |
 | `enregistrer_intervention` | enregistrer intervention | plombier, texas-plumbing-pros |
 | `enregistrer_rendezvous` | enregistrer rendezvous | barbershop, barbershop-courbevoie, lak-nail-salon, maison-ephemere, onglerie |
-| `enregistrer_reservation` | enregistrer reservation | restaurant, thai-viens-express |
+| `enregistrer_reservation` | enregistrer reservation | openhouse-canggu, restaurant, thai-viens-express |
 
-Toutes POSTent vers `server.url = <APP_URL>/api/vapi/booking` (le booking n'est
-PAS réel : démo). La source de vérité reste `scripts/vapi-setup-assistants.mjs`.
+Toutes POSTent vers le webhook n8n (`server.url`, cf. `VAPI_TOOL_URL`) — le
+booking n'est PAS réel : démo. La source de vérité reste
+`scripts/vapi-setup-assistants.mjs`.
 
 ## Recréer / mettre à jour
 
@@ -75,7 +76,7 @@ curl -s -X POST https://api.vapi.ai/tool \
   --data @/tmp/new_tool.json
 ```
 
-> ⚠️ Ces fichiers contiennent les prompts système et l'URL de webhook interne
-> (`receptionniste.zerocall.io/api/vapi/booking`). Ne pas exposer publiquement.
+> ⚠️ Ces fichiers contiennent les prompts système et l'URL de webhook n8n interne
+> (`n8n.zerocall.io/webhook/…`). Ne pas exposer publiquement.
 > Aucune clé API n'est stockée dedans (`isServerUrlSecretSet` indique juste qu'un
 > secret existe côté Vapi).

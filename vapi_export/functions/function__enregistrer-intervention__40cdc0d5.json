@@ -2,10 +2,10 @@
   "type": "function",
   "async": false,
   "server": {
-    "url": "https://receptionniste.zerocall.io/api/vapi/booking"
+    "url": "https://n8n.zerocall.io/webhook/00000000-1234-0000-4321-000000000000"
   },
   "function": {
-    "name": "enregistrer_commande",
+    "name": "enregistrer_intervention",
     "parameters": {
       "type": "object",
       "required": [
@@ -36,21 +36,25 @@
           "type": "string",
           "description": "Prénom du client / customer first name."
         },
-        "commande": {
-          "type": "string",
-          "description": "Type de commande / order type (plateau apéritif, pâté en croûte, buffet…)."
+        "urgence": {
+          "type": "boolean",
+          "description": "true si urgence / true if emergency, sinon false."
         },
         "telephone": {
           "type": "string",
           "description": "Numéro de téléphone du client / phone number."
         },
-        "nombre_personnes": {
+        "nature_probleme": {
           "type": "string",
-          "description": "Nombre de convives / number of people."
+          "description": "Nature du problème / nature of the issue (fuite, panne chauffe-eau, rénovation…)."
+        },
+        "adresse_intervention": {
+          "type": "string",
+          "description": "Adresse complète du lieu de l'intervention / full service address (numéro, rue, code postal, ville)."
         }
       }
     },
-    "description": "Enregistre la demande de commande à retirer en boutique (démo) pour Maison Ferrand. À appeler une fois toutes les informations confirmées par le client. / Records the demo in-store pickup order once confirmed."
+    "description": "Enregistre la demande de intervention (démo) pour Plomberie Mercier. À appeler une fois toutes les informations confirmées par le client. / Records the demo service call once confirmed."
   },
   "messages": [
     {

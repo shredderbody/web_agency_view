@@ -18,7 +18,7 @@
     "inputMinCharacters": 3
   },
   "createdAt": "2026-06-14T13:40:04.689Z",
-  "updatedAt": "2026-06-17T05:17:59.404Z",
+  "updatedAt": "2026-08-25T05:21:02.392Z",
   "model": {
     "model": "gpt-4.1",
     "tools": [
@@ -26,7 +26,7 @@
         "type": "function",
         "async": false,
         "server": {
-          "url": "https://receptionniste.zerocall.io/api/vapi/booking"
+          "url": "https://n8n.zerocall.io/webhook/00000000-1234-0000-4321-000000000000"
         },
         "function": {
           "name": "enregistrer_rendezvous",
@@ -138,7 +138,8 @@
     }
   },
   "server": {
-    "url": "https://receptionniste.zerocall.io/api/vapi/booking"
+    "url": "https://n8n.zerocall.io/webhook/00000000-1234-0000-4321-000000000000"
   },
+  "latestVersion": "v2",
   "isServerUrlSecretSet": false
 }

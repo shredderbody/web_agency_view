@@ -2,10 +2,10 @@
   "type": "function",
   "async": false,
   "server": {
-    "url": "https://receptionniste.zerocall.io/api/vapi/booking"
+    "url": "https://n8n.zerocall.io/webhook/00000000-1234-0000-4321-000000000000"
   },
   "function": {
-    "name": "enregistrer_intervention",
+    "name": "enregistrer_reservation",
     "parameters": {
       "type": "object",
       "required": [
@@ -36,25 +36,17 @@
           "type": "string",
           "description": "Prénom du client / customer first name."
         },
-        "urgence": {
-          "type": "boolean",
-          "description": "true si urgence / true if emergency, sinon false."
-        },
         "telephone": {
           "type": "string",
           "description": "Numéro de téléphone du client / phone number."
         },
-        "nature_probleme": {
+        "nombre_couverts": {
           "type": "string",
-          "description": "Nature du problème / nature of the issue (fuite, panne chauffe-eau, rénovation…)."
-        },
-        "adresse_intervention": {
-          "type": "string",
-          "description": "Adresse complète du lieu de l'intervention / full service address (numéro, rue, code postal, ville)."
+          "description": "Nombre de couverts / number of guests."
         }
       }
     },
-    "description": "Enregistre la demande de intervention (démo) pour Plomberie Mercier. À appeler une fois toutes les informations confirmées par le client. / Records the demo service call once confirmed."
+    "description": "Enregistre la demande de réservation de table (démo) pour Le Comptoir 12. À appeler une fois toutes les informations confirmées par le client. / Records the demo table reservation once confirmed."
   },
   "messages": [
     {

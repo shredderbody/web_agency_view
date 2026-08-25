@@ -182,8 +182,9 @@ jq -r '.[] | select(.name=="enregistrer_intervention") | .usedBy[]' functions/_i
 |----------|------|---------|
 ${toolTableRows}
 
-Toutes POSTent vers \`server.url = <APP_URL>/api/vapi/booking\` (le booking n'est
-PAS réel : démo). La source de vérité reste \`scripts/vapi-setup-assistants.mjs\`.
+Toutes POSTent vers le webhook n8n (\`server.url\`, cf. \`VAPI_TOOL_URL\`) — le
+booking n'est PAS réel : démo. La source de vérité reste
+\`scripts/vapi-setup-assistants.mjs\`.
 
 ## Recréer / mettre à jour
 
@@ -201,8 +202,8 @@ curl -s -X POST https://api.vapi.ai/tool \\
   --data @/tmp/new_tool.json
 \`\`\`
 
-> ⚠️ Ces fichiers contiennent les prompts système et l'URL de webhook interne
-> (\`receptionniste.zerocall.io/api/vapi/booking\`). Ne pas exposer publiquement.
+> ⚠️ Ces fichiers contiennent les prompts système et l'URL de webhook n8n interne
+> (\`n8n.zerocall.io/webhook/…\`). Ne pas exposer publiquement.
 > Aucune clé API n'est stockée dedans (\`isServerUrlSecretSet\` indique juste qu'un
 > secret existe côté Vapi).
 `

@@ -93,5 +93,5 @@ Tous les `GET` de liste acceptent :
   `speech-02-turbo` (FR) pour restaurant / thaï — voir `assistants/` et
   `lib/voiceCatalog.ts`.
 - Tools définis **en inline** (`model.tools`), pas via `toolIds` ; ils POSTent
-  vers `<APP_URL>/api/vapi/booking` (booking de démo, non réel).
+  vers le webhook n8n (`VAPI_TOOL_URL`, booking de démo, non réel).
 - Widget Web : voir la mémoire `vapi-frontend-widget-playbook` (CSP / mic / mount).

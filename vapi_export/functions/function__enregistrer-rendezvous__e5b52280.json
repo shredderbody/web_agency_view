@@ -2,10 +2,10 @@
   "type": "function",
   "async": false,
   "server": {
-    "url": "https://receptionniste.zerocall.io/api/vapi/booking"
+    "url": "https://n8n.zerocall.io/webhook/00000000-1234-0000-4321-000000000000"
   },
   "function": {
-    "name": "enregistrer_reservation",
+    "name": "enregistrer_rendezvous",
     "parameters": {
       "type": "object",
       "required": [
@@ -40,13 +40,13 @@
           "type": "string",
           "description": "Numéro de téléphone du client / phone number."
         },
-        "nombre_couverts": {
+        "prestation": {
           "type": "string",
-          "description": "Nombre de couverts / number of guests."
+          "description": "Prestation choisie / chosen service (coupe, barbe, contours, soin du visage…)."
         }
       }
     },
-    "description": "Enregistre la demande de réservation de table (démo) pour Le Comptoir 12. À appeler une fois toutes les informations confirmées par le client. / Records the demo table reservation once confirmed."
+    "description": "Enregistre la demande de rendez-vous (démo) pour Barbershop Courbevoie. À appeler une fois toutes les informations confirmées par le client. / Records the demo appointment once confirmed."
   },
   "messages": [
     {
