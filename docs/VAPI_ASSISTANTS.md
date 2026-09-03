@@ -198,6 +198,9 @@ tous les clients de démo, et en ajouter un ne demande aucune modification.
 | `meta` | jsonb — `{ slug, env, ts, workflow }` |
 | `call_id` / `tool_call_id` | ids Vapi ; `tool_call_id` est **unique** → un rejeu ne duplique pas |
 | `source` | `n8n` (ou `api` pour l'ancienne route) |
+| `environment` | `dev` (défaut) \| `rec` \| `prod` — contrainte `check` |
+| `calendar_id` | agenda de destination, défaut `hello@zerocall.io` |
+| `limit_creneau` | entier, défaut `1` — créneaux posés par la demande |
 
 Migration : **`supabase/migrations/003_demo_bookings_n8n.sql`** (autonome et
 idempotente — elle crée la table si besoin, 002 n'a pas à être jouée avant).

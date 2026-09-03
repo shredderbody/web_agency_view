@@ -119,12 +119,22 @@ RLS activé sans policy → seul le `service_role` y accède. `customers` et
 
 ### Schéma créé (vérifié)
 
-11 colonnes : `id`, `created_at`, `tool`, `payload` (jsonb), `meta` (jsonb),
-`domain_name`, `assistant_id`, `assistant_name`, `call_id`, `tool_call_id`, `source`.
+14 colonnes : `id`, `created_at`, `tool`, `payload` (jsonb), `meta` (jsonb),
+`domain_name`, `assistant_id`, `assistant_name`, `call_id`, `tool_call_id`,
+`source`, `environment`, `calendar_id`, `limit_creneau`.
 
-6 index : `demo_bookings_pkey`, `_assistant_id_idx`, `_tenant_recent_idx`
+Les 3 dernières ont été ajoutées le 2026-08-25, toutes avec un défaut (donc les
+lignes existantes sont remplies et aucune voie d'écriture n'a à changer) :
+
+| Colonne | Type | Défaut | Note |
+|---|---|---|---|
+| `environment` | text `not null` | `dev` | `dev` \| `rec` \| `prod`, contrainte `demo_bookings_environment_chk` |
+| `calendar_id` | text | `hello@zerocall.io` | agenda de l'agence ; nullable à dessein (un `calendarId` vide ne doit pas faire échouer l'insert) |
+| `limit_creneau` | integer `not null` | `1` | nombre de créneaux posés par la demande |
+
+7 index : `demo_bookings_pkey`, `_assistant_id_idx`, `_tenant_recent_idx`
 `(assistant_id, created_at desc)`, `_call_id_idx`, `_source_idx`,
-`_tool_call_id_uidx` (unique partiel). RLS activé, 0 policy.
+`_environment_idx`, `_tool_call_id_uidx` (unique partiel). RLS activé, 0 policy.
 
 Migration **rejouée une seconde fois** sans effet de bord (0 ligne touchée) :
 idempotence confirmée.

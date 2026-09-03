@@ -29,8 +29,13 @@
 --
 -- La branche démo du workflow n'a pas de contexte HTTP (pas de Host, pas de
 -- session) : elle identifie l'appel par l'assistant et le call Vapi. On ajoute
--- donc les colonnes de traçabilité correspondantes, et une colonne `source`
--- pour distinguer les deux voies d'écriture.
+-- donc les colonnes de traçabilité correspondantes, une colonne `source`
+-- pour distinguer les deux voies d'écriture, et une colonne `environment`
+-- (`dev` | `rec` | `prod`, défaut `dev`) pour séparer les écritures de mise au
+-- point des écritures réelles — même convention que `public.user_roles.environment`.
+-- `calendar_id` porte l'agenda de destination (défaut `hello@zerocall.io`,
+-- l'agenda de l'agence : une démo n'a pas d'agenda client à elle).
+-- `limit_creneau` porte le nombre de créneaux posés par la demande (défaut 1).
 --
 -- Idempotent, rejouable. Ne touche à aucune colonne existante.
 
@@ -48,6 +53,20 @@ alter table public.demo_bookings add column if not exists assistant_name text;
 alter table public.demo_bookings add column if not exists call_id        text;
 alter table public.demo_bookings add column if not exists tool_call_id   text;
 alter table public.demo_bookings add column if not exists source         text;
+alter table public.demo_bookings add column if not exists environment    text not null default 'dev';
+alter table public.demo_bookings add column if not exists calendar_id    text default 'hello@zerocall.io';
+alter table public.demo_bookings add column if not exists limit_creneau  integer not null default 1;
+
+-- Valeurs autorisées pour `environment`. Pas de `add constraint if not exists`
+-- en Postgres : on avale le duplicate_object pour rester rejouable.
+do $$
+begin
+  alter table public.demo_bookings
+    add constraint demo_bookings_environment_chk check (environment in ('dev', 'rec', 'prod'));
+exception
+  when duplicate_object then null;
+end
+$$;
 
 -- Clé de tenant : indexée seule, et en composite pour lister l'historique d'un
 -- client démo du plus récent au plus ancien sans tri en mémoire.
@@ -56,6 +75,7 @@ create index if not exists demo_bookings_tenant_recent_idx
   on public.demo_bookings (assistant_id, created_at desc);
 create index if not exists demo_bookings_call_id_idx      on public.demo_bookings (call_id);
 create index if not exists demo_bookings_source_idx       on public.demo_bookings (source);
+create index if not exists demo_bookings_environment_idx  on public.demo_bookings (environment);
 
 -- Un tool call Vapi ne doit produire qu'une ligne, même si Vapi rejoue le POST
 -- (retry réseau, timeout côté assistant). Index partiel : les écritures issues
@@ -77,3 +97,9 @@ comment on column public.demo_bookings.tool_call_id is
   'ID du tool call Vapi (message.toolCalls[0].id). Unique : garde-fou anti-doublon sur rejeu.';
 comment on column public.demo_bookings.source is
   'Voie d''écriture : "n8n" (workflow DXijRdXTdTKVGXE8) ou "api" (/api/vapi/booking).';
+comment on column public.demo_bookings.calendar_id is
+  'Agenda de destination du rendez-vous, ex. "hello@zerocall.io" (défaut : l''agenda de l''agence, les démos n''ont pas d''agenda client). Nullable à dessein : un insert best-effort qui pousse un calendarId vide ne doit pas être rejeté.';
+comment on column public.demo_bookings.limit_creneau is
+  'Nombre de créneaux réservables en une fois pour cette demande. Défaut 1 : une démo ne pose qu''un créneau par appel.';
+comment on column public.demo_bookings.environment is
+  'Environnement d''origine de l''écriture : "dev" (défaut), "rec" (recette) ou "prod". Contrainte demo_bookings_environment_chk. Même convention que public.user_roles.environment. L''écrivain (branche démo n8n / /api/vapi/booking) doit le positionner explicitement ; sans valeur, la ligne retombe sur "dev".';
