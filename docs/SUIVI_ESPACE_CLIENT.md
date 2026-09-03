@@ -4,7 +4,7 @@
 > bas : l'état de chaque étape est à jour. Reprendre à la première étape `[ ]`.
 > Mettre à jour ce fichier **après chaque étape**, jamais à la fin.
 
-Dernière mise à jour : 2026-09-03 — étape 11 en cours (build vert, place au déploiement).
+Dernière mise à jour : 2026-09-03 — **chantier terminé, en service sur https://receptionniste.zerocall.io**.
 
 ## Demande
 
@@ -75,8 +75,28 @@ Conséquences, actées :
 - [x] **8.** UI admin `/espace/admin` — 12 vitrines, codes d'accès copiables, journal global
 - [x] **9.** Cohérence : alias de polices corrigé + lien « Espace client » au pied du site + boucle de synchro
 - [x] **10.** `npm run build` + `tsc --noEmit` : OK
-- [ ] **11.** Rebuild Docker + redéploiement (`bash update.sh`) + vérif publique
-- [ ] **12.** Doc (`docs/README.md`, `docs/ARCHITECTURE.md`) + mémoire + commit
+- [x] **11.** Rebuild Docker + redéploiement (`bash update.sh`) + vérif publique
+- [x] **12.** Doc (`docs/ESPACE_CLIENT.md`, index, `docs/DESIGN.md`) + mémoire + commits
+
+## En service
+
+| | |
+|---|---|
+| Connexion | https://receptionniste.zerocall.io/espace/login |
+| Vision admin | https://receptionniste.zerocall.io/espace/admin |
+| Conteneurs | `atelier-vitrine` (web) · `atelier-vitrine-sync` (boucle horaire) |
+| Codes d'accès | dérivés de `PORTAL_SECRET`, lisibles et copiables dans `/espace/admin` |
+
+**Reste optionnel** — rien de bloquant :
+
+- `git push` non fait (à faire quand tu veux publier le dépôt).
+- Trois actions de test du 2026-09-03 sur `thai-viens-express` restent dans le
+  journal (report → confirmation → report). Le journal est immuable : on n'y
+  fait pas de ménage. Si tu les veux hors de vue, le plus honnête est de les
+  laisser et de filtrer par date.
+- Le ruban des pages de démo déborde à 390 px (`.demo-ribbon`). **Antérieur à ce
+  chantier**, vérifié à l'identique sur l'ancienne production. Pas corrigé ici :
+  hors périmètre, et ça touche les douze vitrines publiques.
 
 ## Journal
 
@@ -163,3 +183,15 @@ Conséquences, actées :
   `Exited (0)` en cours de session (arrêt propre, cause inconnue, logs pollués
   par des sondes de robots sur des Server Actions). **Redémarré** ; le
   déploiement de l'étape 11 le remplace de toute façon.
+- **2026-09-03 · mise en service** — `bash update.sh` : image reconstruite,
+  conteneur `web` remplacé, Caddy rechargé, `https://receptionniste.zerocall.io`
+  répond 200. `/espace/login` 200, `/espace/admin` 307 vers le login sans cookie
+  (comportement attendu). Parcours complet rejoué **en production** (admin et
+  `thai-viens-express`) : **aucune erreur console**.
+- **2026-09-03 · la boucle de synchro s'est cassée deux fois sur du YAML** —
+  d'abord un bloc plié (`>`) qui conserve les retours à la ligne des lignes plus
+  indentées (« syntax error: unexpected | »), puis une commande chaîne redécoupée
+  en mots par compose (« expecting "do" »). Réglé en sortant la boucle du YAML :
+  `scripts/portal-sync-loop.sh`, monté en lecture seule. Première exécution en
+  production vérifiée : `{"ok":true, projection:{scanned:0}}` — la projection est
+  bien idempotente, elle n'a rien retrouvé à faire.
