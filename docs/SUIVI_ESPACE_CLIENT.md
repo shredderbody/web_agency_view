@@ -5,8 +5,9 @@
 > Mettre à jour ce fichier **après chaque étape**, jamais à la fin.
 
 Dernière mise à jour : 2026-09-03 — en service sur https://receptionniste.zerocall.io.
-**Lot 2 terminé et en service** (comptes de démonstration par vitrine + petits
+Lot 2 terminé et en service (comptes de démonstration par vitrine + petits
 écrans, étapes 13 à 15) — commits `fb98add` et `424991c`.
+**Lot 3 en cours : déménagement des URL vers `/<slug>/admin`, étape 16.**
 
 ## Demande
 
@@ -138,14 +139,56 @@ vitrine » (onze colonnes) cède la place à **une carte par vitrine sous 1040 p
 - `verifyCredentials` renvoie `{ slug, role }` : c'est l'**e-mail** qui choisit
   l'espace ouvert, le slug n'est plus demandé dans cet onglet.
 
+## Lot 3 — les URL déménagent vers `/<slug>/admin` (2026-09-03)
+
+> « remplace /espace/slug par /slug/admin »
+
+Trois lectures possibles ; celle retenue après arbitrage du demandeur : **tout à
+la racine**, l'espace de suivi n'a plus de préfixe à lui.
+
+| Avant | Après |
+|---|---|
+| `/espace/<slug>` | `/<slug>/admin` |
+| `/espace/admin` | `/admin` |
+| `/espace/login` | `/admin/login` |
+
+Raison de forme : c'est l'adresse qu'on donne au client — « votre site, puis
+`/admin` » — et c'est déjà la forme d'un site client autonome, où la vitrine est
+à la racine du domaine.
+
+**Écartée : `/demo/<slug>/admin`.** Collision réelle — `/demo/ines-garden/admin`
+serait capté par `app/demo/ines-garden/[categorie]`, la route du catalogue.
+
+### Étapes
+
+- [x] **16.** Déménagement
+  - [x] Groupe de routes `app/(portal)/` — un seul layout pour `/admin`,
+        `/admin/login` et `/<slug>/admin` (deux branches de l'arbre, une seule
+        coquille). `app/espace/` supprimé.
+  - [x] La page unique `/espace/[slug]` est **scindée en deux** : `/admin`
+        (agence) et `/<slug>/admin` (une vitrine). Elles ne partageaient qu'un
+        `if`.
+  - [x] `lib/portal/paths.ts` — `spaceHref` / `loginHref` / `ADMIN_PATH` /
+        `LOGIN_PATH`. Plus une seule URL en dur dans les composants.
+  - [x] Redirections **308** des anciennes adresses (`next.config.js`), l'ordre
+        des règles compte : `/espace/:slug` attraperait `login` et `admin`.
+  - [x] Liens internes : barre, tableau agence, tableau vitrine, formulaire de
+        connexion, pied du site public.
+  - [x] Vérifié : les 5 redirections, `/admin` et `/<slug>/admin` sans session
+        (307 vers le login), **404 franc** sur `/nimportequoi/admin`,
+        cloisonnement inchangé, et le site public intact — `/`,
+        `/demo/barbershop`, `/demo/ines-garden`, `/demo/ines-garden/vases-medicis`
+        et une fiche produit : 200.
+  - [ ] `npm run build`, commit, push, `bash update.sh`, vérif en production
+
 ## En service
 
 | | |
 |---|---|
-| Connexion | https://receptionniste.zerocall.io/espace/login |
-| Vision admin | https://receptionniste.zerocall.io/espace/admin |
+| Connexion | https://receptionniste.zerocall.io/admin/login |
+| Vision admin | https://receptionniste.zerocall.io/admin |
 | Conteneurs | `atelier-vitrine` (web) · `atelier-vitrine-sync` (boucle horaire) |
-| Codes d'accès | dérivés de `PORTAL_SECRET`, lisibles et copiables dans `/espace/admin` |
+| Codes d'accès | dérivés de `PORTAL_SECRET`, lisibles et copiables dans `/admin` |
 
 **Reste optionnel** — rien de bloquant :
 

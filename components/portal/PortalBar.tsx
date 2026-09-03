@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ExternalLink, LogOut, RefreshCcw, ShieldCheck } from "lucide-react";
+import { ADMIN_PATH, LOGIN_PATH } from "@/lib/portal/paths";
 
 /* Barre d'application — seconde couche neutre, encre profonde, distincte de la
    surface de contenu. Elle porte l'identité, le contexte et les deux seules
@@ -41,14 +42,14 @@ export default function PortalBar({
 
   async function logout() {
     await fetch("/api/portal/logout", { method: "POST" });
-    router.replace("/espace/login");
+    router.replace(LOGIN_PATH);
     router.refresh();
   }
 
   return (
     <header className="esp-bar">
       <div className="esp-wrap esp-bar-in">
-        <Link href={adminHome ? "/espace/admin" : "/"} className="esp-bar-brand">
+        <Link href={adminHome ? ADMIN_PATH : "/"} className="esp-bar-brand">
           <span className="esp-wordmark">Atelier Vitrine</span>
         </Link>
         <span className="esp-bar-sep" aria-hidden />

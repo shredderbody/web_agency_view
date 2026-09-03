@@ -1,14 +1,40 @@
-# Espace client des démos — `/espace`
+# Espace client des démos — `/<slug>/admin`
 
 Suivi de consommation et **traçabilité complète des actions** pour les douze
 vitrines de démonstration. Un espace par démo, plus une vision administrateur.
 
 | | |
 |---|---|
-| Connexion | `/espace/login` |
-| Espace d'une démo | `/espace/<slug>` (les 12 slugs de `lib/portal/registry.ts`) |
-| Vision administrateur | `/espace/admin` |
+| Connexion | `/admin/login` |
+| Espace d'une démo | `/<slug>/admin` (les 12 slugs de `lib/portal/registry.ts`) |
+| Vision administrateur | `/admin` |
 | Suivi du chantier | [SUIVI_ESPACE_CLIENT.md](./SUIVI_ESPACE_CLIENT.md) |
+
+## Adresses
+
+L'espace de suivi vit **à la racine**, pas sous un préfixe à lui :
+
+| Adresse | Quoi |
+|---|---|
+| `/<slug>/admin` | l'espace d'UNE vitrine — l'adresse qu'on donne au client : « votre site, puis `/admin` ». Même forme que sur un site client autonome, où la vitrine est à la racine du domaine. |
+| `/admin` | l'espace de l'agence, vision sur les 12 vitrines |
+| `/admin/login` | la connexion |
+
+`/<slug>/admin` est un segment dynamique **à la racine** : il attrape n'importe
+quel `/<mot>/admin`. Un mot qui n'est pas une vitrine connue rend un **404 franc**
+— répondre autre chose ferait de cette page un annuaire des démos. Les segments
+statiques restent prioritaires : `/demo/...` et `/api/...` ne sont pas touchés.
+
+Les anciennes adresses `/espace/*` **redirigent en 308** (`next.config.js`) :
+des liens et des codes ont déjà été transmis avec, elles ne meurent pas.
+
+    /espace          → /admin
+    /espace/login    → /admin/login
+    /espace/admin    → /admin
+    /espace/<slug>   → /<slug>/admin
+
+Les URL vivent dans `lib/portal/paths.ts` (`spaceHref`, `loginHref`,
+`ADMIN_PATH`, `LOGIN_PATH`) — un seul endroit à changer.
 
 ## Ce qu'on stocke, et ce qu'on ne stocke pas
 
@@ -67,7 +93,7 @@ Vapi (appel ou chat)
                                             ▲
                    PATCH /api/portal/reservations (confirmer, reporter, annuler…)
                                             │
-                                     /espace/<slug>   ← lit UNIQUEMENT Supabase
+                                     /<slug>/admin    ← lit UNIQUEMENT Supabase
 
 API Vapi (/call, /chat) ──> POST /api/portal/sync ──> demo_usage_daily
 ```
@@ -117,8 +143,8 @@ celui de l'agence :
 
 | E-mail | Ouvre | Rôle |
 |---|---|---|
-| `<slug>@debug.com` (`barbershop@debug.com`, `ines-garden@debug.com`, …) | `/espace/<slug>`, **cette vitrine seule** | `client` |
-| `test@debug.com` | `/espace/admin`, toutes les vitrines | `admin` |
+| `<slug>@debug.com` (`barbershop@debug.com`, `ines-garden@debug.com`, …) | `/<slug>/admin`, **cette vitrine seule** | `client` |
+| `test@debug.com` | `/admin`, toutes les vitrines | `admin` |
 
 C'est le point important : **quand on montre une vitrine à un prospect, il se
 connecte à SA démo et n'y voit que SES données** — pas la consommation des onze
@@ -188,7 +214,7 @@ survol n'existant pas sur mobile.
 
 Registre **produit**, pas marque : une seule famille (Hanken Grotesk), échelle
 rem fixe, vermillon réservé aux actions primaires et à la sélection, seconde
-couche neutre pour la barre d'application. Feuille dédiée `app/espace/espace.css`,
+couche neutre pour la barre d'application. Feuille dédiée `app/(portal)/espace.css`,
 tout préfixé `esp-` sous `.esp` — aucune interférence avec le site public ni
 avec les mondes des vitrines.
 

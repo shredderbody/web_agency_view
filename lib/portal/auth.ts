@@ -102,8 +102,8 @@ export function verifyAccess(slug: string, code: string): PortalRole | null {
    on montre une vitrine à un prospect, il se connecte à SA démo et n'y voit que
    SES données — pas la consommation des onze autres, ni leurs codes d'accès.
 
-     <slug>@debug.com   → session `client` sur /espace/<slug>, cette démo seule
-     test@debug.com     → session `admin`, vision sur toutes les vitrines
+     <slug>@debug.com   → session `client` sur /<slug>/admin, cette démo seule
+     test@debug.com     → session `admin` sur /admin, toutes les vitrines
 
    L'e-mail dit la vitrine : `barbershop@debug.com`, `ines-garden@debug.com`.
    Mot de passe commun (Test123!) — il se dicte à voix haute devant un prospect,

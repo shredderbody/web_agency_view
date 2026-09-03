@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-#  portal-sync.sh — alimente le suivi de l'espace client (/espace).
+#  portal-sync.sh — alimente le suivi de l'espace client (/<slug>/admin).
 #
 #  Deux traitements, tous deux idempotents (cf. app/api/portal/sync/route.ts) :
 #    1. PROJECTION   : demo_bookings (écrit par n8n) → journal d'actions.

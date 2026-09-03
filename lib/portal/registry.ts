@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   Registre des démos vu par l'ESPACE CLIENT (/espace/[slug]).
+   Registre des démos vu par l'ESPACE DE SUIVI (/<slug>/admin).
 
    Une seule source de vérité pour : le slug d'URL, l'enseigne affichée, le
    métier, et surtout la CLÉ DE TENANT — l'`assistant_id` Vapi, la même que
@@ -15,7 +15,7 @@
 export type DemoKind = "rendezvous" | "reservation" | "commande" | "intervention";
 
 export type DemoTenant = {
-  /** Clé d'URL : /demo/<slug> côté public, /espace/<slug> côté client. */
+  /** Clé d'URL : /demo/<slug> côté public, /<slug>/admin côté suivi. */
   slug: string;
   /** Enseigne affichée dans l'espace. */
   business: string;

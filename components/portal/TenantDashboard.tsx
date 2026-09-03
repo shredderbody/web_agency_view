@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, CalendarDays, ClipboardList, Gauge, UsersRound } from "lucide-react";
 import type { TenantDashboardData } from "@/lib/portal/dashboard";
+import { spaceHref } from "@/lib/portal/paths";
 import PortalBar from "./PortalBar";
 import StatTiles from "./StatTiles";
 import UsageChart from "./UsageChart";
@@ -73,7 +74,7 @@ export default function TenantDashboard({
                 <button
                   key={p.days} type="button" className="esp-seg-b"
                   aria-pressed={data.period === p.days}
-                  onClick={() => router.push(`/espace/${tenant.slug}?p=${p.days}`)}
+                  onClick={() => router.push(`${spaceHref(tenant.slug)}?p=${p.days}`)}
                 >
                   {p.label}
                 </button>

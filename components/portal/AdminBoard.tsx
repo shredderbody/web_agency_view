@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AlertCircle, ArrowUpRight, AtSign, Check, ClipboardCopy, Gauge } from "lucide-react";
 import type { AdminDashboardData } from "@/lib/portal/dashboard";
+import { ADMIN_PATH, spaceHref } from "@/lib/portal/paths";
 import PortalBar from "./PortalBar";
 import StatTiles from "./StatTiles";
 import UsageChart from "./UsageChart";
@@ -117,7 +118,7 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
                 <button
                   key={p.days} type="button" className="esp-seg-b"
                   aria-pressed={data.period === p.days}
-                  onClick={() => router.push(`/espace/admin?p=${p.days}`)}
+                  onClick={() => router.push(`${ADMIN_PATH}?p=${p.days}`)}
                 >
                   {p.label}
                 </button>
@@ -212,7 +213,7 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
                           </span>
                         </td>
                         <td>
-                          <Link className="esp-btn esp-btn-sm" href={`/espace/${r.tenant.slug}`}>
+                          <Link className="esp-btn esp-btn-sm" href={spaceHref(r.tenant.slug)}>
                             Ouvrir <ArrowUpRight size={12} aria-hidden />
                           </Link>
                         </td>
@@ -273,7 +274,7 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
 
                       <div className="esp-vitrine-foot">
                         {codeButton(r.tenant.slug, r.accessCode)}
-                        <Link className="esp-btn esp-btn-sm" href={`/espace/${r.tenant.slug}`}>
+                        <Link className="esp-btn esp-btn-sm" href={spaceHref(r.tenant.slug)}>
                           Ouvrir <ArrowUpRight size={12} aria-hidden />
                         </Link>
                         {r.testAccount && accountButton(r.tenant.slug, r.testAccount)}

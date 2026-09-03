@@ -45,8 +45,8 @@ export default function SiteFooter() {
               <li><a href="/#tarifs" className="foot-link">{t.footer.pricing}</a></li>
               <li><a href="/#faq" className="foot-link">{t.footer.faq}</a></li>
               <li><a href={`mailto:${CONTACT_EMAIL}`} className="foot-link">{CONTACT_EMAIL}</a></li>
-              {/* Accès au suivi de consommation et des réservations (cf. /espace). */}
-              <li><Link href="/espace/login" className="foot-link">{t.footer.clientArea}</Link></li>
+              {/* Accès au suivi de consommation et des réservations (cf. /admin). */}
+              <li><Link href="/admin/login" className="foot-link">{t.footer.clientArea}</Link></li>
             </ul>
           </div>
         </div>

@@ -37,7 +37,7 @@ Quatre fonctions « backend » sont branchées :
 | [DEPLOY.md](./DEPLOY.md) | Déploiement Docker, Caddy / Cloudflare, scripts, variables d'env |
 | [STRIPE.md](./STRIPE.md) | Intégration Stripe : flux de paiement, webhook, prix, env vars |
 | [VAPI_ASSISTANTS.md](./VAPI_ASSISTANTS.md) | Bulle Vapi hybride par métier, assistants inbound bilingues, function tools, CSP |
-| [ESPACE_CLIENT.md](./ESPACE_CLIENT.md) | **Espace client `/espace`** : traçabilité des actions, fiche client, calendrier des réservations, suivi de consommation, vision admin |
+| [ESPACE_CLIENT.md](./ESPACE_CLIENT.md) | **Espace client `/<slug>/admin`** : traçabilité des actions, fiche client, calendrier des réservations, suivi de consommation, vision admin |
 | [SUIVI_ESPACE_CLIENT.md](./SUIVI_ESPACE_CLIENT.md) | Journal de bord du chantier de l'espace client (fichier de reprise) |
 | [VAPI_FRONTEND_WIDGET.md](./VAPI_FRONTEND_WIDGET.md) | **Playbook réutilisable** : intégrer le widget Vapi en front-end (CSP, micro, montage, responsive mobile/tablette/desktop) — valable pour tout projet client |
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { spaceHref } from "@/lib/portal/paths";
 import {
   AlertCircle, ArrowRight, CalendarCheck, KeyRound, Loader2, Lock, Mail, PhoneCall,
   ShieldCheck,
@@ -79,7 +80,7 @@ export default function LoginForm({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Connexion impossible.");
-      router.replace(`/espace/${data.slug}`);
+      router.replace(spaceHref(data.slug));
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Connexion impossible.");
