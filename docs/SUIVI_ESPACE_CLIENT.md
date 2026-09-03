@@ -7,7 +7,7 @@
 Dernière mise à jour : 2026-09-03 — en service sur https://receptionniste.zerocall.io.
 Lot 2 terminé et en service (comptes de démonstration par vitrine + petits
 écrans, étapes 13 à 15) — commits `fb98add` et `424991c`.
-**Lot 3 en cours : déménagement des URL vers `/<slug>/admin`, étape 16.**
+**Lot 3 terminé et en service** : URL déménagées vers `/<slug>/admin` — commit `d6575ea`.
 
 ## Demande
 
@@ -179,7 +179,16 @@ serait capté par `app/demo/ines-garden/[categorie]`, la route du catalogue.
         cloisonnement inchangé, et le site public intact — `/`,
         `/demo/barbershop`, `/demo/ines-garden`, `/demo/ines-garden/vases-medicis`
         et une fiche produit : 200.
-  - [ ] `npm run build`, commit, push, `bash update.sh`, vérif en production
+  - [x] `npm run build`, commit `d6575ea`, push, `bash update.sh`
+  - [x] **Vérifié EN PRODUCTION** : les 5 redirections 308 partent bien vers les
+        nouvelles adresses ; `/admin` et `/barbershop/admin` sans session → 307
+        vers `/admin/login` (avec `?demo=barbershop`) ; `/nimportequoi/admin`
+        → **404** ; cloisonnement intact (cookie `barbershop` : `/admin` et
+        `/ines-garden/admin` → 307 vers `/barbershop/admin`). Parcours agence
+        complet au navigateur depuis l'ANCIENNE adresse : `/espace/login` mène à
+        `/admin/login`, connexion → `/admin`, « Ouvrir » → `/thai-viens-express/admin`,
+        marque → `/admin`, déconnexion → `/admin/login`, pied du site public →
+        `/admin/login`. Aucune erreur console. Site public intact.
 
 ## En service
 
