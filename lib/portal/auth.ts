@@ -2,7 +2,7 @@
 
 import { createHmac, timingSafeEqual, randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
-import { ADMIN_SLUG, getTenant } from "./registry";
+import { ADMIN_SLUG, DEMO_TENANTS, getTenant } from "./registry";
 
 /* ════════════════════════════════════════════════════════════════════════════
    Session de l'espace client.
@@ -72,15 +72,16 @@ function derivedCode(slug: string): string {
   return `${out.slice(0, 4)}-${out.slice(4)}`;
 }
 
-function envOverride(slug: string): string | undefined {
-  const key = `PORTAL_CODE_${slug.toUpperCase().replace(/[^A-Z0-9]/g, "_")}`;
+/** Surcharge par slug : `<PREFIXE>_<SLUG_EN_MAJUSCULES_AVEC_UNDERSCORES>`. */
+function envForSlug(prefix: string, slug: string): string | undefined {
+  const key = `${prefix}${slug.toUpperCase().replace(/[^A-Z0-9]/g, "_")}`;
   return process.env[key];
 }
 
 /** Code d'accès d'un slug (ou de `admin`). Affiché dans l'espace administrateur. */
 export function accessCodeFor(slug: string): string {
   if (slug === ADMIN_SLUG) return process.env.PORTAL_ADMIN_CODE || derivedCode(ADMIN_SLUG);
-  return envOverride(slug) || derivedCode(slug);
+  return envForSlug("PORTAL_CODE_", slug) || derivedCode(slug);
 }
 
 /**
@@ -96,42 +97,84 @@ export function verifyAccess(slug: string, code: string): PortalRole | null {
   return safeEqual(clean, expected) ? "client" : null;
 }
 
-/* ── Compte de test (email + mot de passe) ──────────────────────────────────
-   Le portail ne connaît que des SLUGS et des CODES — sauf UN compte de service,
-   destiné aux essais et aux démonstrations de l'espace d'administration : on ne
-   dicte pas un code dérivé à quelqu'un qui veut juste ouvrir /espace/admin.
+/* ── Comptes de test (e-mail + mot de passe) ────────────────────────────────
+   UN COMPTE PAR DÉMO, plus un compte agence. C'est le point important : quand
+   on montre une vitrine à un prospect, il se connecte à SA démo et n'y voit que
+   SES données — pas la consommation des onze autres, ni leurs codes d'accès.
 
-   Identifiants par défaut : test@debug.com / Test123!, surchargeables par
-   PORTAL_TEST_EMAIL et PORTAL_TEST_PASSWORD. Poser PORTAL_TEST_ACCOUNT=off
-   ferme la porte (une mise en production « pour de vrai » devrait le faire).  */
+     <slug>@debug.com   → session `client` sur /espace/<slug>, cette démo seule
+     test@debug.com     → session `admin`, vision sur toutes les vitrines
 
-const TEST_EMAIL_DEFAULT = "test@debug.com";
+   L'e-mail dit la vitrine : `barbershop@debug.com`, `ines-garden@debug.com`.
+   Mot de passe commun (Test123!) — il se dicte à voix haute devant un prospect,
+   c'est tout ce qu'on lui demande. Surcharges :
+
+     PORTAL_TEST_DOMAIN            domaine des e-mails de démo (défaut debug.com)
+     PORTAL_TEST_EMAIL             e-mail du compte agence
+     PORTAL_TEST_EMAIL_<SLUG>      e-mail d'une démo en particulier
+     PORTAL_TEST_PASSWORD          mot de passe commun
+     PORTAL_TEST_PASSWORD_<SLUG>   mot de passe d'une démo en particulier
+     PORTAL_TEST_ACCOUNT=off       ferme tous ces comptes d'un coup
+
+   Ces comptes sont un CONFORT DE DÉMONSTRATION, pas un système de comptes :
+   le jour où l'espace sert à de vrais clients payants, on pose `off`.         */
+
+const TEST_ADMIN_EMAIL_DEFAULT = "test@debug.com";
 const TEST_PASSWORD_DEFAULT = "Test123!";
 
 export function isTestAccountEnabled(): boolean {
   return (process.env.PORTAL_TEST_ACCOUNT || "").trim().toLowerCase() !== "off";
 }
 
-/** Identifiants du compte de test, tels qu'affichés sur l'écran de connexion. */
-export function testAccount(): { email: string; password: string } {
-  return {
-    email: (process.env.PORTAL_TEST_EMAIL || TEST_EMAIL_DEFAULT).trim().toLowerCase(),
-    password: process.env.PORTAL_TEST_PASSWORD || TEST_PASSWORD_DEFAULT,
-  };
+function testDomain(): string {
+  return (process.env.PORTAL_TEST_DOMAIN || "debug.com").trim().toLowerCase();
+}
+
+/** E-mail de connexion d'une démo (ou du compte agence pour `admin`). */
+export function testEmailFor(slug: string): string {
+  const raw = slug === ADMIN_SLUG
+    ? process.env.PORTAL_TEST_EMAIL || TEST_ADMIN_EMAIL_DEFAULT
+    : envForSlug("PORTAL_TEST_EMAIL_", slug) || `${slug}@${testDomain()}`;
+  return raw.trim().toLowerCase();
+}
+
+/** Mot de passe d'une démo. Commun par défaut : il se dicte de vive voix. */
+export function testPasswordFor(slug: string): string {
+  return envForSlug("PORTAL_TEST_PASSWORD_", slug)
+    || process.env.PORTAL_TEST_PASSWORD
+    || TEST_PASSWORD_DEFAULT;
+}
+
+/** Les deux identifiants d'une démo, tels que l'espace admin les affiche. */
+export function testAccountFor(slug: string): { email: string; password: string } {
+  return { email: testEmailFor(slug), password: testPasswordFor(slug) };
 }
 
 /**
- * Vérifie un couple email / mot de passe. Renvoie `admin` — ce compte existe
- * précisément pour voir l'espace d'administration — ou `null`.
- * Les deux comparaisons sont faites (pas de court-circuit sur l'email) pour ne
- * pas révéler au chrono quel identifiant est le bon.
+ * Vérifie un couple e-mail / mot de passe et dit QUELLE PORTE il ouvre :
+ * l'espace d'une démo (`client`), ou l'administration (`admin`).
+ *
+ * L'e-mail sert à trouver le compte, jamais à répondre : qu'il soit inconnu ou
+ * que le mot de passe soit faux, l'appelant renvoie le même message. Un e-mail
+ * inconnu fait quand même la comparaison, pour ne pas se trahir au chrono.
  */
-export function verifyCredentials(email: string, password: string): PortalRole | null {
+export function verifyCredentials(
+  email: string, password: string,
+): { slug: string; role: PortalRole } | null {
   if (!isTestAccountEnabled()) return null;
-  const account = testAccount();
-  const emailOk = safeEqual(email.trim().toLowerCase(), account.email);
-  const passwordOk = safeEqual(password, account.password);
-  return emailOk && passwordOk ? "admin" : null;
+  const clean = email.trim().toLowerCase();
+
+  if (safeEqual(clean, testEmailFor(ADMIN_SLUG))) {
+    return safeEqual(password, testPasswordFor(ADMIN_SLUG)) ? { slug: ADMIN_SLUG, role: "admin" } : null;
+  }
+  const tenant = DEMO_TENANTS.find((t) => testEmailFor(t.slug) === clean);
+  if (!tenant) {
+    safeEqual(password, testPasswordFor(ADMIN_SLUG)); // même travail, même durée
+    return null;
+  }
+  return safeEqual(password, testPasswordFor(tenant.slug))
+    ? { slug: tenant.slug, role: "client" }
+    : null;
 }
 
 /* ── Jeton de session ─────────────────────────────────────────────────────── */

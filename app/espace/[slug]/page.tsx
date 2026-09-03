@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { accessCodeFor, canAccess, currentSession } from "@/lib/portal/auth";
+import {
+  accessCodeFor, canAccess, currentSession, isTestAccountEnabled, testAccountFor,
+} from "@/lib/portal/auth";
 import { ADMIN_SLUG, getTenant } from "@/lib/portal/registry";
 import { loadAdminDashboard, loadTenantDashboard, type PeriodDays } from "@/lib/portal/dashboard";
 import TenantDashboard from "@/components/portal/TenantDashboard";
@@ -33,7 +35,11 @@ export default async function EspacePage({
 
   if (slug === ADMIN_SLUG) {
     if (session.role !== "admin") redirect(`/espace/${session.slug}`);
-    const data = await loadAdminDashboard(period, accessCodeFor);
+    const data = await loadAdminDashboard(
+      period,
+      accessCodeFor,
+      (s) => (isTestAccountEnabled() ? testAccountFor(s) : null),
+    );
     return <AdminBoard data={data} />;
   }
 

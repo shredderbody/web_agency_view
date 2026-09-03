@@ -4,7 +4,8 @@
 > bas : l'état de chaque étape est à jour. Reprendre à la première étape `[ ]`.
 > Mettre à jour ce fichier **après chaque étape**, jamais à la fin.
 
-Dernière mise à jour : 2026-09-03 — **chantier terminé, en service sur https://receptionniste.zerocall.io**.
+Dernière mise à jour : 2026-09-03 — en service sur https://receptionniste.zerocall.io.
+**Chantier en cours : lot 2 (comptes de démonstration par vitrine), étapes 13 à 15.**
 
 ## Demande
 
@@ -77,6 +78,59 @@ Conséquences, actées :
 - [x] **10.** `npm run build` + `tsc --noEmit` : OK
 - [x] **11.** Rebuild Docker + redéploiement (`bash update.sh`) + vérif publique
 - [x] **12.** Doc (`docs/ESPACE_CLIENT.md`, index, `docs/DESIGN.md`) + mémoire + commits
+
+## Lot 2 — comptes de démonstration & petits écrans (2026-09-03, après mise en service)
+
+Deux demandes arrivées après la mise en service, traitées à la suite.
+
+**A. Un compte e-mail + mot de passe pour entrer.** Livré d'abord en compte
+unique (`test@debug.com` → administration), puis **corrigé sur remarque du
+demandeur** : ce n'est pas ce qu'il fallait. Il faut **un compte PAR DÉMO** —
+quand on montre une vitrine à un prospect, il se connecte à SA démo et n'y voit
+que SES données, pas la consommation des onze autres ni leurs codes d'accès.
+
+Forme retenue : `<slug>@debug.com` → session **`client`** sur `/espace/<slug>`
+(cette vitrine seule) ; `test@debug.com` → session **`admin`** (toutes les
+vitrines). Mot de passe commun `Test123!` : il se dicte à voix haute devant un
+prospect. Surcharges : `PORTAL_TEST_DOMAIN`, `PORTAL_TEST_EMAIL[_<SLUG>]`,
+`PORTAL_TEST_PASSWORD[_<SLUG>]`, et `PORTAL_TEST_ACCOUNT=off` qui ferme tout.
+
+**B. Espace administrateur sur tablette et téléphone.** Le tableau « par
+vitrine » (onze colonnes) cède la place à **une carte par vitrine sous 1040 px**.
+
+### Étapes
+
+- [x] **13.** Lot A, première version : compte unique `test@debug.com` → admin
+      (`lib/portal/auth.ts`, route de login, onglet « Identifiants »)
+- [x] **14.** Lot B : cartes « par vitrine » < 1040 px, tuiles 2 colonnes < 560 px,
+      première colonne des tableaux épinglée, `UsageChart` à la largeur réelle
+      du conteneur + réponse au doigt — **vérifié 390 / 820 / 1280**
+- [x] **14b.** Commit `fb98add`, push, `bash update.sh`, vérifié en production
+- [ ] **15.** Lot A, reprise : **un compte par démo** (la vraie demande)
+  - [x] `lib/portal/auth.ts` — `testEmailFor` / `testPasswordFor` /
+        `testAccountFor`, `verifyCredentials` renvoie `{ slug, role }`
+  - [x] `POST /api/portal/login` — l'e-mail choisit l'espace ouvert
+  - [x] `/espace/login` + `LoginForm` — e-mail pré-rempli depuis la vitrine choisie
+  - [x] `/espace/admin` — identifiants de chaque vitrine, copiables d'un clic
+        (e-mail + mot de passe ensemble), dans le tableau **et** dans la carte
+  - [x] Vérification navigateur : un compte de démo ne voit QUE sa vitrine
+        (cookie `barbershop` → son espace 200 ; `/espace/thai-viens-express` et
+        `/espace/admin` → 307 vers son propre espace). E-mail inconnu et mauvais
+        mot de passe : même 401, même message.
+  - [x] `.env`, `docs/ESPACE_CLIENT.md`, mémoire
+  - [ ] `npm run build`, commit, push, `bash update.sh`, vérif en production
+
+### Détail utile à la reprise
+
+- La colonne « Accès » du tableau porte **deux** boutons empilés : le code dérivé
+  et le compte de démonstration. Le second copie l'e-mail ET le mot de passe.
+- Deux réglages de largeur ont été nécessaires pour que les onze colonnes tiennent
+  encore dans les 1180 px du conteneur une fois le compte ajouté : les nombres ne
+  se coupent plus (`white-space: nowrap` sur `.esp-table .n`), la mention « réel »
+  est descendue avec la ville, et la gouttière des cellules est passée de 0,75 à
+  0,6 rem. Défilement interne mesuré : **0 px** à 1280 et 1440.
+- `verifyCredentials` renvoie `{ slug, role }` : c'est l'**e-mail** qui choisit
+  l'espace ouvert, le slug n'est plus demandé dans cet onglet.
 
 ## En service
 

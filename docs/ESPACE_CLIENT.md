@@ -109,17 +109,29 @@ Les codes sont **dérivés** de `PORTAL_SECRET` — rien à créer quand une dé
 s'ajoute — et l'espace administrateur les affiche, copiables en un clic. Le code
 administrateur ouvre tous les espaces (mode dépannage au téléphone).
 
-### Compte de test
+### Comptes de démonstration — un par vitrine
 
 Une seule exception au « pas de comptes utilisateurs » : l'onglet **Identifiants**
-de l'écran de connexion, e-mail + mot de passe, qui ouvre directement
-`/espace/admin`. Il sert aux essais et aux démonstrations — on ne dicte pas un
-code dérivé à quelqu'un qui veut juste voir l'espace d'administration.
+de l'écran de connexion, e-mail + mot de passe. Il y en a **un par démo**, plus
+celui de l'agence :
 
-Par défaut `test@debug.com` / `Test123!` ; surchargeable par `PORTAL_TEST_EMAIL`
-et `PORTAL_TEST_PASSWORD`. `PORTAL_TEST_ACCOUNT=off` retire l'onglet **et** ferme
-la route : c'est le geste à faire le jour où l'espace sert à de vrais clients
-payants.
+| E-mail | Ouvre | Rôle |
+|---|---|---|
+| `<slug>@debug.com` (`barbershop@debug.com`, `ines-garden@debug.com`, …) | `/espace/<slug>`, **cette vitrine seule** | `client` |
+| `test@debug.com` | `/espace/admin`, toutes les vitrines | `admin` |
+
+C'est le point important : **quand on montre une vitrine à un prospect, il se
+connecte à SA démo et n'y voit que SES données** — pas la consommation des onze
+autres, ni leurs codes d'accès. L'e-mail dit la vitrine, et c'est lui qui choisit
+l'espace ouvert ; le slug n'est pas demandé.
+
+Mot de passe commun `Test123!` : il se dicte à voix haute devant un prospect.
+Choisir sa vitrine dans le premier onglet pré-remplit l'e-mail du second, et
+l'espace d'administration affiche les identifiants de chaque vitrine, copiables
+en un clic (e-mail + mot de passe d'un seul coup).
+
+`PORTAL_TEST_ACCOUNT=off` retire l'onglet **et** ferme la route : c'est le geste à
+faire le jour où l'espace sert à de vrais clients payants.
 
 ## Variables d'environnement
 
@@ -128,9 +140,12 @@ payants.
 | `PORTAL_SECRET` | Signature du cookie **et** graine des codes d'accès. La changer révoque tout. |
 | `PORTAL_ADMIN_CODE` | Code administrateur explicite. Vide = code dérivé. |
 | `PORTAL_CODE_<SLUG>` | Fige le code d'un client (slug en majuscules, tirets → `_`). |
-| `PORTAL_TEST_ACCOUNT` | `off` désactive le compte de test. Toute autre valeur (ou absente) le laisse actif. |
-| `PORTAL_TEST_EMAIL` | E-mail du compte de test. Défaut : `test@debug.com`. |
-| `PORTAL_TEST_PASSWORD` | Mot de passe du compte de test. Défaut : `Test123!`. |
+| `PORTAL_TEST_ACCOUNT` | `off` ferme **tous** les comptes de démonstration. Toute autre valeur (ou absente) les laisse ouverts. |
+| `PORTAL_TEST_DOMAIN` | Domaine des e-mails de démo. Défaut : `debug.com`. |
+| `PORTAL_TEST_EMAIL` | E-mail du compte agence. Défaut : `test@debug.com`. |
+| `PORTAL_TEST_EMAIL_<SLUG>` | E-mail d'une démo en particulier. Défaut : `<slug>@<domaine>`. |
+| `PORTAL_TEST_PASSWORD` | Mot de passe commun. Défaut : `Test123!`. |
+| `PORTAL_TEST_PASSWORD_<SLUG>` | Mot de passe d'une démo en particulier. |
 | `PORTAL_SYNC_SECRET` | En-tête `x-portal-sync-secret` de `POST /api/portal/sync`. |
 | `DEMO_DB_SUPABASE_URL` | Projet Supabase des réservations (**GritUnited**, celui où n8n écrit). |
 | `DEMO_DB_SUPABASE_SERVICE_ROLE_KEY` | Clé `service_role` du même projet. Serveur uniquement. |
@@ -144,7 +159,7 @@ n'est pas là que le workflow n8n écrit.
 
 | Route | Rôle |
 |---|---|
-| `POST /api/portal/login` | `{ slug, code }` — ou `{ email, password }` pour le compte de test → cookie de session |
+| `POST /api/portal/login` | `{ slug, code }` — ou `{ email, password }` (comptes de démonstration ; l'e-mail choisit l'espace) → cookie de session |
 | `POST /api/portal/logout` | Efface le cookie |
 | `GET /api/portal/actions` | Journal d'un tenant, d'une réservation, ou global (admin) |
 | `GET /api/portal/reservations` | Liste des réservations d'un tenant |

@@ -11,8 +11,9 @@ export const dynamic = "force-dynamic";
 /* POST /api/portal/login → cookie de session. Deux corps acceptés :
 
      { slug, code }        — la voie normale : une démo, son code d'accès.
-     { email, password }   — le compte de test (cf. lib/portal/auth.ts), qui
-                             ouvre directement /espace/admin.
+     { email, password }   — les comptes de test (cf. lib/portal/auth.ts) :
+                             <slug>@debug.com ouvre CETTE démo et elle seule,
+                             test@debug.com ouvre l'administration.
 
    Le message d'erreur est volontairement le même que le code soit faux ou le
    slug inconnu : distinguer les deux dirait à un curieux quelles démos existent. */
@@ -34,11 +35,13 @@ export async function POST(req: NextRequest) {
     if (!email.trim() || !password) {
       return NextResponse.json({ error: "Renseignez l'e-mail et le mot de passe." }, { status: 400 });
     }
-    role = verifyCredentials(email, password);
-    if (!role) {
+    const account = verifyCredentials(email, password);
+    if (!account) {
       return NextResponse.json({ error: "E-mail ou mot de passe incorrect." }, { status: 401 });
     }
-    target = ADMIN_SLUG;
+    // L'e-mail dit la vitrine : c'est lui qui choisit l'espace ouvert.
+    target = account.slug;
+    role = account.role;
   } else {
     const slug = String(body.slug ?? "").trim().toLowerCase();
     const code = String(body.code ?? "");

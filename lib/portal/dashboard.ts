@@ -83,6 +83,8 @@ export type AdminRow = {
   customers: number;
   lastActionAt: string | null;
   accessCode: string;
+  /** Identifiants de démonstration de CETTE vitrine, `null` si les comptes sont fermés. */
+  testAccount: { email: string; password: string } | null;
 };
 
 export type AdminDashboardData = {
@@ -97,6 +99,7 @@ export type AdminDashboardData = {
 export async function loadAdminDashboard(
   period: PeriodDays = 30,
   accessCode: (slug: string) => string,
+  testAccount: (slug: string) => { email: string; password: string } | null = () => null,
 ): Promise<AdminDashboardData> {
   const fromIso = new Date(Date.now() - (period - 1) * 86400_000).toISOString();
   const nowIso = new Date().toISOString();
@@ -130,6 +133,7 @@ export async function loadAdminDashboard(
         customers: customers.filter((c) => c.assistant_id === tenant.assistantId).length,
         lastActionAt: own[0]?.occurred_at ?? null,
         accessCode: accessCode(tenant.slug),
+        testAccount: testAccount(tenant.slug),
       };
     });
 
@@ -145,6 +149,7 @@ export async function loadAdminDashboard(
         usage: { day: "total", calls: 0, call_seconds: 0, call_cost: 0, chats: 0, chat_messages: 0, chat_cost: 0 },
         actions: 0, bookings: 0, cancels: 0, upcoming: 0, customers: 0,
         lastActionAt: null, accessCode: accessCode(tenant.slug),
+        testAccount: testAccount(tenant.slug),
       })),
       usage: emptyUsage(period),
       actions: [], reservations: [],

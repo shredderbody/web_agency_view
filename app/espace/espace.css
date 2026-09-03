@@ -285,13 +285,15 @@
 .esp-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
 .esp-table th {
   text-align: left; font-weight: 600; color: var(--esp-ink-2); font-size: 0.75rem;
-  padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--esp-line-2); white-space: nowrap;
+  padding: 0.55rem 0.6rem; border-bottom: 1px solid var(--esp-line-2); white-space: nowrap;
 }
-.esp-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--esp-line); vertical-align: middle; }
+.esp-table td { padding: 0.6rem 0.6rem; border-bottom: 1px solid var(--esp-line); vertical-align: middle; }
 .esp-table tbody tr:last-child td { border-bottom: 0; }
 .esp-table tbody tr { transition: background var(--esp-fast); }
 .esp-table tbody tr:hover { background: var(--esp-surface-2); }
-.esp-table .n { text-align: right; font-variant-numeric: tabular-nums; }
+/* Un nombre ne se coupe jamais en deux lignes : « 0,19 $ » sur deux lignes se
+   lit comme deux valeurs. */
+.esp-table .n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* ── Bascule tableau / cartes ────────────────────────────────────────────── */
 
@@ -344,7 +346,10 @@
   display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
   padding-top: 0.65rem; border-top: 1px solid var(--esp-line);
 }
-.esp-vitrine-foot > :last-child { margin-left: auto; }
+.esp-vitrine-foot > .esp-btn:nth-child(2) { margin-left: auto; }
+/* Le compte de démonstration passe à la ligne, pleine largeur : un e-mail de
+   trente caractères ne tient pas à côté d'un code et d'un bouton. */
+.esp-vitrine-foot > .esp-account { flex-basis: 100%; justify-content: flex-start; }
 
 /* ── Calendrier ──────────────────────────────────────────────────────────── */
 
@@ -477,6 +482,18 @@
   background: var(--esp-bad-bg); color: var(--esp-bad);
   border: 1px solid oklch(0.52 0.19 28 / 0.3); font-size: 0.8125rem; font-weight: 550;
 }
+/* ── Accès d'une vitrine (code dérivé + compte de démonstration) ─────────── */
+
+/* Empilés : ce sont deux voies d'entrée pour la même vitrine, pas deux colonnes. */
+.esp-access { display: flex; flex-direction: column; align-items: flex-start; gap: 0.15rem; }
+.esp-account { max-width: 100%; font-size: 0.6875rem; gap: 0.3rem; }
+.esp-account-mail { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Le mot de passe se lit comme un code : chasse tabulaire, léger interlettrage. */
+.esp-account-pw {
+  color: var(--esp-ink-3); font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  padding-left: 0.35rem; border-left: 1px solid var(--esp-line-2); flex: none;
+}
+
 .esp-code { font-variant-numeric: tabular-nums; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 650; }
 
 @media (min-width: 900px) {
@@ -553,8 +570,7 @@
   .esp-minis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
   .esp-btn-sm { min-height: 2.25rem; }
-  .esp-vitrine-foot .esp-btn { flex: 1 1 auto; }
-  .esp-vitrine-foot > :last-child { margin-left: 0; }
+  .esp-vitrine-foot > .esp-btn:not(.esp-account) { flex: 1 1 auto; }
 
   .esp-h1 { font-size: 1.375rem; }
   .esp-note { font-size: 0.75rem; }

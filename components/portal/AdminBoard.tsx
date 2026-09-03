@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { AlertCircle, ArrowUpRight, Check, ClipboardCopy, Gauge } from "lucide-react";
+import { AlertCircle, ArrowUpRight, AtSign, Check, ClipboardCopy, Gauge } from "lucide-react";
 import type { AdminDashboardData } from "@/lib/portal/dashboard";
 import PortalBar from "./PortalBar";
 import StatTiles from "./StatTiles";
@@ -14,9 +14,12 @@ import { fmtAgo, fmtCost, fmtDayLabel, fmtDuration } from "./format";
 /* Vision administrateur : les douze démos d'un coup d'œil, la consommation
    consolidée, et le journal de TOUTES les actions.
 
-   La colonne « code d'accès » est la raison pratique d'être de cet écran :
-   quand un client demande comment entrer, la réponse est ici, copiable en un
-   clic — pas dans un fichier de configuration.
+   La colonne « accès » est la raison pratique d'être de cet écran : quand un
+   client demande comment entrer, la réponse est ici, copiable en un clic — pas
+   dans un fichier de configuration. Deux entrées par vitrine, et c'est voulu :
+   le CODE dérivé (à dicter au téléphone) et le COMPTE DE DÉMONSTRATION
+   (<slug>@debug.com + mot de passe), qui n'ouvre que cette vitrine — un
+   prospect à qui on montre sa démo ne voit pas les onze autres.
 
    DEUX RENDUS pour « par vitrine », choisis en CSS (jamais en JavaScript : pas
    de mesure de fenêtre, donc pas de saut à l'hydratation) :
@@ -41,11 +44,12 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
   const labelOf = (slug: string | null) =>
     data.rows.find((r) => r.tenant.slug === slug)?.tenant.business ?? slug ?? "—";
 
-  const copy = async (slug: string, code: string) => {
+  /** `key` distingue les deux boutons d'une même ligne (code / compte). */
+  const copy = async (key: string, text: string) => {
     try {
-      await navigator.clipboard.writeText(code);
-      setCopied(slug);
-      setTimeout(() => setCopied((c) => (c === slug ? null : c)), 2000);
+      await navigator.clipboard.writeText(text);
+      setCopied(key);
+      setTimeout(() => setCopied((c) => (c === key ? null : c)), 2000);
     } catch {
       setCopied(null);
     }
@@ -65,11 +69,28 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
   const codeButton = (slug: string, code: string) => (
     <button
       type="button" className="esp-btn esp-btn-sm esp-btn-quiet esp-code"
-      onClick={() => copy(slug, code)}
+      onClick={() => copy(`${slug}:code`, code)}
       title="Copier le code d'accès"
     >
       {code}
-      {copied === slug
+      {copied === `${slug}:code`
+        ? <Check size={12} aria-hidden style={{ color: "var(--esp-ok)" }} />
+        : <ClipboardCopy size={12} aria-hidden />}
+    </button>
+  );
+
+  /* Le compte de démonstration de la vitrine. Un clic copie les DEUX lignes,
+     e-mail et mot de passe : c'est ce qu'on colle dans un message au prospect. */
+  const accountButton = (slug: string, account: { email: string; password: string }) => (
+    <button
+      type="button" className="esp-btn esp-btn-sm esp-btn-quiet esp-account"
+      onClick={() => copy(`${slug}:account`, `${account.email}\n${account.password}`)}
+      title="Copier l'e-mail et le mot de passe de démonstration"
+    >
+      <AtSign size={12} aria-hidden style={{ color: "var(--esp-ink-3)" }} />
+      <span className="esp-account-mail">{account.email}</span>
+      <span className="esp-account-pw">{account.password}</span>
+      {copied === `${slug}:account`
         ? <Check size={12} aria-hidden style={{ color: "var(--esp-ok)" }} />
         : <ClipboardCopy size={12} aria-hidden />}
     </button>
@@ -143,7 +164,7 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
                     <th scope="col" className="n">Clients</th>
                     <th scope="col" className="n">Coût</th>
                     <th scope="col">Dernier signe</th>
-                    <th scope="col">Code d&apos;accès</th>
+                    <th scope="col">Accès</th>
                     <th scope="col"><span className="esp-micro">Espace</span></th>
                   </tr>
                 </thead>
@@ -152,8 +173,11 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
                     const quiet = r.actions === 0 && r.usage.calls === 0 && r.usage.chats === 0;
                     return (
                       <tr key={r.tenant.slug}>
+                        {/* L'enseigne tient sur UNE ligne ; la mention « réel »
+                            descend avec la ville, sinon un nom de vingt lettres
+                            se coupe en deux au milieu du tableau. */}
                         <td>
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem" }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem", whiteSpace: "nowrap" }}>
                             <span
                               aria-hidden
                               style={{
@@ -162,12 +186,14 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
                               }}
                             />
                             <span style={{ fontWeight: 600 }}>{r.tenant.business}</span>
-                            {r.tenant.real && (
-                              <span className="esp-micro" title="Bâtie sur les données réelles d'un commerce">réel</span>
-                            )}
                           </span>
                           <br />
-                          <span className="esp-micro">{r.tenant.city}</span>
+                          <span className="esp-micro">
+                            {r.tenant.city}
+                            {r.tenant.real && (
+                              <span title="Bâtie sur les données réelles d'un commerce"> · réel</span>
+                            )}
+                          </span>
                         </td>
                         <td className="n">{r.usage.calls || "—"}</td>
                         <td className="n">{durationOf(r.usage.call_seconds)}</td>
@@ -179,7 +205,12 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
                         <td className="esp-small" style={{ color: quiet ? "var(--esp-ink-3)" : undefined }}>
                           {r.lastActionAt ? fmtAgo(r.lastActionAt) : "jamais"}
                         </td>
-                        <td>{codeButton(r.tenant.slug, r.accessCode)}</td>
+                        <td>
+                          <span className="esp-access">
+                            {codeButton(r.tenant.slug, r.accessCode)}
+                            {r.testAccount && accountButton(r.tenant.slug, r.testAccount)}
+                          </span>
+                        </td>
                         <td>
                           <Link className="esp-btn esp-btn-sm" href={`/espace/${r.tenant.slug}`}>
                             Ouvrir <ArrowUpRight size={12} aria-hidden />
@@ -245,6 +276,7 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
                         <Link className="esp-btn esp-btn-sm" href={`/espace/${r.tenant.slug}`}>
                           Ouvrir <ArrowUpRight size={12} aria-hidden />
                         </Link>
+                        {r.testAccount && accountButton(r.tenant.slug, r.testAccount)}
                       </div>
                     </li>
                   );
@@ -256,11 +288,17 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
               <p className="esp-note">
                 <Gauge size={15} aria-hidden />
                 <span>
-                  Les codes ci-dessus sont dérivés de <code>PORTAL_SECRET</code>. Changer ce
-                  secret les régénère tous et ferme toutes les sessions ouvertes. Pour figer
-                  le code d&apos;un client, poser <code>PORTAL_CODE_&lt;SLUG&gt;</code> dans le{" "}
-                  <code>.env</code>. Les appels Vapi ne sont conservés que 14 jours côté
-                  fournisseur : la synchronisation doit tourner au moins une fois par semaine.
+                  <b>Deux façons d&apos;entrer, une seule vitrine au bout.</b> Le code est
+                  dérivé de <code>PORTAL_SECRET</code> (le changer les régénère tous et ferme
+                  toutes les sessions) ; le compte de démonstration ouvre <b>cette vitrine
+                  et elle seule</b> — le prospect à qui vous la montrez ne voit ni la
+                  consommation des autres, ni leurs codes. Surcharges dans le{" "}
+                  <code>.env</code> : <code>PORTAL_CODE_&lt;SLUG&gt;</code>,{" "}
+                  <code>PORTAL_TEST_EMAIL_&lt;SLUG&gt;</code>,{" "}
+                  <code>PORTAL_TEST_PASSWORD_&lt;SLUG&gt;</code> ; et{" "}
+                  <code>PORTAL_TEST_ACCOUNT=off</code> ferme tous ces comptes d&apos;un coup.
+                  Les appels Vapi ne sont conservés que 14 jours côté fournisseur : la
+                  synchronisation doit tourner au moins une fois par semaine.
                 </span>
               </p>
             </div>

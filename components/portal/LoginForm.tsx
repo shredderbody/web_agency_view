@@ -15,25 +15,30 @@ import {
 
      • Pas de Google OAuth : une démo n'a pas de compte utilisateur, elle a un
        SLUG et un CODE D'ACCÈS (cf. lib/portal/auth.ts). Le second onglet,
-       « Identifiants », n'existe que pour le compte de test de l'agence, qui
-       ouvre directement l'espace d'administration.
+       « Identifiants », porte les comptes de DÉMONSTRATION : un par vitrine
+       (<slug>@debug.com, qui n'ouvre que cette vitrine) plus celui de l'agence.
+       Choisir sa vitrine dans le premier onglet pré-remplit l'e-mail du second.
      • Le choix de la démo est explicite (liste déroulante) : un client sait
        quelle vitrine est la sienne, et l'administrateur choisit « Administration ».
    ════════════════════════════════════════════════════════════════════════════ */
 
-type Option = { slug: string; label: string; city: string; accent: string };
+type Option = {
+  slug: string; label: string; city: string; accent: string;
+  /** E-mail de démonstration de cette vitrine, `null` si les comptes sont fermés. */
+  testEmail: string | null;
+};
 
 type Mode = "code" | "credentials";
 
 export default function LoginForm({
-  options, initialSlug, expired, devSecret, testEmail,
+  options, initialSlug, expired, devSecret, testAccounts,
 }: {
   options: Option[];
   initialSlug: string;
   expired: boolean;
   devSecret: boolean;
-  /** E-mail du compte de test, ou `null` si le compte est désactivé. */
-  testEmail: string | null;
+  /** Les comptes de démonstration sont-ils ouverts ? (PORTAL_TEST_ACCOUNT) */
+  testAccounts: boolean;
 }) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("code");
@@ -53,6 +58,12 @@ export default function LoginForm({
   const switchTo = (next: Mode) => {
     setMode(next);
     setError(null);
+    // Passer aux identifiants après avoir choisi sa vitrine : l'e-mail est déjà
+    // connu, autant l'écrire. On n'écrase jamais une saisie en cours.
+    if (next === "credentials" && !email.trim()) {
+      const chosen = options.find((o) => o.slug === slug);
+      if (chosen?.testEmail) setEmail(chosen.testEmail);
+    }
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -120,11 +131,11 @@ export default function LoginForm({
             <p className="esp-small" style={{ marginTop: "0.35rem" }}>
               {mode === "code"
                 ? "Choisissez votre vitrine, puis saisissez le code fourni par l'agence."
-                : "Compte de service de l'agence : ouvre l'espace d'administration."}
+                : "Chaque vitrine a son compte de démonstration ; il n'ouvre que la sienne."}
             </p>
           </div>
 
-          {testEmail && (
+          {testAccounts && (
             <div className="esp-tabs" style={{ marginBottom: 0 }} role="tablist">
               <button
                 type="button"
@@ -220,7 +231,7 @@ export default function LoginForm({
                     style={{ paddingLeft: "2rem" }}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder={testEmail ?? "vous@exemple.com"}
+                    placeholder="votre-vitrine@debug.com"
                     autoComplete="username"
                     spellCheck={false}
                     required
@@ -278,7 +289,7 @@ export default function LoginForm({
           <p className="esp-micro" style={{ textAlign: "center" }}>
             {mode === "code"
               ? "Code perdu ? L'agence le retrouve dans son espace d'administration."
-              : `Compte de test : ${testEmail}`}
+              : "Identifiants perdus ? L'agence les retrouve dans son espace d'administration."}
           </p>
         </form>
       </main>
