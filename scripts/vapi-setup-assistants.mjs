@@ -14,7 +14,11 @@
  *   - collecte : prénom, nom, téléphone, date + heure (dans les horaires)
  *     + champs spécifiques (adresse d'intervention plombier, couverts resto,
  *       type de commande traiteur),
- *   - expose un FUNCTION TOOL qui POST vers le webhook n8n (VAPI_TOOL_URL).
+ *   - expose 4 FUNCTION TOOLS qui POSTent vers le webhook n8n (VAPI_TOOL_URL) :
+ *     la création (`enregistrer_*`) + `rechercher_client` / `annuler_reservation`
+ *     / `modifier_reservation`, sur le modèle du verrou CRM de l'assistant
+ *     receptionist « Yelena » (identification par nom + prénom + téléphone
+ *     avant toute modif/annulation — cf. docs/VAPI_ASSISTANTS.md §3).
  *
  * Si un ID d'assistant est déjà présent dans .env (NEXT_PUBLIC_VAPI_ASSISTANT_*),
  * le script fait un PATCH (mêmes IDs conservés) ; sinon il crée l'assistant.
@@ -457,9 +461,21 @@ Tu prends des ${m.rdvFr} pour les clients.
 - Téléphone : ${m.phone} · ${m.city}.
 
 ## DÉMO — IMPORTANT
-Ceci est une démonstration. La ${m.rdvFr} n'est PAS réelle : aucune confirmation réelle (SMS/e-mail) n'est envoyée et aucun paiement n'est demandé. Confirme néanmoins avec assurance, comme un vrai standardiste. Ne mentionne jamais que c'est simulé.
+Ceci est une démonstration. La ${m.rdvFr} n'est PAS réelle : aucune confirmation réelle (SMS/e-mail) n'est envoyée et aucun paiement n'est demandé. Le suivi (création/modification/annulation) est en revanche réellement enregistré côté démo, donc les outils ci-dessous renvoient des réponses cohérentes avec l'historique. Confirme avec assurance, comme un vrai standardiste. Ne mentionne jamais que c'est simulé.
 
-## DÉROULÉ (une question à la fois)
+## IDENTIFICATION CLIENT (verrou obligatoire avant modif/annulation)
+- Si le client dit qu'il a DÉJÀ une ${m.rdvFr}, ou qu'il veut la MODIFIER ou l'ANNULER : demande son nom, son prénom ET son numéro de téléphone, puis appelle IMMÉDIATEMENT l'outil « rechercher_client » avec ces 3 informations. Ne devine jamais, n'invente jamais de réservation.
+- Si l'outil trouve une réservation active : annonce-la (date/heure) et demande ce qu'il souhaite faire (la garder, la modifier, l'annuler).
+- Si l'outil ne trouve rien, ou signale un nom qui ne correspond pas au téléphone : dis-le simplement et propose soit de réessayer (nom/téléphone), soit de créer une nouvelle réservation.
+- Ne saute jamais cette étape d'identification avant d'appeler « annuler_reservation » ou « modifier_reservation ».
+
+## MODIFIER OU ANNULER UNE RÉSERVATION EXISTANTE
+1. Identifie le client (étape ci-dessus) et fais-lui confirmer la réservation trouvée.
+2. Pour une annulation : confirme une dernière fois puis appelle « annuler_reservation » avec nom/prénom/téléphone.
+3. Pour un report : demande la nouvelle date et la nouvelle heure (vérifie qu'elles tombent dans les horaires d'ouverture), fais confirmer, puis appelle « modifier_reservation » avec nom/prénom/téléphone/date/heure.
+4. Confirme chaleureusement le résultat renvoyé par l'outil.
+
+## NOUVELLE RÉSERVATION (une question à la fois)
 1. Accueille le client et demande ce qu'il souhaite réserver.
 2. Recueille : ${baseFields}.
 3. ${m.extraAskFr}
@@ -498,9 +514,21 @@ Tu prends des ${m.rdvFr} pour les clients.
 - Téléphone : ${m.phone} · ${m.city}.
 
 ## DÉMO — IMPORTANT
-Ceci est une démonstration. La ${m.rdvFr} n'est PAS réelle : aucune confirmation réelle (SMS/e-mail) n'est envoyée et aucun paiement n'est demandé. Confirme néanmoins avec assurance, comme un vrai standardiste. Ne mentionne jamais que c'est simulé.
+Ceci est une démonstration. La ${m.rdvFr} n'est PAS réelle : aucune confirmation réelle (SMS/e-mail) n'est envoyée et aucun paiement n'est demandé. Le suivi (création/modification/annulation) est en revanche réellement enregistré côté démo, donc les outils ci-dessous renvoient des réponses cohérentes avec l'historique. Confirme avec assurance, comme un vrai standardiste. Ne mentionne jamais que c'est simulé.
 
-## DÉROULÉ (une question à la fois)
+## IDENTIFICATION CLIENT (verrou obligatoire avant modif/annulation)
+- Si le client dit qu'il a DÉJÀ une ${m.rdvFr}, ou qu'il veut la MODIFIER ou l'ANNULER : demande son nom, son prénom ET son numéro de téléphone, puis appelle IMMÉDIATEMENT l'outil « rechercher_client » avec ces informations. Ne devine jamais, n'invente jamais de réservation.
+- Si l'outil trouve une réservation active : annonce-la (date/heure) et demande ce qu'il souhaite faire (la garder, la modifier, l'annuler).
+- Si l'outil ne trouve rien, ou signale un nom qui ne correspond pas au téléphone : dis-le simplement et propose soit de réessayer (nom/téléphone), soit de créer une nouvelle réservation.
+- Ne saute jamais cette étape d'identification avant d'appeler « annuler_reservation » ou « modifier_reservation ». Même logique en anglais (identify by first name + last name + phone before any change).
+
+## MODIFIER OU ANNULER UNE RÉSERVATION EXISTANTE
+1. Identifie le client (étape ci-dessus) et fais-lui confirmer la réservation trouvée.
+2. Pour une annulation : confirme une dernière fois puis appelle « annuler_reservation » avec nom/prénom/téléphone.
+3. Pour un report : demande la nouvelle date et la nouvelle heure (vérifie qu'elles tombent dans les horaires d'ouverture), fais confirmer, puis appelle « modifier_reservation » avec nom/prénom/téléphone/date/heure.
+4. Confirme chaleureusement le résultat renvoyé par l'outil.
+
+## NOUVELLE RÉSERVATION (une question à la fois)
 1. Accueille le client et demande ce qu'il souhaite réserver.
 2. Recueille : ${baseFields}.
 3. ${m.extraAskFr}
@@ -510,7 +538,7 @@ Ceci est une démonstration. La ${m.rdvFr} n'est PAS réelle : aucune confirmati
 7. Confirme chaleureusement que la demande est notée et propose ton aide pour autre chose.
 
 ## EN (mirror)
-You also handle everything in ENGLISH if the customer speaks English: same flow, collect first name, last name, phone, date and time within opening hours. ${m.extraAskEn} Then call the tool « ${m.toolName} ». Keep replies to 1–2 short sentences.
+You also handle everything in ENGLISH if the customer speaks English: same flow, collect first name, last name, phone, date and time within opening hours. ${m.extraAskEn} Then call the tool « ${m.toolName} ». Before cancelling or rescheduling an existing booking, ALWAYS authenticate first via « rechercher_client » with first name + last name + phone, confirm what it finds, then call « annuler_reservation » or « modifier_reservation ». Keep replies to 1–2 short sentences.
 
 Ne réponds qu'aux sujets liés à ${m.business}. Reste bref.`;
 }
@@ -557,6 +585,92 @@ function buildTool(m) {
   };
 }
 
+// ── Identification client + modif/annulation (verrou CRM façon « Yelena ») ──
+// 3 tools communs à tous les métiers, réutilisant le même webhook n8n : celui-ci
+// authentifie le client par nom + prénom + téléphone (recherche dans l'historique
+// des réservations de démo de cet assistant) avant de modifier ou annuler quoi
+// que ce soit. Pas de champ métier spécifique : ces tools travaillent uniquement
+// sur l'identité + le créneau.
+function identityProps(m) {
+  const fr = m.bilingual !== false;
+  return {
+    prenom: { type: "string", description: "Prénom du client / customer first name." },
+    nom: { type: "string", description: "Nom de famille du client / customer last name." },
+    telephone: {
+      type: "string",
+      description: "Numéro de téléphone du client, utilisé pour l'authentifier / customer phone number, used to authenticate them.",
+    },
+    ...(fr ? { langue: baseProps.langue } : {}),
+  };
+}
+
+function buildCommonTools(m) {
+  const fr = m.bilingual !== false;
+  const idProps = identityProps(m);
+  const idRequired = ["prenom", "nom", "telephone"];
+
+  const rechercherClient = {
+    type: "function",
+    async: false,
+    function: {
+      name: "rechercher_client",
+      description: fr
+        ? `Vérifie si le client a déjà une ${m.rdvFr} chez ${m.business} : authentifie par nom + prénom + téléphone et renvoie la réservation active trouvée (ou son absence). À appeler dès que le client dit avoir déjà réservé, ou avant de créer une nouvelle réservation si un doute existe. / Checks whether the customer already has a booking, authenticated by first name + last name + phone.`
+        : `Checks whether the customer already has a booking with ${m.business}, authenticated by first name + last name + phone number. Call it whenever the customer says they already booked, or before creating a new booking if unsure.`,
+      parameters: { type: "object", properties: idProps, required: idRequired },
+    },
+    server: { url: TOOL_URL },
+    messages: [
+      { type: "request-start", content: fr ? "Je vérifie, un instant…" : "One moment, let me check…" },
+      { type: "request-failed", content: fr ? "Désolé, je n'arrive pas à vérifier pour le moment." : "Sorry, I can't check right now." },
+    ],
+  };
+
+  const annulerReservation = {
+    type: "function",
+    async: false,
+    function: {
+      name: "annuler_reservation",
+      description: fr
+        ? `Annule la ${m.rdvFr} active du client chez ${m.business}. Authentifie D'ABORD par nom + prénom + téléphone (via rechercher_client) et fais confirmer au client la réservation trouvée avant d'annuler. / Cancels the customer's active booking — authenticate first via rechercher_client.`
+        : `Cancels the customer's active booking with ${m.business}. Authenticate FIRST with first name + last name + phone (via rechercher_client) and have the customer confirm the booking found before cancelling.`,
+      parameters: { type: "object", properties: idProps, required: idRequired },
+    },
+    server: { url: TOOL_URL },
+    messages: [
+      { type: "request-start", content: fr ? "Je m'en occupe, un instant…" : "One moment, cancelling that…" },
+      { type: "request-failed", content: fr ? "Désolé, je n'ai pas pu annuler la réservation." : "Sorry, I couldn't cancel the booking." },
+    ],
+  };
+
+  const modifierReservation = {
+    type: "function",
+    async: false,
+    function: {
+      name: "modifier_reservation",
+      description: fr
+        ? `Reporte la ${m.rdvFr} active du client chez ${m.business} vers une nouvelle date/heure. Authentifie D'ABORD par nom + prénom + téléphone (via rechercher_client) et fais confirmer la réservation existante avant de la modifier. / Reschedules the customer's active booking to a new date/time — authenticate first via rechercher_client.`
+        : `Reschedules the customer's active booking with ${m.business} to a new date/time. Authenticate FIRST with first name + last name + phone (via rechercher_client) and confirm the existing booking before changing it.`,
+      parameters: {
+        type: "object",
+        properties: {
+          ...idProps,
+          date: { type: "string", description: "Nouvelle date souhaitée (JJ/MM/AAAA) / new requested date." },
+          heure: { type: "string", description: "Nouvelle heure souhaitée (HH:MM, dans les horaires) / new requested time." },
+        },
+        required: [...idRequired, "date", "heure"],
+      },
+    },
+    server: { url: TOOL_URL },
+    messages: [
+      { type: "request-start", content: fr ? "Je modifie ça, un instant…" : "One moment, updating that…" },
+      { type: "request-failed", content: fr ? "Désolé, je n'ai pas pu modifier la réservation." : "Sorry, I couldn't update the booking." },
+    ],
+  };
+
+  return [rechercherClient, annulerReservation, modifierReservation];
+}
+
 function payload(m) {
   return {
     name: `Démo vitrine · ${m.business}`.slice(0, 40),
@@ -570,7 +684,7 @@ function payload(m) {
       model: "gpt-4.1",
       temperature: 0.4,
       messages: [{ role: "system", content: systemPrompt(m) }],
-      tools: [buildTool(m)],
+      tools: [buildTool(m), ...buildCommonTools(m)],
     },
     server: { url: TOOL_URL },
     metadata: { project: "web_agency_view", kind: "demo-inbound", slug: m.slug },

@@ -84,12 +84,15 @@ propose un créneau valide.
 
 ## 3. Function tools (inbound)
 
-Chaque assistant expose **un** function tool, appelé une fois que le client a
-confirmé. Tous pointent vers le **webhook n8n** :
+Chaque assistant expose **4 function tools** — la création métier + 3 tools
+communs de suivi (identification / annulation / report), sur le modèle du
+verrou CRM de l'assistant *receptionist* « Yelena » (`docs` du projet
+`receptionist`, `VAPI_PLAYBOOK.md` — identification par nom + prénom +
+téléphone avant toute modif/annulation). Tous pointent vers le **webhook n8n** :
 `POST https://n8n.zerocall.io/webhook/00000000-1234-0000-4321-000000000000`
 (surchargeable via `VAPI_TOOL_URL`). C'est aussi le `server.url` de l'assistant.
 
-### Champs communs (tous les métiers)
+### 3.1 Création (1 tool par métier)
 
 | Paramètre | Type | Requis | Description |
 |---|---|---|---|
@@ -100,41 +103,83 @@ confirmé. Tous pointent vers le **webhook n8n** :
 | `heure` | string | ✅ | Heure souhaitée (HH:MM, dans les horaires) |
 | `langue` | string | — | Langue de la conversation (`fr` / `en`) |
 
-### Champs spécifiques par métier
+Champs spécifiques par métier :
 
 | Tool | slug | Champs additionnels |
 |---|---|---|
-| `enregistrer_rendezvous` | `barbershop`, `onglerie` | `prestation` (string) |
-| `enregistrer_commande` | `traiteur` | `commande` (string), `nombre_personnes` (string) — la date/heure = **retrait** |
-| `enregistrer_reservation` | `restaurant` | `nombre_couverts` (string) |
-| `enregistrer_intervention` | `plombier` | `adresse_intervention` (string), `nature_probleme` (string), `urgence` (boolean) |
+| `enregistrer_rendezvous` | `barbershop`, `onglerie`, … | `prestation` (string) |
+| `enregistrer_commande` | `traiteur`, `ines-garden` | `commande`/`pieces_souhaitees` (string) — la date/heure = **retrait/livraison** |
+| `enregistrer_reservation` | `restaurant`, … | `nombre_couverts` (string) |
+| `enregistrer_intervention` | `plombier`, `texas-plumbing-pros` | `adresse_intervention` (string), `nature_probleme` (string), `urgence` (boolean) |
 
 > **Le plombier demande systématiquement l'adresse complète du lieu
 > d'intervention** et la nature du problème — c'est imposé dans son prompt.
+
+### 3.2 Identification / annulation / report (3 tools communs, tous métiers)
+
+Pas de champ spécifique métier : ces tools authentifient le client par
+**nom + prénom + téléphone** dans l'historique des réservations de démo de cet
+assistant (recherche par téléphone normalisé, confirmée par le nom), puis
+agissent sur la réservation **active** la plus récente trouvée.
+
+| Tool | Champs | Rôle |
+|---|---|---|
+| `rechercher_client` | `prenom`, `nom`, `telephone`, `langue` | Vérifie si le client a déjà une réservation active ; renvoie date/heure ou l'absence de réservation |
+| `annuler_reservation` | `prenom`, `nom`, `telephone`, `langue` | Annule la réservation active trouvée (aucune s'il n'y en a pas) |
+| `modifier_reservation` | `prenom`, `nom`, `telephone`, `date`, `heure`, `langue` | Reporte la réservation active vers la nouvelle date/heure |
+
+Le prompt impose le verrou : **jamais** d'appel à `annuler_reservation` /
+`modifier_reservation` sans être passé par `rechercher_client` juste avant et
+avoir fait confirmer au client la réservation trouvée.
 
 ### Traitement côté n8n (câblage actuel)
 
 Workflow **`DEV - WebAgencyView - 01 - Receptionist - MultiTenant - Demo`**
 (`DXijRdXTdTKVGXE8`, projet `SU61xL4G7FcslHvZ`) — le même que le projet
-*receptionist*, avec une branche dédiée aux démos ajoutée en fin de `Switch1` :
+*receptionist*, avec deux branches dédiées aux démos ajoutées en fin de
+`Switch1` (additif : aucun nœud/branche existant du workflow receptionist n'a
+été modifié) :
 
 ```
-Webhook1 → Edit Fields1 → Get row(s)3 → Code in JavaScript16 → Code in JavaScript
-        → Switch1 ─[10] demoBooking ─▶ Code - Demo Lead
-                                        → Supabase - Demo Booking
-                                        → Respond to Webhook - Demo
-                  └[11] fallback ─────▶ Respond to Webhook - Fallback
+Webhook1 → Edit Fields1 → Get many rows19 → Code in JavaScript16 → Code in JavaScript
+        → Switch1 ─[…10 sorties receptionist existantes, inchangées…]
+                  ├─[11] createDemoBooking ──▶ Demo: Build Create Payload
+                  │                             → Demo: Create Booking (insert demo_bookings)
+                  │                             → Demo: Respond Create
+                  └─[12] demoBookingLookup ──▶ Demo: Get Client Bookings (getAll demo_bookings, assistant_id)
+                                                → Demo: Match & Decide (authentifie tel+nom, déduit l'état courant)
+                                                → Demo: Needs Insert? ─true─▶ Demo: Log Booking Event → Demo: Respond Mutate
+                                                                      └false─▶ Demo: Respond Lookup
 ```
 
-- `Switch1` route sur `function_tool` *startsWith* `enregistrer_` : **aucun**
-  nouveau tool n'est à déclarer côté workflow quand on ajoute un métier.
-- `Get row(s)3` (lookup tenant *receptionist*) est en `alwaysOutputData` : les
-  assistants de démo, absents de `practitioner_initialization`, traversent quand
-  même la chaîne.
-- La sortie `fallback` garantit qu'aucun POST ne reste sans réponse (tool inconnu
-  → `result: "OK"` ; événement sans `toolCalls` → `{ received: true }`).
-- `Supabase - Demo Booking` est en `onError: continueRegularOutput` : une panne
-  Supabase **n'empêche jamais** l'assistant de confirmer au client.
+- `createDemoBooking` matche `function_tool` = `enregistrer_rendezvous` /
+  `_reservation` / `_commande` / `_intervention` ; `demoBookingLookup` matche
+  `rechercher_client` / `lister_reservations` / `annuler_reservation` /
+  `modifier_reservation`. **Aucun** nouveau tool n'est à déclarer côté workflow
+  quand on ajoute un métier de création (juste 1 nom de tool en plus dans la
+  1ʳᵉ règle) ; les 3 tools de suivi sont déjà génériques.
+- **Historique événementiel, pas d'UPDATE SQL** : `annuler_reservation` /
+  `modifier_reservation` insèrent une **nouvelle ligne** `demo_bookings`
+  (`tool = annuler_reservation` / `modifier_reservation`) plutôt que de modifier
+  la ligne de création. `Demo: Match & Decide` déduit l'état courant du client
+  en prenant, parmi les lignes dont le téléphone (normalisé, 9 derniers chiffres)
+  correspond, la plus récente par `created_at` : si c'est une annulation → pas
+  de réservation active ; sinon la date/heure de cette ligne fait foi. Aucune
+  migration SQL n'était nécessaire (les colonnes existantes suffisent).
+- `Demo: Get Client Bookings` est en `alwaysOutputData: true` (même pattern que
+  `Get many rows19`) : même sans réservation existante pour ce client, l'item
+  traverse quand même la chaîne jusqu'à `Demo: Match & Decide`, qui répond alors
+  « aucune réservation trouvée ».
+- `Demo: Create Booking` / `Demo: Log Booking Event` sont en
+  `onError: continueRegularOutput` : une panne Supabase n'empêche jamais
+  l'assistant de confirmer au client (même principe que documenté plus bas pour
+  l'ancien endpoint `/api/vapi/booking`).
+- Les 10 sorties `Switch1` d'origine (real inbound *receptionist* : `getAvailability`,
+  `bookAppointment`, `cancelAppointment`, …) ne matchaient **aucun** nom de tool
+  démo avant cet ajout ; comme `Switch1` n'avait pas de sortie de repli, ces
+  appels de démo étaient auparavant silencieusement ignorés (pas de panne
+  visible côté client, mais rien n'était persisté). C'est corrigé par les 2
+  nouvelles sorties ci-dessus.
 - Réponse renvoyée à Vapi : `{ "results": [ { "toolCallId", "result" } ] }`, avec
   une phrase de confirmation **FR ou EN** selon l'argument `langue`.
 
@@ -148,7 +193,7 @@ tous les clients de démo, et en ajouter un ne demande aucune modification.
 |---|---|
 | `assistant_id` | **clé de tenant** — `message.assistant.id` |
 | `assistant_name` | ex. `Démo vitrine · Le Comptoir 12` |
-| `tool` | `enregistrer_rendezvous` \| `_reservation` \| `_commande` \| `_intervention` |
+| `tool` | `enregistrer_rendezvous` \| `_reservation` \| `_commande` \| `_intervention` \| `annuler_reservation` \| `modifier_reservation` (événement, pas d'update — cf. §3.2) |
 | `payload` | jsonb — les arguments du tool |
 | `meta` | jsonb — `{ slug, env, ts, workflow }` |
 | `call_id` / `tool_call_id` | ids Vapi ; `tool_call_id` est **unique** → un rejeu ne duplique pas |
