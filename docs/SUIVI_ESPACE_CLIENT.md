@@ -1,0 +1,165 @@
+# Suivi — Espace client des démos (login, consommation, réservations, admin)
+
+> **Fichier de reprise.** Si la session est coupée, relire ce fichier de haut en
+> bas : l'état de chaque étape est à jour. Reprendre à la première étape `[ ]`.
+> Mettre à jour ce fichier **après chaque étape**, jamais à la fin.
+
+Dernière mise à jour : 2026-09-03 — étape 11 en cours (build vert, place au déploiement).
+
+## Demande
+
+1. Reprendre le **login de `~/receptionist`** et l'adapter aux **slugs de démo**.
+2. Mettre en avant la **consommation des appels et des messages** (suivi complet).
+3. Un slug **`admin`** → vision administrateur sur **toutes** les démos.
+4. Intégrer un **calendrier** pour voir / mettre à jour les **réservations**
+   (vue calendrier **et** vue cards).
+5. Compléter ce qui manque, cohérence des templates de démo, design soigné.
+6. **Rebuild + redéploiement Docker** en fin de chantier.
+
+### Précision du 2026-09-03 (message en cours de chantier)
+
+> « l'objectif est d'avoir une **traçabilité complète des ACTIONS** — pas du
+> contenu de discussion, mais des actions : booking, annulation, reschedule, etc.
+> — et le **client avec ses coordonnées** pour le suivi. **Stockage dans Supabase**
+> puis **relecture depuis Supabase**. »
+
+Conséquences, actées :
+
+- On ne stocke ni transcript ni contenu de conversation. **Une action = une ligne.**
+- Le modèle passe de « lire l'API Vapi » à **3 tables Supabase** (migration 005) :
+  `demo_customers` (fiche client) · `demo_reservations` (état courant) ·
+  `demo_actions` (journal immuable : qui, quoi, quand, avant → après).
+- `demo_bookings` reste la **boîte de réception brute** où n8n écrit ; une
+  **projection idempotente** (clé `tool_call_id`) la déverse dans les 3 tables.
+- L'espace client lit **uniquement Supabase**. L'API Vapi ne sert plus qu'à la
+  synchro de consommation (`demo_usage_daily`), jamais à l'affichage direct.
+
+## Décisions d'architecture (arrêtées le 2026-09-03)
+
+| Sujet | Décision | Pourquoi |
+|---|---|---|
+| URL | `/espace/login` puis `/espace/[slug]` | ne touche pas à `/demo/[slug]` (public) |
+| Slug `admin` | `/espace/admin` — même route, rôle `admin` | exactement la demande |
+| Auth | cookie **HttpOnly signé HMAC-SHA256** (`node:crypto`), pas de dépendance | le Supabase auth de receptionist est un AUTRE projet ; aucune table `profiles` ici |
+| Codes d'accès | **dérivés** `HMAC(PORTAL_SECRET, slug)` → 8 caractères, surchargeables par `PORTAL_CODE_<SLUG>` | aucun secret à créer par démo ; l'admin les lit dans son tableau de bord |
+| Consommation appels | **API Vapi** `GET /call?assistantId=…` (coût, durée, breakdown) | source de vérité |
+| Consommation messages | **API Vapi** `GET /chat?assistantId=…` (messages + coût chat) | le widget est hybride chat+call |
+| ⚠️ Rétention Vapi | **14 jours** sur ce plan (erreur 400 au-delà) | → archivage local obligatoire |
+| Archive consommation | table `public.demo_usage_daily` + route de sync | conserve l'historique au-delà des 14 j |
+| Réservations | table `public.demo_bookings` du projet **GritUnited** `bbxwezoscjuwsoflponx` | c'est là que le workflow n8n écrit |
+| Écriture réservation | colonnes `status`, `starts_at`, `customer_*`, `notes`, `updated_at`, `demo_slug` (migration 004) | permet update/annulation depuis l'espace |
+| `payload` | jsonb contenant parfois une **chaîne** JSON (écriture n8n) | normalisation côté app obligatoire |
+
+## Ressources vérifiées
+
+| Ressource | Valeur / état |
+|---|---|
+| Démos | 12 slugs (`lib/vapi.ts` `CONFIG`) — 1 assistant Vapi dédié chacun |
+| Supabase repo | `uvpuhoyaovmztephqknq` — **répond de nouveau** (n'est plus en pause) |
+| Supabase n8n/démo | `bbxwezoscjuwsoflponx` (GritUnited) — contient les vraies lignes |
+| Clé Vapi privée | `.env` `VAPI_PRIVATE_KEY` — testée OK (`/call`, `/chat`) |
+| Docker | `docker-compose.yml` (service `web`, port 3010) + `update.sh` (mode caddy) |
+| Domaine public | `https://receptionniste.zerocall.io` |
+
+## Étapes
+
+- [x] **1.** Audit : login receptionist, démos, tables, API Vapi, Docker
+- [x] **2.** Migration `004_portal_espace_client.sql` (colonnes réservation + `demo_usage_daily`) + application sur les 2 projets
+- [x] **3a.** `lib/portal/registry.ts` — 12 tenants, clé `assistant_id`
+- [x] **3b.** Migration `005_portal_ledger.sql` — `demo_customers` / `demo_reservations` / `demo_actions` (appliquée sur les 2 projets)
+- [x] **3c.** Socle serveur : `lib/portal/*` — `registry` `supabase` `phone` `time` `auth` `types` `ledger` `projection` `usage`
+- [x] **4.** Routes API `/api/portal/*` — `login` `logout` `actions` `reservations` `sync` — **testées sur données réelles**
+- [x] **5.** UI login `/espace/login` — repris de receptionist, charte Atelier Vitrine
+- [x] **6.** UI espace démo `/espace/[slug]` — 4 onglets, tuiles + graphe + tableau chiffré
+- [x] **7.** UI calendrier + cartes, édition en place (confirmer / reporter / annuler / note)
+- [x] **8.** UI admin `/espace/admin` — 12 vitrines, codes d'accès copiables, journal global
+- [x] **9.** Cohérence : alias de polices corrigé + lien « Espace client » au pied du site + boucle de synchro
+- [x] **10.** `npm run build` + `tsc --noEmit` : OK
+- [ ] **11.** Rebuild Docker + redéploiement (`bash update.sh`) + vérif publique
+- [ ] **12.** Doc (`docs/README.md`, `docs/ARCHITECTURE.md`) + mémoire + commit
+
+## Journal
+
+- **2026-09-03 · audit** — 12 démos recensées, API Vapi validée (appels + chats,
+  coûts détaillés), rétention 14 j découverte, `demo_bookings` lue sur les deux
+  projets Supabase, conception arrêtée (tableau ci-dessus).
+- **2026-09-03 · migration 004** — appliquée via l'API management Supabase sur
+  `bbxwezoscjuwsoflponx` (GritUnited) **et** `uvpuhoyaovmztephqknq` (projet du `.env`).
+  Le projet du `.env` n'avait jamais reçu la 003 : elle a été jouée avant la 004.
+  Vérifié : `demo_usage_daily` répond, `demo_bookings.status/starts_at/demo_slug` existent.
+- **2026-09-03 · anomalie design confirmée** — `--font-display` / `--font-body` /
+  `--font-elegant` / `--font-barber` sont utilisées partout dans `app/globals.css`
+  mais **définies nulle part** : tout le site rend avec la pile sans-serif par
+  défaut de Tailwind, pas avec Bricolage/Hanken/Anton/Marcellus (pourtant chargées
+  par `app/layout.tsx`). Déjà signalé « à corriger » dans `docs/DESIGN.md`.
+  → corrigé à l'étape 9 (cohérence).
+- **2026-09-03 · modèle d'actions** — migration 005 appliquée sur les deux projets :
+  `demo_customers` (dédoublonnée sur `(assistant_id, phone E.164)`),
+  `demo_reservations` (état courant + `original_starts_at` pour la dérive),
+  `demo_actions` (journal immuable, index unique sur `tool_call_id`).
+  `demo_bookings` gagne `projected_at` + `reservation_id` : curseur de projection.
+- **2026-09-03 · socle serveur** — `lib/portal/` : `supabase.ts` (PostgREST
+  service_role, pas de dépendance ajoutée), `phone.ts` (E.164 par indicatif du
+  tenant), `time.ts` (créneau dicté → UTC **dans le fuseau du commerce** :
+  Bali/New York/Chicago ne sont pas Paris), `auth.ts` (cookie HMAC + codes
+  dérivés), `ledger.ts`, `projection.ts` (idempotente, double garde-fou),
+  `usage.ts` (Vapi → `demo_usage_daily` → lecture Supabase uniquement).
+- **2026-09-03 · `.env`** — ajout de `PORTAL_SECRET`, `PORTAL_ADMIN_CODE`,
+  `DEMO_DB_SUPABASE_URL` / `_SERVICE_ROLE_KEY` (projet GritUnited), `PORTAL_SYNC_SECRET`.
+- **2026-09-03 · première synchro réelle** — `POST /api/portal/sync` :
+  15 lignes brutes lues → **12 actions projetées**, 3 ignorées (assistant de test
+  inconnu du registre, marquées traitées pour ne plus être relues).
+  12 fiches clients créées, 12 réservations, téléphones normalisés E.164
+  (`+33`, `+1`, `+62`). Relance : `scanned: 0` → **idempotence vérifiée**.
+  Consommation archivée pour `thai-viens-express` (2 appels, 5 conversations écrites).
+- **2026-09-03 · deux corrections de justesse** issues du test :
+  1. **Ordre des dates** — le schéma des tools impose `JJ/MM/AAAA` pour les douze
+     démos, mais un assistant répondant en anglais peut glisser en `MM/JJ`.
+     Garde-fou ajouté dans `time.ts` : si le second nombre dépasse 12, ce n'est
+     pas un mois, on retourne la lecture. Aucune supposition dans les cas ambigus.
+  2. **Fenêtre des messages** — les conversations écrites ne subissent PAS la
+     rétention de 14 jours (l'API `/chat` renvoie des sessions du 8 août).
+     Fenêtre séparée de 180 jours : sinon la moitié de la consommation écrite
+     était jetée à chaque synchro (vérifié : 0 → 5 conversations archivées).
+- **2026-09-03 · interface** — feuille dédiée `app/espace/espace.css` (registre
+  PRODUIT : une seule famille, échelle rem fixe, vermillon réservé aux actions,
+  seconde couche neutre pour la barre d'application). Palette de séries
+  (bleu voix / terre écrit) **validée** par `validate_palette.js` sur la surface
+  crème : ΔE protan 23,2 · vision normale 29,6 · contraste ≥ 3:1.
+  Graphe SVG maison (colonnes empilées, un seul axe, infobulle), aucune
+  dépendance ajoutée au projet.
+- **2026-09-03 · parcours vérifié au navigateur (Playwright)** — connexion,
+  4 onglets, calendrier mensuel, édition en place. Chaîne de traçabilité relue
+  **en base** :
+  `booking_created` (n8n) → `booking_rescheduled` (espace, 16/09 19h30 → 17/09 20h30)
+  → `booking_confirmed` (espace) → `booking_rescheduled` (espace, → 18/09 12h15).
+  Chaque ligne porte son avant → après et son auteur. Aucune erreur console.
+  *(Ces trois actions de test restent dans le journal : il est immuable par
+  construction, on n'y fait pas de ménage. Elles sont datées du 2026-09-03.)*
+- **2026-09-03 · deux corrections d'affichage** — en-tête de panneau (le dernier
+  élément va à droite, pas le premier venu) et **suppression d'un pourcentage
+  mensonger** : le rendement affichait « 171 % des échanges ont donné une prise »
+  quand des actions existent sans appel Vapi correspondant (rétention de 14 jours,
+  saisie depuis l'espace). Remplacé par le compte brut dans ce cas.
+- **2026-09-03 · anomalie de polices CORRIGÉE** — bloc d'alias ajouté dans
+  `:root` (`app/globals.css`) : `--font-display` → Bricolage, `--font-body` →
+  Hanken, `--font-elegant` → Marcellus, `--font-barber` → Anton.
+  **Vérifié avant/après au navigateur** : la production servait
+  `ui-sans-serif, system-ui` pour le corps ET les titres — les quatre polices
+  étaient chargées par `layout.tsx`, payées en octets, et jamais appliquées.
+  Contrôle de non-régression sur `/demo/barbershop`, `/demo/restaurant`,
+  `/demo/ines-garden` à 1280 px et 390 px : **aucun débordement nouveau**
+  (le seul relevé — le bandeau défilant d'Ines Garden et le ruban de démo à
+  390 px — existe **à l'identique** sur la production actuelle, donc antérieur).
+  ⚠️ **Changement visuel volontaire sur TOUT le site public et les 12 démos.**
+- **2026-09-03 · mise en service de la synchro** — pas de `crontab` sur cette
+  machine : la boucle horaire est un **service Docker** (`portal-sync`,
+  `curlimages/curl`), démarré par `update.sh`. `scripts/portal-sync.sh` reste
+  pour les relances manuelles depuis l'hôte.
+- **2026-09-03 · passe mobile (390 px)** — barre d'application réduite aux
+  icônes sous 680 px, en-tête de calendrier qui passe à la ligne, pastilles de
+  jour pleines. Débordement horizontal ramené de 422 px à 390 px : **zéro**.
+- **2026-09-03 · incident sans rapport** — le conteneur `atelier-vitrine` était
+  `Exited (0)` en cours de session (arrêt propre, cause inconnue, logs pollués
+  par des sondes de robots sur des Server Actions). **Redémarré** ; le
+  déploiement de l'étape 11 le remplace de toute façon.

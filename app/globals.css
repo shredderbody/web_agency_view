@@ -47,6 +47,19 @@
   --shadow-sm: 0 1px 2px oklch(0.235 0.018 55 / 0.06);
   --shadow: 0 12px 30px oklch(0.235 0.018 55 / 0.09);
   --shadow-lg: 0 30px 70px oklch(0.235 0.018 55 / 0.16);
+
+  /* ── Alias de polices ──────────────────────────────────────────────────────
+     `app/layout.tsx` expose --font-bricolage / --font-hanken / --font-anton /
+     --font-marcellus (next/font). Tout le CSS, lui, raisonne en RÔLES :
+     --font-display, --font-body, --font-elegant, --font-barber. Le pont entre
+     les deux manquait : chaque `font-family: var(--font-display)` retombait sur
+     une variable indéfinie, donc sur la pile sans-serif par défaut de la base
+     Tailwind. Les quatre polices étaient chargées, payées, et jamais appliquées.
+     Anomalie signalée dans docs/DESIGN.md ; corrigée ici. */
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-elegant: var(--font-marcellus), ui-serif, Georgia, serif;
+  --font-barber: var(--font-anton), ui-sans-serif, system-ui, sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

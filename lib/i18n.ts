@@ -127,6 +127,7 @@ type UI = {
     rights: string;
     legal: string;
     privacy: string;
+    clientArea: string;
   };
   notFound: { code: string; titleLead: string; titleAccent: string; body: string; home: string; demos: string };
   demoIndex: { back: string; devis: string; kicker: string; title: string; body: string; visit: string };
@@ -365,6 +366,7 @@ export const ui: Record<Lang, UI> = {
       rights: "Atelier Vitrine. Conçu à la main, à Paris.",
       legal: "Mentions légales",
       privacy: "Confidentialité",
+      clientArea: "Espace client",
     },
     notFound: {
       code: "Erreur 404",
@@ -616,6 +618,7 @@ export const ui: Record<Lang, UI> = {
       rights: "Atelier Vitrine. Handcrafted in Paris.",
       legal: "Legal notice",
       privacy: "Privacy",
+      clientArea: "Client area",
     },
     notFound: {
       code: "Error 404",

@@ -131,6 +131,14 @@ info "Replacing web container (public entrypoint left running)…"
 $DC up -d --no-deps --force-recreate web
 ok "web container swapped"
 
+# Boucle de synchronisation du suivi (espace client). Séparée du web pour que
+# son redémarrage ne coupe jamais le site. Voir docker-compose.yml : sans elle,
+# l'archive de consommation prend du retard et la rétention Vapi de 14 jours
+# finit par créer un trou définitif dans les graphes.
+info "Starting portal-sync loop…"
+$DC up -d --no-deps portal-sync 2>/dev/null && ok "portal-sync running" \
+  || warn "portal-sync could not start — check: $DC logs portal-sync"
+
 if [[ "$DEPLOY_MODE" == "caddy" ]]; then
   # ── Caddy mode ──────────────────────────────────────────────────────────────
   # The host Caddy already reverse-proxies $DOMAIN → 127.0.0.1:3010. We don't

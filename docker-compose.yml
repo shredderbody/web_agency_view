@@ -47,6 +47,37 @@ services:
       retries: 5
       start_period: 30s
 
+  # ── Synchronisation du suivi (espace client) ────────────────────────────────
+  #  Projette les lignes brutes de demo_bookings vers le journal d'actions, et
+  #  archive la consommation Vapi dans demo_usage_daily.
+  #
+  #  POURQUOI UN SERVICE À PART, et pas seulement le bouton « Synchroniser » de
+  #  l'espace admin : le plan Vapi ne conserve que **14 jours** d'historique
+  #  d'appels. Passé ce délai l'API refuse la requête et la consommation de ces
+  #  jours-là est perdue définitivement. Cette boucle horaire est la seule
+  #  garantie que l'archive ne prenne jamais de retard.
+  #
+  #  Pas de cron sur cette machine (crontab absent) : la boucle vit donc dans le
+  #  déploiement, part avec `update.sh` et se voit dans `docker compose ps`.
+  portal-sync:
+    image: curlimages/curl:latest
+    container_name: atelier-vitrine-sync
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_healthy
+    env_file:
+      - .env
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      'while true; do
+         curl -s --max-time 180 -X POST
+           -H "x-portal-sync-secret: $${PORTAL_SYNC_SECRET}"
+           http://web:3010/api/portal/sync
+         | head -c 400; echo;
+         sleep 3600;
+       done'
+
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: atelier-vitrine-tunnel

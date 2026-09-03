@@ -1,0 +1,469 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ESPACE CLIENT — feuille de style dédiée (/espace/*).
+
+   Registre PRODUIT, pas marque. Le site public d'Atelier Vitrine cherche à
+   séduire ; ici, l'utilisateur est DANS UNE TÂCHE : « combien j'ai consommé,
+   qui a réservé, qu'est-ce qui a bougé ». L'interface doit disparaître derrière
+   la tâche. Donc, par rapport à `globals.css` :
+
+     • UNE seule famille (Hanken Grotesk) partout, Bricolage réservé au logotype.
+       Pas de police display dans un libellé de bouton ou une cellule de tableau.
+     • Échelle de corps FIXE en rem, pas de `clamp()` fluide : sur un tableau de
+       bord, un titre qui rétrécit dans un panneau étroit est un défaut, pas une
+       adaptation.
+     • Stratégie couleur RETENUE : le vermillon ne sert QU'aux actions primaires
+       et à la sélection courante. Jamais en décoration. Les couleurs de statut
+       forment un vocabulaire séparé et réservé.
+     • Une seconde couche neutre (`--esp-bar`, encre profonde) pour la barre
+       d'application, distincte de la surface de contenu.
+
+   Tout est préfixé `esp-` et vit sous `.esp` : aucune interférence avec les
+   vitrines de démo ni avec le site public.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.esp {
+  /* Surfaces — reprises des tokens de marque pour rester chez soi. */
+  --esp-canvas: oklch(0.972 0.012 84);
+  --esp-surface: oklch(0.995 0.004 86);
+  --esp-surface-2: oklch(0.958 0.014 80);
+  --esp-bar: oklch(0.235 0.02 58);
+  --esp-bar-ink: oklch(0.93 0.012 84);
+
+  /* Encres — vérifiées : --esp-ink 13.9:1 et --esp-ink-2 6.4:1 sur la surface. */
+  --esp-ink: oklch(0.235 0.018 55);
+  --esp-ink-2: oklch(0.44 0.022 55);
+  --esp-ink-3: oklch(0.565 0.02 60);
+
+  --esp-line: oklch(0.235 0.018 55 / 0.13);
+  --esp-line-2: oklch(0.235 0.018 55 / 0.26);
+
+  /* Accent — actions primaires et sélection courante UNIQUEMENT. */
+  --esp-accent: oklch(0.605 0.2 33);
+  --esp-accent-deep: oklch(0.5 0.18 32);
+  --esp-accent-soft: oklch(0.605 0.2 33 / 0.1);
+
+  /* Séries de données — palette catégorielle validée sur la surface crème
+     (validate_palette.js : ΔE protan 23,2 · normal 29,6 · contraste ≥ 3:1).
+     Volontairement DISTINCTE de l'accent : une barre de graphe n'est pas un
+     bouton, elle ne doit pas se lire comme une action. */
+  --esp-voice: oklch(0.5 0.13 250);
+  --esp-voice-soft: oklch(0.5 0.13 250 / 0.14);
+  --esp-text: oklch(0.66 0.12 62);
+  --esp-text-soft: oklch(0.66 0.12 62 / 0.16);
+
+  /* Statuts — vocabulaire RÉSERVÉ, jamais recyclé en couleur de série.
+     Toujours accompagnés de leur libellé : jamais la couleur seule. */
+  --esp-ok: oklch(0.5 0.11 155);
+  --esp-ok-bg: oklch(0.5 0.11 155 / 0.12);
+  --esp-wait: oklch(0.58 0.12 78);
+  --esp-wait-bg: oklch(0.58 0.12 78 / 0.14);
+  --esp-off: oklch(0.55 0.015 60);
+  --esp-off-bg: oklch(0.55 0.015 60 / 0.12);
+  --esp-bad: oklch(0.52 0.19 28);
+  --esp-bad-bg: oklch(0.52 0.19 28 / 0.12);
+
+  --esp-r: 0.55rem;
+  --esp-r-lg: 0.9rem;
+  --esp-shadow: 0 10px 30px oklch(0.235 0.018 55 / 0.1);
+  --esp-shadow-sm: 0 2px 8px oklch(0.235 0.018 55 / 0.08);
+
+  /* Échelle de z réelle, nommée. Jamais de 999. */
+  --z-sticky: 20;
+  --z-pop: 40;
+  --z-toast: 60;
+
+  --esp-fast: 150ms cubic-bezier(0.25, 1, 0.5, 1);
+  --esp-med: 220ms cubic-bezier(0.25, 1, 0.5, 1);
+
+  font-family: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--esp-ink);
+  background: var(--esp-canvas);
+  min-height: 100dvh;
+  font-feature-settings: "ss01", "cv01", "tnum";
+}
+
+.esp *, .esp *::before, .esp *::after { box-sizing: border-box; }
+.esp :focus-visible { outline: 2px solid var(--esp-accent); outline-offset: 2px; border-radius: 4px; }
+
+/* ── Typographie ─────────────────────────────────────────────────────────── */
+
+.esp-h1 { font-size: 1.5rem;   font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin: 0; text-wrap: balance; }
+.esp-h2 { font-size: 1.0625rem; font-weight: 650; letter-spacing: -0.012em; line-height: 1.3; margin: 0; }
+.esp-h3 { font-size: 0.9375rem; font-weight: 650; letter-spacing: -0.008em; margin: 0; }
+.esp-lead { font-size: 0.9375rem; color: var(--esp-ink-2); margin: 0; max-width: 68ch; text-wrap: pretty; }
+.esp-small { font-size: 0.8125rem; color: var(--esp-ink-2); }
+.esp-micro { font-size: 0.75rem; color: var(--esp-ink-3); }
+.esp-num { font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.esp-wordmark { font-family: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif; font-weight: 700; letter-spacing: -0.03em; }
+
+/* ── Coquille ────────────────────────────────────────────────────────────── */
+
+.esp-shell { display: flex; flex-direction: column; min-height: 100dvh; }
+.esp-wrap { width: 100%; max-width: 1180px; margin-inline: auto; padding-inline: clamp(1rem, 3vw, 2rem); }
+
+.esp-bar {
+  position: sticky; top: 0; z-index: var(--z-sticky);
+  background: var(--esp-bar); color: var(--esp-bar-ink);
+}
+.esp-bar-in { display: flex; align-items: center; gap: 0.75rem; height: 3.5rem; }
+.esp-bar a { color: inherit; }
+.esp-bar-brand { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9375rem; white-space: nowrap; flex: none; }
+.esp-bar-sep { width: 1px; height: 1.25rem; background: oklch(1 0 0 / 0.18); flex: none; }
+.esp-bar-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.esp-bar-spacer { flex: 1 1 auto; }
+
+.esp-bar-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  height: 2rem; padding: 0 0.7rem; border-radius: var(--esp-r);
+  font: inherit; font-size: 0.8125rem; font-weight: 550;
+  color: var(--esp-bar-ink); background: oklch(1 0 0 / 0.09);
+  border: 1px solid oklch(1 0 0 / 0.14); cursor: pointer;
+  transition: background var(--esp-fast), border-color var(--esp-fast);
+}
+.esp-bar-btn:hover { background: oklch(1 0 0 / 0.17); border-color: oklch(1 0 0 / 0.26); }
+.esp-bar-btn:active { background: oklch(1 0 0 / 0.22); }
+.esp-bar-btn:disabled { opacity: 0.5; cursor: progress; }
+
+.esp-main { flex: 1 1 auto; padding-block: 1.75rem 4rem; }
+.esp-stack > * + * { margin-top: 1.5rem; }
+
+/* ── Onglets ─────────────────────────────────────────────────────────────── */
+
+.esp-tabs {
+  display: flex; gap: 0.15rem; overflow-x: auto; scrollbar-width: none;
+  border-bottom: 1px solid var(--esp-line); margin-bottom: 1.5rem;
+}
+.esp-tabs::-webkit-scrollbar { display: none; }
+.esp-tab {
+  position: relative; flex: none; padding: 0.6rem 0.85rem 0.7rem;
+  font: inherit; font-size: 0.875rem; font-weight: 550; color: var(--esp-ink-2);
+  background: none; border: 0; cursor: pointer; white-space: nowrap;
+  transition: color var(--esp-fast);
+}
+.esp-tab:hover { color: var(--esp-ink); }
+.esp-tab::after {
+  content: ""; position: absolute; left: 0.5rem; right: 0.5rem; bottom: -1px; height: 2px;
+  background: var(--esp-accent); border-radius: 2px 2px 0 0;
+  transform: scaleX(0); transition: transform var(--esp-med);
+}
+.esp-tab[aria-selected="true"] { color: var(--esp-ink); }
+.esp-tab[aria-selected="true"]::after { transform: scaleX(1); }
+.esp-tab-count {
+  margin-left: 0.4rem; font-size: 0.75rem; font-weight: 600;
+  color: var(--esp-ink-3); font-variant-numeric: tabular-nums;
+}
+
+/* ── Panneaux ────────────────────────────────────────────────────────────── */
+
+.esp-panel {
+  background: var(--esp-surface); border: 1px solid var(--esp-line);
+  border-radius: var(--esp-r-lg);
+}
+.esp-panel-head {
+  display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap;
+  padding: 1rem 1.15rem 0.85rem;
+}
+/* Le dernier élément d'un en-tête de panneau va à droite ; les autres suivent
+   le titre. Une règle, pas une exception par panneau. */
+.esp-panel-head > :last-child:not(:first-child) { margin-left: auto; }
+.esp-panel-body { padding: 0 1.15rem 1.15rem; }
+.esp-panel-body-flush { padding: 0 0 0.4rem; }
+
+/* ── Tuiles de chiffres ──────────────────────────────────────────────────── */
+
+.esp-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); gap: 0.75rem; }
+.esp-tile {
+  background: var(--esp-surface); border: 1px solid var(--esp-line);
+  border-radius: var(--esp-r-lg); padding: 0.9rem 1rem 1rem;
+  display: flex; flex-direction: column; gap: 0.15rem;
+}
+.esp-tile-k {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--esp-ink-2);
+}
+.esp-tile-dot { width: 0.5rem; height: 0.5rem; border-radius: 2px; flex: none; }
+.esp-tile-v { font-size: 1.625rem; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.esp-tile-u { font-size: 0.9375rem; font-weight: 600; color: var(--esp-ink-2); margin-left: 0.15rem; }
+.esp-tile-s { font-size: 0.75rem; color: var(--esp-ink-3); }
+
+/* ── Graphe de consommation ──────────────────────────────────────────────── */
+
+.esp-chart { position: relative; }
+.esp-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.esp-chart-grid { stroke: var(--esp-line); stroke-width: 1; }
+.esp-chart-axis { fill: var(--esp-ink-3); font-size: 10px; font-variant-numeric: tabular-nums; }
+.esp-chart-hit { fill: transparent; cursor: pointer; }
+.esp-chart-hit:hover + .esp-chart-band, .esp-chart-hit:focus-visible + .esp-chart-band { opacity: 1; }
+.esp-chart-band { fill: var(--esp-ink); opacity: 0; transition: opacity var(--esp-fast); pointer-events: none; }
+.esp-chart-band.is-on { opacity: 0.05; }
+
+.esp-tip {
+  position: absolute; z-index: var(--z-pop); pointer-events: none;
+  background: var(--esp-bar); color: var(--esp-bar-ink);
+  border-radius: var(--esp-r); padding: 0.5rem 0.65rem;
+  font-size: 0.75rem; line-height: 1.5; box-shadow: var(--esp-shadow);
+  white-space: nowrap; transform: translate(-50%, calc(-100% - 10px));
+}
+.esp-tip-d { font-weight: 650; margin-bottom: 0.2rem; }
+.esp-tip-r { display: flex; align-items: center; gap: 0.4rem; }
+.esp-tip-r b { font-variant-numeric: tabular-nums; margin-left: auto; padding-left: 0.9rem; }
+
+.esp-legend { display: flex; flex-wrap: wrap; gap: 0.9rem; font-size: 0.75rem; color: var(--esp-ink-2); }
+.esp-legend-i { display: inline-flex; align-items: center; gap: 0.35rem; }
+.esp-legend-s { width: 0.6rem; height: 0.6rem; border-radius: 2px; flex: none; }
+
+/* ── Pastilles de statut ─────────────────────────────────────────────────── */
+
+.esp-badge {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.15rem 0.45rem; border-radius: 0.35rem;
+  font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+}
+.esp-badge::before { content: ""; width: 0.4rem; height: 0.4rem; border-radius: 50%; background: currentColor; flex: none; }
+.esp-badge-ok   { color: var(--esp-ok);   background: var(--esp-ok-bg); }
+.esp-badge-wait { color: var(--esp-wait); background: var(--esp-wait-bg); }
+.esp-badge-off  { color: var(--esp-off);  background: var(--esp-off-bg); }
+.esp-badge-bad  { color: var(--esp-bad);  background: var(--esp-bad-bg); }
+.esp-badge-flat { background: transparent; padding-inline: 0; }
+
+/* ── Boutons ─────────────────────────────────────────────────────────────── */
+
+.esp-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  min-height: 2.125rem; padding: 0 0.8rem; border-radius: var(--esp-r);
+  font: inherit; font-size: 0.8125rem; font-weight: 600;
+  border: 1px solid var(--esp-line-2); background: var(--esp-surface); color: var(--esp-ink);
+  cursor: pointer; transition: background var(--esp-fast), border-color var(--esp-fast), color var(--esp-fast);
+}
+.esp-btn:hover { background: var(--esp-surface-2); border-color: var(--esp-ink-3); }
+.esp-btn:active { background: oklch(0.235 0.018 55 / 0.07); }
+.esp-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.esp-btn-primary { background: var(--esp-accent); border-color: var(--esp-accent); color: oklch(0.995 0.004 86); }
+.esp-btn-primary:hover { background: var(--esp-accent-deep); border-color: var(--esp-accent-deep); }
+.esp-btn-primary:active { background: var(--esp-accent-deep); }
+.esp-btn-danger { color: var(--esp-bad); border-color: oklch(0.52 0.19 28 / 0.3); }
+.esp-btn-danger:hover { background: var(--esp-bad-bg); border-color: var(--esp-bad); }
+.esp-btn-quiet { border-color: transparent; background: transparent; color: var(--esp-ink-2); }
+.esp-btn-quiet:hover { background: var(--esp-surface-2); border-color: var(--esp-line); color: var(--esp-ink); }
+.esp-btn-sm { min-height: 1.85rem; font-size: 0.75rem; padding: 0 0.6rem; }
+.esp-btn-block { width: 100%; }
+
+.esp-seg { display: inline-flex; padding: 0.15rem; gap: 0.15rem; background: var(--esp-surface-2); border: 1px solid var(--esp-line); border-radius: var(--esp-r); }
+.esp-seg-b {
+  padding: 0.3rem 0.65rem; border: 0; border-radius: calc(var(--esp-r) - 0.15rem);
+  font: inherit; font-size: 0.8125rem; font-weight: 550; color: var(--esp-ink-2);
+  background: transparent; cursor: pointer; transition: background var(--esp-fast), color var(--esp-fast);
+}
+.esp-seg-b:hover { color: var(--esp-ink); }
+.esp-seg-b[aria-pressed="true"] { background: var(--esp-surface); color: var(--esp-ink); box-shadow: var(--esp-shadow-sm); }
+
+/* ── Champs ──────────────────────────────────────────────────────────────── */
+
+.esp-field { display: flex; flex-direction: column; gap: 0.3rem; }
+.esp-label { font-size: 0.8125rem; font-weight: 600; color: var(--esp-ink); }
+.esp-input, .esp-select, .esp-textarea {
+  width: 100%; min-height: 2.5rem; padding: 0.5rem 0.7rem;
+  font: inherit; font-size: 0.875rem; color: var(--esp-ink);
+  background: var(--esp-surface); border: 1px solid var(--esp-line-2);
+  border-radius: var(--esp-r); transition: border-color var(--esp-fast), box-shadow var(--esp-fast);
+}
+.esp-textarea { min-height: 4.5rem; resize: vertical; line-height: 1.5; }
+.esp-input:hover, .esp-select:hover, .esp-textarea:hover { border-color: var(--esp-ink-3); }
+.esp-input:focus, .esp-select:focus, .esp-textarea:focus {
+  outline: none; border-color: var(--esp-accent); box-shadow: 0 0 0 3px var(--esp-accent-soft);
+}
+/* Le gris « élégant » d'un placeholder est le défaut le plus illisible du web :
+   on reste au-dessus de 4,5:1 comme pour du corps de texte. */
+.esp-input::placeholder, .esp-textarea::placeholder { color: var(--esp-ink-3); opacity: 1; }
+.esp-input:disabled { background: var(--esp-surface-2); color: var(--esp-ink-3); cursor: not-allowed; }
+
+/* ── Tableau ─────────────────────────────────────────────────────────────── */
+
+.esp-tablewrap { overflow-x: auto; }
+.esp-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+.esp-table th {
+  text-align: left; font-weight: 600; color: var(--esp-ink-2); font-size: 0.75rem;
+  padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--esp-line-2); white-space: nowrap;
+}
+.esp-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--esp-line); vertical-align: middle; }
+.esp-table tbody tr:last-child td { border-bottom: 0; }
+.esp-table tbody tr { transition: background var(--esp-fast); }
+.esp-table tbody tr:hover { background: var(--esp-surface-2); }
+.esp-table .n { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ── Calendrier ──────────────────────────────────────────────────────────── */
+
+.esp-cal-head { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; padding: 0 1.15rem 0.9rem; }
+.esp-cal-month { font-size: 0.9375rem; font-weight: 650; text-transform: capitalize; min-width: 9.5rem; }
+.esp-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid var(--esp-line); }
+.esp-cal-dow {
+  padding: 0.45rem 0.5rem; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.02em;
+  color: var(--esp-ink-3); text-align: center; text-transform: uppercase;
+  border-bottom: 1px solid var(--esp-line);
+}
+.esp-cal-cell {
+  position: relative; min-height: 5.25rem; padding: 0.35rem 0.4rem 0.4rem;
+  border-right: 1px solid var(--esp-line); border-bottom: 1px solid var(--esp-line);
+  background: none; font: inherit; text-align: left; color: inherit; cursor: pointer;
+  display: flex; flex-direction: column; gap: 0.2rem;
+  transition: background var(--esp-fast);
+}
+.esp-cal-cell:nth-child(7n + 7) { border-right: 0; }
+.esp-cal-cell:hover { background: var(--esp-surface-2); }
+.esp-cal-cell.is-out { background: var(--esp-surface-2); color: var(--esp-ink-3); }
+.esp-cal-cell.is-sel { background: var(--esp-accent-soft); }
+.esp-cal-cell.is-sel::after {
+  content: ""; position: absolute; inset: 0; border: 2px solid var(--esp-accent);
+  border-radius: 2px; pointer-events: none;
+}
+.esp-cal-n { font-size: 0.75rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.esp-cal-today { display: inline-grid; place-items: center; width: 1.35rem; height: 1.35rem; border-radius: 50%; background: var(--esp-ink); color: var(--esp-canvas); }
+.esp-cal-chip {
+  display: block; width: 100%; text-align: left;
+  font-size: 0.6875rem; line-height: 1.35; font-weight: 550;
+  padding: 0.1rem 0.3rem; border-radius: 0.25rem;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.esp-cal-more { font-size: 0.625rem; color: var(--esp-ink-3); font-weight: 600; }
+
+/* ── Cartes de réservation ───────────────────────────────────────────────── */
+
+.esp-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 0.75rem; }
+.esp-card {
+  background: var(--esp-surface); border: 1px solid var(--esp-line);
+  border-radius: var(--esp-r-lg); padding: 0.85rem 0.95rem;
+  display: flex; flex-direction: column; gap: 0.55rem;
+  transition: border-color var(--esp-fast), box-shadow var(--esp-fast);
+}
+.esp-card:hover { border-color: var(--esp-line-2); box-shadow: var(--esp-shadow-sm); }
+.esp-card.is-open { border-color: var(--esp-ink-3); box-shadow: var(--esp-shadow-sm); }
+.esp-card.is-cancelled .esp-card-when { text-decoration: line-through; text-decoration-thickness: 1px; color: var(--esp-ink-3); }
+.esp-card-top { display: flex; align-items: flex-start; gap: 0.6rem; }
+.esp-card-when { font-size: 0.9375rem; font-weight: 650; letter-spacing: -0.01em; }
+.esp-card-who { font-size: 0.8125rem; color: var(--esp-ink-2); }
+.esp-card-meta { display: flex; flex-wrap: wrap; gap: 0.35rem 0.8rem; font-size: 0.75rem; color: var(--esp-ink-2); }
+.esp-card-meta span { display: inline-flex; align-items: center; gap: 0.3rem; }
+.esp-card-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; padding-top: 0.15rem; }
+.esp-card-edit { display: flex; flex-direction: column; gap: 0.6rem; padding-top: 0.65rem; border-top: 1px solid var(--esp-line); }
+.esp-card-ref { font-size: 0.6875rem; color: var(--esp-ink-3); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+
+/* ── Journal ─────────────────────────────────────────────────────────────── */
+
+.esp-feed { display: flex; flex-direction: column; }
+.esp-feed-row {
+  display: grid; grid-template-columns: 6.5rem 1.35rem 1fr auto; gap: 0.7rem;
+  align-items: baseline; padding: 0.6rem 1.15rem;
+  border-bottom: 1px solid var(--esp-line);
+}
+.esp-feed-row:last-child { border-bottom: 0; }
+.esp-feed-when { font-size: 0.75rem; color: var(--esp-ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.esp-feed-mark {
+  width: 1.35rem; height: 1.35rem; border-radius: 50%; display: grid; place-items: center;
+  align-self: center; flex: none;
+}
+.esp-feed-mark svg { width: 0.8rem; height: 0.8rem; }
+.esp-feed-what { font-size: 0.8125rem; line-height: 1.5; }
+.esp-feed-what b { font-weight: 650; }
+.esp-feed-what .esp-arrow { color: var(--esp-ink-3); padding-inline: 0.2rem; }
+.esp-feed-who { font-size: 0.6875rem; color: var(--esp-ink-3); white-space: nowrap; }
+
+/* ── États vides ─────────────────────────────────────────────────────────── */
+
+.esp-empty { padding: 2.25rem 1.15rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.esp-empty-t { font-size: 0.9375rem; font-weight: 650; }
+.esp-empty-d { font-size: 0.8125rem; color: var(--esp-ink-2); max-width: 46ch; }
+
+/* ── Squelettes de chargement ────────────────────────────────────────────── */
+
+.esp-skel { background: var(--esp-surface-2); border-radius: var(--esp-r); animation: espPulse 1.4s ease-in-out infinite; }
+@keyframes espPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+/* ── Bandeau d'alerte ────────────────────────────────────────────────────── */
+
+.esp-note {
+  display: flex; gap: 0.6rem; align-items: flex-start;
+  padding: 0.7rem 0.9rem; border-radius: var(--esp-r);
+  border: 1px solid var(--esp-line-2); background: var(--esp-surface-2);
+  font-size: 0.8125rem; color: var(--esp-ink-2);
+}
+.esp-note svg { flex: none; margin-top: 0.15rem; }
+.esp-note-warn { border-color: oklch(0.58 0.12 78 / 0.4); background: var(--esp-wait-bg); color: var(--esp-ink); }
+.esp-note-bad { border-color: oklch(0.52 0.19 28 / 0.35); background: var(--esp-bad-bg); color: var(--esp-ink); }
+
+/* ── Écran de connexion ──────────────────────────────────────────────────── */
+
+.esp-login { display: grid; grid-template-columns: 1fr; min-height: 100dvh; }
+.esp-login-side {
+  display: none; position: relative; overflow: hidden;
+  background: var(--esp-bar); color: var(--esp-bar-ink);
+  padding: 3rem clamp(2rem, 4vw, 3.5rem);
+  flex-direction: column; justify-content: space-between;
+}
+.esp-login-side::before {
+  content: ""; position: absolute; inset: -30% -20% auto auto;
+  width: 26rem; height: 26rem; border-radius: 50%;
+  background: radial-gradient(circle, oklch(0.605 0.2 33 / 0.28), transparent 68%);
+}
+.esp-login-side > * { position: relative; }
+.esp-login-t { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.2; margin: 1.75rem 0 0.75rem; text-wrap: balance; }
+.esp-login-p { color: oklch(0.93 0.012 84 / 0.72); font-size: 0.9375rem; max-width: 46ch; text-wrap: pretty; }
+.esp-login-list { list-style: none; margin: 2rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.85rem; }
+.esp-login-li { display: flex; gap: 0.7rem; align-items: flex-start; font-size: 0.875rem; }
+.esp-login-ic {
+  width: 1.85rem; height: 1.85rem; border-radius: var(--esp-r); flex: none;
+  display: grid; place-items: center; background: oklch(1 0 0 / 0.1);
+}
+.esp-login-foot { font-size: 0.75rem; color: oklch(0.93 0.012 84 / 0.5); border-top: 1px solid oklch(1 0 0 / 0.12); padding-top: 1rem; }
+.esp-login-main { display: grid; place-items: center; padding: 2.5rem 1.25rem; }
+.esp-login-form { width: 100%; max-width: 25rem; display: flex; flex-direction: column; gap: 1.1rem; }
+.esp-login-err {
+  display: flex; gap: 0.5rem; align-items: flex-start;
+  padding: 0.6rem 0.75rem; border-radius: var(--esp-r);
+  background: var(--esp-bad-bg); color: var(--esp-bad);
+  border: 1px solid oklch(0.52 0.19 28 / 0.3); font-size: 0.8125rem; font-weight: 550;
+}
+.esp-code { font-variant-numeric: tabular-nums; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 650; }
+
+@media (min-width: 900px) {
+  .esp-login { grid-template-columns: 44% 1fr; }
+  .esp-login-side { display: flex; }
+}
+
+/* ── Adaptations ─────────────────────────────────────────────────────────── */
+
+/* Sous 680 px la barre d'application garde le contexte (chez qui suis-je) et
+   perd le décor : le logotype et les libellés de boutons partent, les icônes
+   restent. Une barre qui passe à la ligne n'est plus une barre. */
+@media (max-width: 680px) {
+  .esp-bar-in { gap: 0.45rem; }
+  .esp-bar-brand, .esp-bar-sep, .esp-bar-sm-hide { display: none; }
+  .esp-bar-btn { padding-inline: 0.5rem; }
+  .esp-cal-head .esp-micro { flex-basis: 100%; }
+}
+
+@media (max-width: 780px) {
+  .esp-feed-row { grid-template-columns: 4.5rem 1.35rem 1fr; row-gap: 0.15rem; }
+  .esp-feed-who { grid-column: 3; }
+  .esp-cal-cell { min-height: 3.75rem; padding: 0.25rem; }
+  /* Réduites à une pastille : le fond pâle disparaît, la couleur de la
+     réservation devient le point lui-même, sinon il est invisible. */
+  .esp-cal-chip { font-size: 0; padding: 0; width: 0.36rem; height: 0.36rem; margin-inline: auto; border-radius: 50%; background: currentColor !important; }
+  .esp-cal-more { display: none; }
+  .esp-bar-title { max-width: 9rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esp *, .esp *::before, .esp *::after {
+    animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Indicateur de traitement — la seule animation en boucle de l'espace. */
+.esp-spin { animation: espSpin 0.8s linear infinite; }
+@keyframes espSpin { to { transform: rotate(360deg); } }
+
+/* Le graphe seul, pour ancrer l'infobulle en pourcentage de sa hauteur. */
+.esp-chart-plot { position: relative; }

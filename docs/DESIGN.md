@@ -60,14 +60,17 @@ Le CSS (`globals.css`) référence des **alias logiques** : `--font-display`,
 `--font-body`, `--font-elegant`, `--font-barber` (ex. `.d-hero { font-family: var(--font-display) }`,
 `body { font-family: var(--font-body) }`).
 
-> ⚠️ **Ambiguïté vérifiée dans le code.** Ces alias `--font-display`, `--font-body`,
-> `--font-elegant`, `--font-barber` **ne sont définis nulle part** dans le dépôt
-> (ni `globals.css`, ni `layout.tsx`, ni un composant). Le `layout.tsx` n'expose que
-> `--font-bricolage`, `--font-hanken`, `--font-anton`, `--font-marcellus`. En l'état,
-> les déclarations `font-family: var(--font-display)` / `var(--font-body)` tombent sur
-> la police par défaut du navigateur. Il manque vraisemblablement un bloc d'aliasing
-> du type `--font-display: var(--font-bricolage)` (etc.) dans `:root`. À corriger pour
-> que la typographie de marque s'applique réellement.
+> ✅ **Anomalie corrigée le 2026-09-03.** Ces alias `--font-display`, `--font-body`,
+> `--font-elegant`, `--font-barber` n'étaient **définis nulle part** : chaque
+> `font-family: var(--font-display)` tombait sur une variable indéfinie, donc sur
+> la pile sans-serif par défaut de la base Tailwind. Les quatre polices étaient
+> chargées par `layout.tsx`, payées en octets, et jamais appliquées (vérifié au
+> navigateur sur la production : `ui-sans-serif, system-ui` partout, corps comme
+> titres). Un bloc d'aliasing a été ajouté dans `:root` de `app/globals.css` :
+> `--font-display: var(--font-bricolage)`, `--font-body: var(--font-hanken)`,
+> `--font-elegant: var(--font-marcellus)`, `--font-barber: var(--font-anton)`,
+> chacun avec sa pile de repli. La typographie de marque s'applique désormais
+> réellement sur tout le site et les douze vitrines.
 
 Échelle de titres (classes CSS, `clamp()` fluide) : `.d-hero`, `.d-xl`, `.d-lg`,
 `.d-md`. Accent italique : `.serif-accent` (poids 400, italique). Largeur de contenu :
@@ -89,7 +92,7 @@ consommée par les classes `.vit-*` et les variables locales
 | `resto` | vert nuit | bougie / sauge | `--font-elegant` (Marcellus) |
 | `plombier` | bleu clair / ardoise | bleu / cuivre | `--font-display` (Bricolage) |
 
-(La même remarque d'aliasing de polices s'applique aux `--vit-display`.)
+(Le même aliasing vaut pour `--vit-display` / `--vit-body`, corrigé en même temps.)
 
 ## Élévation & rayons
 
