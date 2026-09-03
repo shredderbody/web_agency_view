@@ -5,7 +5,8 @@
 > Mettre à jour ce fichier **après chaque étape**, jamais à la fin.
 
 Dernière mise à jour : 2026-09-03 — en service sur https://receptionniste.zerocall.io.
-**Chantier en cours : lot 2 (comptes de démonstration par vitrine), étapes 13 à 15.**
+**Lot 2 terminé et en service** (comptes de démonstration par vitrine + petits
+écrans, étapes 13 à 15) — commits `fb98add` et `424991c`.
 
 ## Demande
 
@@ -118,7 +119,12 @@ vitrine » (onze colonnes) cède la place à **une carte par vitrine sous 1040 p
         `/espace/admin` → 307 vers son propre espace). E-mail inconnu et mauvais
         mot de passe : même 401, même message.
   - [x] `.env`, `docs/ESPACE_CLIENT.md`, mémoire
-  - [ ] `npm run build`, commit, push, `bash update.sh`, vérif en production
+  - [x] `npm run build`, commit `424991c`, push, `bash update.sh`
+  - [x] **Vérifié EN PRODUCTION** : `barbershop@debug.com` → son espace 200,
+        `/espace/thai-viens-express` et `/espace/admin` → 307 vers son propre
+        espace ; parcours prospect complet au téléphone sur `openhouse-canggu`
+        (e-mail pré-rempli, connexion, ni badge Admin ni bouton Synchroniser) ;
+        côté agence, les 12 comptes listés, défilement interne du tableau 0 px.
 
 ### Détail utile à la reprise
 
