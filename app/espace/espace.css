@@ -293,6 +293,59 @@
 .esp-table tbody tr:hover { background: var(--esp-surface-2); }
 .esp-table .n { text-align: right; font-variant-numeric: tabular-nums; }
 
+/* ── Bascule tableau / cartes ────────────────────────────────────────────── */
+
+/* Un tableau de onze colonnes ne « devient » pas lisible sur un téléphone en
+   défilant : il faut une autre forme. Les deux formes sont dans le HTML, c'est
+   la CSS qui tranche — pas de mesure de fenêtre, donc pas de saut visible à
+   l'hydratation, et l'impression garde le tableau. */
+.esp-narrow-only { display: none; }
+@media (max-width: 1039px) {
+  .esp-wide-only { display: none; }
+  .esp-narrow-only { display: block; }
+}
+
+/* ── En-tête de page (titre + commande de période) ───────────────────────── */
+
+.esp-pagehead { display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
+.esp-pagehead > :last-child { margin-left: auto; }
+
+/* ── Cartes « par vitrine » (tablette et téléphone) ──────────────────────── */
+
+.esp-vitrines {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr)); gap: 0.75rem;
+}
+.esp-vitrine {
+  border: 1px solid var(--esp-line); border-radius: var(--esp-r-lg);
+  padding: 0.85rem 0.95rem; display: flex; flex-direction: column; gap: 0.75rem;
+  background: var(--esp-surface);
+}
+.esp-vitrine-top { display: flex; align-items: flex-start; gap: 0.55rem; }
+.esp-vitrine-dot { width: 0.6rem; height: 0.6rem; border-radius: 2px; flex: none; margin-top: 0.3rem; }
+.esp-vitrine-id { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.esp-vitrine-name { font-size: 0.9375rem; font-weight: 650; letter-spacing: -0.01em; }
+.esp-vitrine-ago { margin-left: auto; white-space: nowrap; padding-top: 0.15rem; }
+
+/* Les chiffres de la ligne de tableau, repliés en petites paires clé/valeur.
+   4 par ligne sur un téléphone courant, 7 d'affilée sur une tablette. */
+.esp-minis {
+  margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(4.25rem, 1fr));
+  gap: 0.5rem 0.35rem;
+}
+.esp-mini { display: flex; flex-direction: column; gap: 0.05rem; min-width: 0; }
+.esp-mini-k { font-size: 0.6875rem; color: var(--esp-ink-3); font-weight: 600; }
+.esp-mini-v {
+  margin: 0; font-size: 0.9375rem; font-weight: 600;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
+}
+.esp-mini-v.is-strong { color: var(--esp-accent-deep); font-weight: 700; }
+.esp-vitrine-foot {
+  display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+  padding-top: 0.65rem; border-top: 1px solid var(--esp-line);
+}
+.esp-vitrine-foot > :last-child { margin-left: auto; }
+
 /* ── Calendrier ──────────────────────────────────────────────────────────── */
 
 .esp-cal-head { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; padding: 0 1.15rem 0.9rem; }
@@ -452,6 +505,59 @@
   .esp-cal-chip { font-size: 0; padding: 0; width: 0.36rem; height: 0.36rem; margin-inline: auto; border-radius: 50%; background: currentColor !important; }
   .esp-cal-more { display: none; }
   .esp-bar-title { max-width: 9rem; }
+}
+
+/* Les tableaux qui restent (détail chiffré, fichier client) gardent leur forme
+   mais défilent : on resserre, et surtout on ÉPINGLE la première colonne — sans
+   elle, on lit des chiffres sans savoir de quelle ligne ils viennent. */
+@media (max-width: 700px) {
+  .esp-table { font-size: 0.78125rem; }
+  .esp-table th, .esp-table td { padding: 0.5rem 0.55rem; }
+  .esp-table th:first-child, .esp-table td:first-child {
+    position: sticky; left: 0; z-index: 1;
+    background: var(--esp-surface); box-shadow: 1px 0 0 var(--esp-line);
+  }
+  .esp-table tbody tr:hover td:first-child { background: var(--esp-surface-2); }
+  .esp-tablewrap { overscroll-behavior-x: contain; }
+}
+
+/* Tablette. Le tableau a déjà cédé la place aux cartes (1039 px) : ici on
+   resserre les marges verticales et on laisse le graphe respirer. */
+@media (max-width: 900px) {
+  .esp-main { padding-block: 1.25rem 3rem; }
+  .esp-stack > * + * { margin-top: 1.15rem; }
+  .esp-panel-head { padding: 0.9rem 1rem 0.75rem; }
+  .esp-panel-body { padding: 0 1rem 1rem; }
+  .esp-feed-row { padding-inline: 1rem; }
+  .esp-cal-head { padding-inline: 1rem; }
+}
+
+/* Téléphone. Trois partis pris :
+   — la commande de période passe pleine largeur, sous le titre : à droite d'un
+     titre qui fait trois lignes, elle est hors de portée du pouce ;
+   — les tuiles de chiffres se figent à deux colonnes (auto-fit n'en donnerait
+     qu'une sous 360 px, et quatre chiffres empilés font défiler pour rien) ;
+   — les cibles tactiles des petits boutons remontent à 2,25 rem (36 px). */
+@media (max-width: 560px) {
+  .esp-pagehead { align-items: stretch; gap: 0.85rem; }
+  .esp-pagehead > :last-child { margin-left: 0; }
+  .esp-seg { display: flex; width: 100%; }
+  .esp-seg-b { flex: 1 1 0; text-align: center; padding-block: 0.45rem; }
+
+  .esp-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+  .esp-tile { padding: 0.7rem 0.75rem 0.8rem; }
+  .esp-tile-v { font-size: 1.375rem; }
+  .esp-tile-s { font-size: 0.6875rem; }
+
+  .esp-vitrines { grid-template-columns: 1fr; }
+  .esp-minis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  .esp-btn-sm { min-height: 2.25rem; }
+  .esp-vitrine-foot .esp-btn { flex: 1 1 auto; }
+  .esp-vitrine-foot > :last-child { margin-left: 0; }
+
+  .esp-h1 { font-size: 1.375rem; }
+  .esp-note { font-size: 0.75rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

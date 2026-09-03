@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
-import { currentSession, isUsingFallbackSecret } from "@/lib/portal/auth";
+import {
+  currentSession, isTestAccountEnabled, isUsingFallbackSecret, testAccount,
+} from "@/lib/portal/auth";
 import { DEMO_TENANTS } from "@/lib/portal/registry";
 import LoginForm from "@/components/portal/LoginForm";
 
@@ -27,6 +29,7 @@ export default async function LoginPage({
       initialSlug={demo && options.some((o) => o.slug === demo) ? demo : ""}
       expired={expire === "1"}
       devSecret={isUsingFallbackSecret()}
+      testEmail={isTestAccountEnabled() ? testAccount().email : null}
     />
   );
 }

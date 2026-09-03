@@ -9,14 +9,21 @@ import PortalBar from "./PortalBar";
 import StatTiles from "./StatTiles";
 import UsageChart from "./UsageChart";
 import ActionFeed from "./ActionFeed";
-import { fmtAgo, fmtCost, fmtDayLabel, fmtDuration, fmtNumber } from "./format";
+import { fmtAgo, fmtCost, fmtDayLabel, fmtDuration } from "./format";
 
 /* Vision administrateur : les douze démos d'un coup d'œil, la consommation
    consolidée, et le journal de TOUTES les actions.
 
    La colonne « code d'accès » est la raison pratique d'être de cet écran :
    quand un client demande comment entrer, la réponse est ici, copiable en un
-   clic — pas dans un fichier de configuration. */
+   clic — pas dans un fichier de configuration.
+
+   DEUX RENDUS pour « par vitrine », choisis en CSS (jamais en JavaScript : pas
+   de mesure de fenêtre, donc pas de saut à l'hydratation) :
+     • ≥ 1040 px — le tableau, onze colonnes comparables ligne à ligne ;
+     • en dessous — une CARTE par vitrine. Onze colonnes dans un défilement
+       horizontal sur téléphone, c'est un tableau qu'on ne lit jamais : le nom
+       de l'enseigne sort de l'écran dès la deuxième colonne. */
 
 const PERIODS = [
   { days: 7, label: "7 j" },
@@ -47,13 +54,34 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
   const totalUpcoming = data.rows.reduce((s, r) => s + r.upcoming, 0);
   const totalCustomers = data.rows.reduce((s, r) => s + r.customers, 0);
 
+  /** Durée d'appel formatée, ou tiret : même écriture dans le tableau et la carte. */
+  const durationOf = (seconds: number) => {
+    if (!seconds) return "—";
+    const d = fmtDuration(seconds);
+    return `${d.value}${d.unit}`;
+  };
+
+  /** Le bouton « code d'accès », identique dans les deux rendus. */
+  const codeButton = (slug: string, code: string) => (
+    <button
+      type="button" className="esp-btn esp-btn-sm esp-btn-quiet esp-code"
+      onClick={() => copy(slug, code)}
+      title="Copier le code d'accès"
+    >
+      {code}
+      {copied === slug
+        ? <Check size={12} aria-hidden style={{ color: "var(--esp-ok)" }} />
+        : <ClipboardCopy size={12} aria-hidden />}
+    </button>
+  );
+
   return (
     <div className="esp-shell">
-      <PortalBar title="Administration" subtitle="12 vitrines" isAdmin adminHome />
+      <PortalBar title="Administration" subtitle={`${data.rows.length} vitrines`} isAdmin adminHome />
 
       <main className="esp-main">
         <div className="esp-wrap esp-stack">
-          <div style={{ display: "flex", alignItems: "flex-end", gap: "1rem", flexWrap: "wrap" }}>
+          <div className="esp-pagehead">
             <div>
               <h1 className="esp-h1">Toutes les vitrines</h1>
               <p className="esp-lead" style={{ marginTop: "0.3rem" }}>
@@ -63,7 +91,7 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
                 {totalCustomers > 1 ? "s" : ""} au fichier.
               </p>
             </div>
-            <div className="esp-seg" style={{ marginLeft: "auto" }} role="group" aria-label="Période">
+            <div className="esp-seg" role="group" aria-label="Période">
               {PERIODS.map((p) => (
                 <button
                   key={p.days} type="button" className="esp-seg-b"
@@ -88,7 +116,7 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
           <section className="esp-panel">
             <header className="esp-panel-head">
               <h2 className="esp-h2">Consommation consolidée</h2>
-              <span className="esp-small">Les douze vitrines cumulées</span>
+              <span className="esp-small">Les {data.rows.length} vitrines cumulées</span>
             </header>
             <div className="esp-panel-body">
               <UsageChart days={data.usage.days} timezone="Europe/Paris" />
@@ -100,7 +128,9 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
               <h2 className="esp-h2">Par vitrine</h2>
               <span className="esp-small">Classées par activité sur la période</span>
             </header>
-            <div className="esp-tablewrap">
+
+            {/* ── Grand écran : le tableau comparatif ─────────────────────── */}
+            <div className="esp-tablewrap esp-wide-only">
               <table className="esp-table">
                 <thead>
                   <tr>
@@ -119,7 +149,6 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
                 </thead>
                 <tbody>
                   {sorted.map((r) => {
-                    const dur = fmtDuration(r.usage.call_seconds);
                     const quiet = r.actions === 0 && r.usage.calls === 0 && r.usage.chats === 0;
                     return (
                       <tr key={r.tenant.slug}>
@@ -141,7 +170,7 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
                           <span className="esp-micro">{r.tenant.city}</span>
                         </td>
                         <td className="n">{r.usage.calls || "—"}</td>
-                        <td className="n">{r.usage.call_seconds ? `${dur.value}${dur.unit}` : "—"}</td>
+                        <td className="n">{durationOf(r.usage.call_seconds)}</td>
                         <td className="n">{r.usage.chat_messages || "—"}</td>
                         <td className="n" style={{ fontWeight: 600 }}>{r.actions || "—"}</td>
                         <td className="n">{r.upcoming || "—"}</td>
@@ -150,18 +179,7 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
                         <td className="esp-small" style={{ color: quiet ? "var(--esp-ink-3)" : undefined }}>
                           {r.lastActionAt ? fmtAgo(r.lastActionAt) : "jamais"}
                         </td>
-                        <td>
-                          <button
-                            type="button" className="esp-btn esp-btn-sm esp-btn-quiet esp-code"
-                            onClick={() => copy(r.tenant.slug, r.accessCode)}
-                            title="Copier le code d'accès"
-                          >
-                            {r.accessCode}
-                            {copied === r.tenant.slug
-                              ? <Check size={12} aria-hidden style={{ color: "var(--esp-ok)" }} />
-                              : <ClipboardCopy size={12} aria-hidden />}
-                          </button>
-                        </td>
+                        <td>{codeButton(r.tenant.slug, r.accessCode)}</td>
                         <td>
                           <Link className="esp-btn esp-btn-sm" href={`/espace/${r.tenant.slug}`}>
                             Ouvrir <ArrowUpRight size={12} aria-hidden />
@@ -173,6 +191,67 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
                 </tbody>
               </table>
             </div>
+
+            {/* ── Tablette et téléphone : une carte par vitrine ───────────── */}
+            <div className="esp-panel-body esp-narrow-only">
+              <ul className="esp-vitrines">
+                {sorted.map((r) => {
+                  const quiet = r.actions === 0 && r.usage.calls === 0 && r.usage.chats === 0;
+                  const stats: { k: string; v: string; strong?: boolean }[] = [
+                    { k: "Appels", v: String(r.usage.calls || "—") },
+                    { k: "Durée", v: durationOf(r.usage.call_seconds) },
+                    { k: "Messages", v: String(r.usage.chat_messages || "—") },
+                    { k: "Actions", v: String(r.actions || "—"), strong: true },
+                    { k: "À venir", v: String(r.upcoming || "—") },
+                    { k: "Clients", v: String(r.customers || "—") },
+                    { k: "Coût", v: `${fmtCost(r.usage.call_cost + r.usage.chat_cost)} $` },
+                  ];
+                  return (
+                    <li key={r.tenant.slug} className="esp-vitrine">
+                      <div className="esp-vitrine-top">
+                        <span
+                          className="esp-vitrine-dot"
+                          aria-hidden
+                          style={{ background: r.tenant.accent }}
+                        />
+                        <span className="esp-vitrine-id">
+                          <span className="esp-vitrine-name">
+                            {r.tenant.business}
+                            {r.tenant.real && (
+                              <span className="esp-micro" title="Bâtie sur les données réelles d'un commerce"> réel</span>
+                            )}
+                          </span>
+                          <span className="esp-micro">{r.tenant.trade} · {r.tenant.city}</span>
+                        </span>
+                        <span
+                          className="esp-micro esp-vitrine-ago"
+                          style={{ color: quiet ? "var(--esp-ink-3)" : "var(--esp-ink-2)" }}
+                        >
+                          {r.lastActionAt ? fmtAgo(r.lastActionAt) : "jamais"}
+                        </span>
+                      </div>
+
+                      <dl className="esp-minis">
+                        {stats.map((s) => (
+                          <div key={s.k} className="esp-mini">
+                            <dt className="esp-mini-k">{s.k}</dt>
+                            <dd className={`esp-mini-v${s.strong ? " is-strong" : ""}`}>{s.v}</dd>
+                          </div>
+                        ))}
+                      </dl>
+
+                      <div className="esp-vitrine-foot">
+                        {codeButton(r.tenant.slug, r.accessCode)}
+                        <Link className="esp-btn esp-btn-sm" href={`/espace/${r.tenant.slug}`}>
+                          Ouvrir <ArrowUpRight size={12} aria-hidden />
+                        </Link>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
             <div className="esp-panel-body" style={{ paddingTop: "0.9rem" }}>
               <p className="esp-note">
                 <Gauge size={15} aria-hidden />

@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  AlertCircle, ArrowRight, CalendarCheck, KeyRound, Loader2, PhoneCall, ShieldCheck,
+  AlertCircle, ArrowRight, CalendarCheck, KeyRound, Loader2, Lock, Mail, PhoneCall,
+  ShieldCheck,
 } from "lucide-react";
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -12,40 +13,58 @@ import {
    composition en deux volets, même promesse à gauche, même formulaire compact
    à droite. Deux écarts assumés :
 
-     • Pas de Google OAuth ni de mot de passe : une démo n'a pas de compte
-       utilisateur, elle a un SLUG et un CODE D'ACCÈS (cf. lib/portal/auth.ts).
+     • Pas de Google OAuth : une démo n'a pas de compte utilisateur, elle a un
+       SLUG et un CODE D'ACCÈS (cf. lib/portal/auth.ts). Le second onglet,
+       « Identifiants », n'existe que pour le compte de test de l'agence, qui
+       ouvre directement l'espace d'administration.
      • Le choix de la démo est explicite (liste déroulante) : un client sait
        quelle vitrine est la sienne, et l'administrateur choisit « Administration ».
    ════════════════════════════════════════════════════════════════════════════ */
 
 type Option = { slug: string; label: string; city: string; accent: string };
 
+type Mode = "code" | "credentials";
+
 export default function LoginForm({
-  options, initialSlug, expired, devSecret,
+  options, initialSlug, expired, devSecret, testEmail,
 }: {
   options: Option[];
   initialSlug: string;
   expired: boolean;
   devSecret: boolean;
+  /** E-mail du compte de test, ou `null` si le compte est désactivé. */
+  testEmail: string | null;
 }) {
   const router = useRouter();
+  const [mode, setMode] = useState<Mode>("code");
   const [slug, setSlug] = useState(initialSlug);
   const [code, setCode] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(
     expired ? "Votre session a expiré. Reconnectez-vous." : null,
   );
   const [busy, setBusy] = useState(false);
 
+  const ready = mode === "code"
+    ? Boolean(slug && code.trim())
+    : Boolean(email.trim() && password);
+
+  const switchTo = (next: Mode) => {
+    setMode(next);
+    setError(null);
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!slug || !code.trim() || busy) return;
+    if (!ready || busy) return;
     setBusy(true);
     setError(null);
     try {
       const res = await fetch("/api/portal/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, code }),
+        body: JSON.stringify(mode === "code" ? { slug, code } : { email, password }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Connexion impossible.");
@@ -99,9 +118,34 @@ export default function LoginForm({
           <div>
             <h2 className="esp-h1">Accéder à votre espace</h2>
             <p className="esp-small" style={{ marginTop: "0.35rem" }}>
-              Choisissez votre vitrine, puis saisissez le code fourni par l&apos;agence.
+              {mode === "code"
+                ? "Choisissez votre vitrine, puis saisissez le code fourni par l'agence."
+                : "Compte de service de l'agence : ouvre l'espace d'administration."}
             </p>
           </div>
+
+          {testEmail && (
+            <div className="esp-tabs" style={{ marginBottom: 0 }} role="tablist">
+              <button
+                type="button"
+                role="tab"
+                className="esp-tab"
+                aria-selected={mode === "code"}
+                onClick={() => switchTo("code")}
+              >
+                Code d&apos;accès
+              </button>
+              <button
+                type="button"
+                role="tab"
+                className="esp-tab"
+                aria-selected={mode === "credentials"}
+                onClick={() => switchTo("credentials")}
+              >
+                Identifiants
+              </button>
+            </div>
+          )}
 
           {error && (
             <p className="esp-login-err" role="alert">
@@ -110,55 +154,112 @@ export default function LoginForm({
             </p>
           )}
 
-          <div className="esp-field">
-            <label className="esp-label" htmlFor="esp-slug">Votre vitrine</label>
-            <select
-              id="esp-slug"
-              className="esp-select"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              required
-            >
-              <option value="" disabled>Sélectionner…</option>
-              {options.map((o) => (
-                <option key={o.slug} value={o.slug}>
-                  {o.label} — {o.city}
-                </option>
-              ))}
-              <option value="admin">Administration — toutes les vitrines</option>
-            </select>
-          </div>
-
-          <div className="esp-field">
-            <label className="esp-label" htmlFor="esp-code">Code d&apos;accès</label>
-            <div style={{ position: "relative" }}>
-              <KeyRound
-                size={15}
-                aria-hidden
-                style={{
-                  position: "absolute", left: "0.7rem", top: "50%",
-                  transform: "translateY(-50%)", color: "var(--esp-ink-3)",
-                }}
-              />
-              <input
-                id="esp-code"
-                className="esp-input esp-code"
-                style={{ paddingLeft: "2rem" }}
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="XXXX-XXXX"
-                autoComplete="one-time-code"
-                spellCheck={false}
+          {mode === "code" ? (
+            <>
+            <div className="esp-field">
+              <label className="esp-label" htmlFor="esp-slug">Votre vitrine</label>
+              <select
+                id="esp-slug"
+                className="esp-select"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
                 required
-              />
+              >
+                <option value="" disabled>Sélectionner…</option>
+                {options.map((o) => (
+                  <option key={o.slug} value={o.slug}>
+                    {o.label} — {o.city}
+                  </option>
+                ))}
+                <option value="admin">Administration — toutes les vitrines</option>
+              </select>
             </div>
-          </div>
+
+            <div className="esp-field">
+              <label className="esp-label" htmlFor="esp-code">Code d&apos;accès</label>
+              <div style={{ position: "relative" }}>
+                <KeyRound
+                  size={15}
+                  aria-hidden
+                  style={{
+                    position: "absolute", left: "0.7rem", top: "50%",
+                    transform: "translateY(-50%)", color: "var(--esp-ink-3)",
+                  }}
+                />
+                <input
+                  id="esp-code"
+                  className="esp-input esp-code"
+                  style={{ paddingLeft: "2rem" }}
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="XXXX-XXXX"
+                  autoComplete="one-time-code"
+                  spellCheck={false}
+                  required
+                />
+              </div>
+            </div>
+            </>
+          ) : (
+            <>
+              <div className="esp-field">
+                <label className="esp-label" htmlFor="esp-email">E-mail</label>
+                <div style={{ position: "relative" }}>
+                  <Mail
+                    size={15}
+                    aria-hidden
+                    style={{
+                      position: "absolute", left: "0.7rem", top: "50%",
+                      transform: "translateY(-50%)", color: "var(--esp-ink-3)",
+                    }}
+                  />
+                  <input
+                    id="esp-email"
+                    type="email"
+                    className="esp-input"
+                    style={{ paddingLeft: "2rem" }}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={testEmail ?? "vous@exemple.com"}
+                    autoComplete="username"
+                    spellCheck={false}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="esp-field">
+                <label className="esp-label" htmlFor="esp-password">Mot de passe</label>
+                <div style={{ position: "relative" }}>
+                  <Lock
+                    size={15}
+                    aria-hidden
+                    style={{
+                      position: "absolute", left: "0.7rem", top: "50%",
+                      transform: "translateY(-50%)", color: "var(--esp-ink-3)",
+                    }}
+                  />
+                  <input
+                    id="esp-password"
+                    type="password"
+                    className="esp-input"
+                    style={{ paddingLeft: "2rem" }}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    required
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
           <button
             type="submit"
             className="esp-btn esp-btn-primary esp-btn-block"
             style={{ minHeight: "2.6rem" }}
-            disabled={busy || !slug || !code.trim()}
+            disabled={busy || !ready}
           >
             {busy ? <Loader2 size={15} className="esp-spin" aria-hidden /> : <>Entrer <ArrowRight size={15} aria-hidden /></>}
           </button>
@@ -175,7 +276,9 @@ export default function LoginForm({
           )}
 
           <p className="esp-micro" style={{ textAlign: "center" }}>
-            Code perdu&nbsp;? L&apos;agence le retrouve dans son espace d&apos;administration.
+            {mode === "code"
+              ? "Code perdu ? L'agence le retrouve dans son espace d'administration."
+              : `Compte de test : ${testEmail}`}
           </p>
         </form>
       </main>

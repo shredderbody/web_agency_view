@@ -109,6 +109,18 @@ Les codes sont **dérivés** de `PORTAL_SECRET` — rien à créer quand une dé
 s'ajoute — et l'espace administrateur les affiche, copiables en un clic. Le code
 administrateur ouvre tous les espaces (mode dépannage au téléphone).
 
+### Compte de test
+
+Une seule exception au « pas de comptes utilisateurs » : l'onglet **Identifiants**
+de l'écran de connexion, e-mail + mot de passe, qui ouvre directement
+`/espace/admin`. Il sert aux essais et aux démonstrations — on ne dicte pas un
+code dérivé à quelqu'un qui veut juste voir l'espace d'administration.
+
+Par défaut `test@debug.com` / `Test123!` ; surchargeable par `PORTAL_TEST_EMAIL`
+et `PORTAL_TEST_PASSWORD`. `PORTAL_TEST_ACCOUNT=off` retire l'onglet **et** ferme
+la route : c'est le geste à faire le jour où l'espace sert à de vrais clients
+payants.
+
 ## Variables d'environnement
 
 | Variable | Rôle |
@@ -116,6 +128,9 @@ administrateur ouvre tous les espaces (mode dépannage au téléphone).
 | `PORTAL_SECRET` | Signature du cookie **et** graine des codes d'accès. La changer révoque tout. |
 | `PORTAL_ADMIN_CODE` | Code administrateur explicite. Vide = code dérivé. |
 | `PORTAL_CODE_<SLUG>` | Fige le code d'un client (slug en majuscules, tirets → `_`). |
+| `PORTAL_TEST_ACCOUNT` | `off` désactive le compte de test. Toute autre valeur (ou absente) le laisse actif. |
+| `PORTAL_TEST_EMAIL` | E-mail du compte de test. Défaut : `test@debug.com`. |
+| `PORTAL_TEST_PASSWORD` | Mot de passe du compte de test. Défaut : `Test123!`. |
 | `PORTAL_SYNC_SECRET` | En-tête `x-portal-sync-secret` de `POST /api/portal/sync`. |
 | `DEMO_DB_SUPABASE_URL` | Projet Supabase des réservations (**GritUnited**, celui où n8n écrit). |
 | `DEMO_DB_SUPABASE_SERVICE_ROLE_KEY` | Clé `service_role` du même projet. Serveur uniquement. |
@@ -129,7 +144,7 @@ n'est pas là que le workflow n8n écrit.
 
 | Route | Rôle |
 |---|---|
-| `POST /api/portal/login` | `{ slug, code }` → cookie de session |
+| `POST /api/portal/login` | `{ slug, code }` — ou `{ email, password }` pour le compte de test → cookie de session |
 | `POST /api/portal/logout` | Efface le cookie |
 | `GET /api/portal/actions` | Journal d'un tenant, d'une réservation, ou global (admin) |
 | `GET /api/portal/reservations` | Liste des réservations d'un tenant |
@@ -139,6 +154,20 @@ n'est pas là que le workflow n8n écrit.
 Options de synchro : `?slug=<slug>` (un seul tenant), `?reprocess=1` (rejoue tout
 l'historique brut — sûr, le filet `tool_call_id` évite les doublons),
 `?usage=0` (projection seule).
+
+## Adaptation aux écrans
+
+Un seul point mérite d'être connu : le tableau « par vitrine » de l'espace
+administrateur (onze colonnes) **cède la place à une carte par vitrine sous
+1040 px**. Les deux formes sont dans le HTML, la CSS tranche — pas de mesure de
+fenêtre, donc pas de saut à l'hydratation, et l'impression garde le tableau.
+
+Le reste suit : tuiles à deux colonnes sous 560 px, commande de période pleine
+largeur, première colonne des tableaux restants épinglée pendant le défilement
+latéral, et le graphe de consommation dessiné à la **largeur réelle** de son
+conteneur (échelle 1:1) — un `viewBox` fixe réduit sur téléphone rendrait les
+étiquettes d'axe illisibles. Le graphe répond aussi à l'appui du doigt, le
+survol n'existant pas sur mobile.
 
 ## Design
 

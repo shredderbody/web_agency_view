@@ -96,6 +96,44 @@ export function verifyAccess(slug: string, code: string): PortalRole | null {
   return safeEqual(clean, expected) ? "client" : null;
 }
 
+/* ── Compte de test (email + mot de passe) ──────────────────────────────────
+   Le portail ne connaît que des SLUGS et des CODES — sauf UN compte de service,
+   destiné aux essais et aux démonstrations de l'espace d'administration : on ne
+   dicte pas un code dérivé à quelqu'un qui veut juste ouvrir /espace/admin.
+
+   Identifiants par défaut : test@debug.com / Test123!, surchargeables par
+   PORTAL_TEST_EMAIL et PORTAL_TEST_PASSWORD. Poser PORTAL_TEST_ACCOUNT=off
+   ferme la porte (une mise en production « pour de vrai » devrait le faire).  */
+
+const TEST_EMAIL_DEFAULT = "test@debug.com";
+const TEST_PASSWORD_DEFAULT = "Test123!";
+
+export function isTestAccountEnabled(): boolean {
+  return (process.env.PORTAL_TEST_ACCOUNT || "").trim().toLowerCase() !== "off";
+}
+
+/** Identifiants du compte de test, tels qu'affichés sur l'écran de connexion. */
+export function testAccount(): { email: string; password: string } {
+  return {
+    email: (process.env.PORTAL_TEST_EMAIL || TEST_EMAIL_DEFAULT).trim().toLowerCase(),
+    password: process.env.PORTAL_TEST_PASSWORD || TEST_PASSWORD_DEFAULT,
+  };
+}
+
+/**
+ * Vérifie un couple email / mot de passe. Renvoie `admin` — ce compte existe
+ * précisément pour voir l'espace d'administration — ou `null`.
+ * Les deux comparaisons sont faites (pas de court-circuit sur l'email) pour ne
+ * pas révéler au chrono quel identifiant est le bon.
+ */
+export function verifyCredentials(email: string, password: string): PortalRole | null {
+  if (!isTestAccountEnabled()) return null;
+  const account = testAccount();
+  const emailOk = safeEqual(email.trim().toLowerCase(), account.email);
+  const passwordOk = safeEqual(password, account.password);
+  return emailOk && passwordOk ? "admin" : null;
+}
+
 /* ── Jeton de session ─────────────────────────────────────────────────────── */
 
 export function issueToken(slug: string, role: PortalRole): string {

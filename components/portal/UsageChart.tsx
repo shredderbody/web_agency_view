@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { UsageDay } from "@/lib/portal/types";
 import { fmtDayLabel, fmtDuration, fmtNumber } from "./format";
 
@@ -18,19 +18,39 @@ import { fmtDayLabel, fmtDuration, fmtNumber } from "./format";
    distincte du vermillon de marque, réservé aux actions.
    ════════════════════════════════════════════════════════════════════════════ */
 
-/* Le repère est FIXE (760 × 180) quelle que soit la période : c'est ce qui
-   garde le même rapport hauteur/largeur à 7, 30 ou 90 jours. Ce sont les
-   colonnes qui s'amincissent, pas le graphe qui s'étire. */
-const W = 760;
-const H = 150;
+/* Le repère suit la LARGEUR RÉELLE du conteneur, en pixels CSS : un viewBox
+   fixe de 760 px réduit sur un téléphone divise tout par deux, y compris les
+   étiquettes d'axe — un axe à 4,5 px ne se lit pas. Ici l'échelle reste 1:1 à
+   toutes les tailles : ce sont les colonnes qui s'amincissent, jamais le texte.
+   Le repli à 760 couvre le premier rendu (serveur) avant la mesure. */
+const W_FALLBACK = 760;
 const PAD_T = 12;
 const PAD_B = 22;
 const PAD_L = 30;
+
+/* Demi-largeur estimée de l'infobulle, pour la garder dans le cadre. */
+const TIP_HALF = 88;
 
 type Props = { days: UsageDay[]; timezone: string };
 
 export default function UsageChart({ days }: Props) {
   const [hover, setHover] = useState<number | null>(null);
+  const plotRef = useRef<HTMLDivElement>(null);
+  const [W, setW] = useState(W_FALLBACK);
+
+  useEffect(() => {
+    const el = plotRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(([entry]) => {
+      setW(Math.max(260, Math.round(entry.contentRect.width)));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // Plus haut sur téléphone : moins large, donc plus étroit — sans quoi le
+  // graphe devient une bande écrasée où deux colonnes ne se distinguent plus.
+  const H = W < 520 ? 180 : 150;
 
   const { max, ticks, bw, gap, slot } = useMemo(() => {
     const peak = Math.max(1, ...days.map((d) => d.calls + d.chats));
@@ -44,7 +64,7 @@ export default function UsageChart({ days }: Props) {
     // colonne comme une journée distincte, sans les transformer en filaments.
     const bw = Math.max(3, slot * 0.72);
     return { max: top, ticks: t, bw, gap: slot - bw, slot };
-  }, [days]);
+  }, [days, W]);
 
   const plotH = H - PAD_T - PAD_B;
   const y = (v: number) => PAD_T + plotH - (v / max) * plotH;
@@ -63,10 +83,11 @@ export default function UsageChart({ days }: Props) {
         </span>
       </div>
 
-      <div className="esp-chart-plot">
+      <div className="esp-chart-plot" ref={plotRef}>
       <svg
         viewBox={`0 0 ${W} ${H}`}
-        style={{ width: "100%", height: "auto" }}
+        style={{ width: "100%", height: `${H}px`, touchAction: "pan-y" }}
+        onPointerLeave={() => setHover(null)}
         role="img"
         aria-label={`Consommation quotidienne sur ${days.length} jours. Détail chiffré dans le tableau qui suit.`}
       >
@@ -110,18 +131,31 @@ export default function UsageChart({ days }: Props) {
                 x={x - gap / 2} y={0} width={slot} height={H}
                 onMouseEnter={() => setHover(i)}
                 onMouseLeave={() => setHover((h) => (h === i ? null : h))}
+                /* Le survol n'existe pas au doigt : on prend aussi l'appui. */
+                onPointerDown={() => setHover(i)}
               />
             </g>
           );
         })}
 
         {days.map((d, i) => {
-          // Une étiquette d'axe tous les n jours : la date de fin est toujours écrite.
-          const every = days.length > 45 ? 10 : days.length > 20 ? 5 : 2;
-          if (i % every !== 0 && i !== days.length - 1) return null;
-          const x = PAD_L + i * slot + bw / 2;
+          // Une étiquette d'axe tous les n jours : la date de fin est toujours
+          // écrite. Le pas se calcule sur la place réelle (44 px par étiquette),
+          // pas sur le nombre de jours — sinon elles se chevauchent en étroit.
+          const every = Math.max(2, Math.ceil(44 / slot));
+          const isLast = i === days.length - 1;
+          if (i % every !== 0 && !isLast) return null;
+          // Une étiquette qui viendrait toucher la dernière saute : la date de
+          // fin, elle, ne saute jamais.
+          if (!isLast && (days.length - 1 - i) * slot < 44) return null;
+          // La dernière est alignée à droite sur le bord du repère, sinon sa
+          // moitié déborde du panneau.
+          const x = isLast ? W : PAD_L + i * slot + bw / 2;
           return (
-            <text key={d.day} className="esp-chart-axis" x={x} y={H - 6} textAnchor="middle">
+            <text
+              key={d.day} className="esp-chart-axis"
+              x={x} y={H - 6} textAnchor={isLast ? "end" : "middle"}
+            >
               {d.day.slice(8)}/{d.day.slice(5, 7)}
             </text>
           );
@@ -132,7 +166,7 @@ export default function UsageChart({ days }: Props) {
         <div
           className="esp-tip"
           style={{
-            left: `${((PAD_L + hover * slot + bw / 2) / W) * 100}%`,
+            left: `${Math.min(Math.max(PAD_L + hover * slot + bw / 2, TIP_HALF), Math.max(TIP_HALF, W - TIP_HALF))}px`,
             top: `${(y(days[hover].calls + days[hover].chats) / H) * 100}%`,
           }}
         >
