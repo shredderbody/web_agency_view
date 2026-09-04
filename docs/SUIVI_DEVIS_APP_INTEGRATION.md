@@ -4,14 +4,19 @@
 > bas : l'état de chaque étape est à jour. Reprendre à la première étape `[ ]`.
 > Mettre à jour ce fichier **après chaque étape**, jamais à la fin.
 
-Dernière mise à jour : 2026-09-04 — 🚧 Étapes 1 à 14 faites. L'application à
-sept onglets est écrite, la dictée fonctionne de bout en bout, le build passe et
-la vérification locale est concluante. Reste à commiter, pousser, redéployer et
-documenter.
+Dernière mise à jour : 2026-09-04 — ✅ **CHANTIER TERMINÉ ET EN SERVICE.**
+Les seize étapes sont closes. Commits `c3ff0bf`, `604ea99`, `ce70f42` poussés,
+déployés et vérifiés sur https://receptionniste.zerocall.io.
 
-## ⏯️ Reprendre ici
+## ✅ En service
 
-Reprendre à l'**étape 15** (commit, push, redéploiement).
+`https://receptionniste.zerocall.io/<slug>/admin/quotes` — **sept onglets**, sur
+les douze vitrines, en français et en anglais : éditeur avec **dictée vocale**
+et enregistrement automatique, listes de devis et de factures, fichier client,
+catalogue modifiable, tableau de bord commercial, réglages de l'émetteur.
+
+Référence : [DEVIS_FACTURES.md](./DEVIS_FACTURES.md). Ce fichier-ci reste le
+journal de bord du chantier.
 
 ## Demande
 
@@ -119,8 +124,8 @@ serveur, c'est un acquis) et **j'ajoute `unit`**.
 - [x] **12.** Onglet Réglages (émetteur, paiement, mentions)
 - [x] **13.** Bilingue + responsive de tout ce qui précède
 - [x] **14.** Build + vérification locale
-- [ ] **15.** Commit + push + redéploiement
-- [ ] **16.** Documentation
+- [x] **15.** Commit + push + redéploiement
+- [x] **16.** Documentation
 
 ## Journal
 
@@ -279,3 +284,32 @@ serveur, c'est un acquis) et **j'ajoute `unit`**.
   Les données de vérification ont été **supprimées** : la base de démonstration
   est rendue dans l'état où elle a été trouvée, au catalogue semé près — qui est
   le comportement voulu, pas un résidu.
+- **2026-09-04 · étapes 15 et 16, en production** — commit `ce70f42` (17
+  fichiers), poussé, puis `bash update.sh` : conteneur remplacé, contrôle de
+  santé passé, URL publique en 200. Vérifications sur le domaine public :
+
+  | Vérification | Résultat |
+  |---|---|
+  | les sept onglets, **français** | ✅ |
+  | les sept onglets, **anglais** | ✅ |
+  | l'éditeur rendu par le serveur, avec la dictée | ✅ « Dicter le devis », « Exemples de dictée », « Confirmation parlée », « Bon pour accord » |
+  | **la dictée en production** | ✅ « Une coupe plus barbe et deux rasages traditionnels » → *Coupe + barbe* 1 × 42 €, *Rasage traditionnel* 2 × 26 € — prix repris du catalogue, non dictés |
+  | base rendue propre | ✅ 0 document de vérification restant |
+
+  Documentation : `DEVIS_FACTURES.md` réécrite (l'application, la dictée, le
+  catalogue modifiable, les réglages), `README.md` réindexé.
+
+## Bilan
+
+Les seize étapes sont closes. Trois choses à retenir :
+
+1. **La découpe du premier portage était fausse, pas son exécution.** « Ne pas
+   reprendre le SaaS » était juste ; ce qui ne l'était pas, c'est d'avoir rangé
+   sous ce mot les onglets, le catalogue, les clients, les réglages et la voix.
+   Une bonne règle mal appliquée coûte aussi cher qu'une mauvaise règle.
+2. **La dictée valait à elle seule le chantier.** C'est le geste qui distingue
+   cet outil d'un formulaire : on parle, le devis s'écrit, et les prix viennent
+   du catalogue sans avoir été dits.
+3. **Le seul point où l'on s'écarte encore de `devis_app` est le PDF**, et il
+   est écrit noir sur blanc dans la documentation pour qu'on puisse me
+   contredire.

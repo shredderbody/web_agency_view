@@ -151,23 +151,115 @@ Toute écriture laisse une trace dans `demo_actions`, le journal immuable de
 l'espace : un devis émis est un fait de la vie du commerce, au même titre qu'un
 rendez-vous pris, et se lit dans le même fil.
 
-## L'interface — `components/portal/DocumentsWorkspace.tsx`
+## L'application — `components/portal/quotes/`
 
-**Deux écrans, pas trois.**
+**Sept onglets, une seule page.**
 
-1. **La liste** — onglets Devis / Factures, tableau (numéro · date · client ·
-   total TTC · statut). Le **numéro lui-même est le lien** vers l'éditeur : on
-   clique ce qu'on cherchait des yeux.
-2. **L'éditeur** — la saisie à gauche, **le document à droite**. Il n'y a pas
-   d'écran « aperçu » : ce qu'on modifie se voit pendant qu'on le modifie.
+| Onglet | Ce qu'il fait |
+|---|---|
+| **Devis en cours** | l'éditeur : saisie à gauche, document à droite, enregistrement automatique, **dictée** |
+| **Mes devis** · **Factures** | listes filtrables par statut, recherche, duplication |
+| **Clients** | fiche complète avec adresse postale ; l'origine est indiquée (rencontré au téléphone / saisi ici) |
+| **Catalogue** | rayons colorés, édition en place, prix d'achat et **marge** |
+| **Tableau de bord** | devis émis et acceptés, taux d'acceptation, facturé, encaissé, reste dû, douze mois glissants, « ce qui se vend » |
+| **Réglages** | identité, paiement, mentions — en surcharge de la vitrine |
 
-Un document **naît sur le serveur** : « Nouveau devis » écrit tout de suite en
-base et reçoit son numéro. Pas de brouillon local sans numéro — un devis qu'on
-croit avoir et qui n'existe nulle part est pire que pas de devis.
+Les données des sept onglets arrivent en **un seul aller-retour serveur**
+(`loadQuotesPage`). Changer d'onglet n'attend donc aucun réseau — ce qu'on
+attend d'un outil qu'on utilise le téléphone à l'oreille.
 
-Le destinataire se **reprend depuis `demo_customers`** : la personne qui a
-réservé par la voix est déjà dans la base, on la sélectionne au lieu de la
-ressaisir.
+On atterrit sur **l'éditeur**, le document le plus récent ouvert. Atterrir sur
+une liste obligerait à cliquer pour reprendre le devis qu'on était en train
+d'écrire, ce qui est la raison la plus fréquente de revenir.
+
+Sur téléphone, les onglets passent en **barre basse fixe** — quatre au pouce,
+les trois autres restant accessibles en haut. Sept onglets en défilement
+horizontal, c'est six onglets qu'on ne voit pas.
+
+Il n'y a pas d'écran « aperçu » : ce qu'on modifie se voit pendant qu'on le
+modifie. Un document **naît sur le serveur** — « Nouveau devis » écrit tout de
+suite en base et reçoit son numéro. Pas de brouillon local sans numéro : un
+devis qu'on croit avoir et qui n'existe nulle part est pire que pas de devis.
+
+### L'enregistrement est automatique
+
+Débounce d'une seconde et demie après la dernière frappe, enregistrement forcé
+quand on quitte l'éditeur, `beforeunload` en dernier filet. **L'état est dit en
+clair** — « Modifications en attente », « Enregistré à 14 h 32 » : un
+enregistrement invisible ne rassure personne.
+
+Un détail qui se voit à l'usage : on marque propre **l'état envoyé**, pas l'état
+courant. Ce qui a été tapé pendant l'aller-retour reste « à enregistrer » et
+repart au tour suivant, au lieu d'être perdu.
+
+## La dictée — `lib/portal/voice.ts`
+
+`devis_app` s'appelle `devis-vocal` dans son `package.json` : la voix n'y est pas
+une option, c'est le produit. Un artisan qui sort d'un chantier ne saisit pas un
+tableau, il dicte.
+
+```
+micro (MediaRecorder)
+  → POST /api/portal/voice/transcribe   OpenAI Whisper           → texte
+  → POST /api/portal/voice/parse        modèle + catalogue       → lignes
+  → écriture des lignes dans le devis
+  → POST /api/portal/voice/speak        Deepgram → ElevenLabs    → confirmation
+                                        → repli SpeechSynthesis
+```
+
+Vérifié en production : « Deux coupes Brutus, plus une taille de barbe, et une
+remise de dix pour cent » donne 2 × *La coupe Brutus* à 28 €, 1 × *Taille de
+barbe* à 19 € et une remise de 10 %. **Les prix n'étaient pas dictés** : ils
+viennent du catalogue.
+
+Quatre précautions :
+
+1. **Le catalogue est envoyé au modèle.** Sans lui, « deux pad thaï » n'a pas de
+   prix — le modèle en inventerait un, et un devis aux prix inventés est pire
+   qu'un devis vide.
+2. **La dictée est une donnée, jamais une instruction.** Elle voyage isolée dans
+   son propre champ JSON, et la consigne système le dit explicitement.
+3. **Le modèle propose, le serveur dispose.** Chaque ligne renvoyée est re-typée
+   et bornée avant d'exister, comme tout ce qui vient du navigateur.
+4. **Le texte reconnu reste affiché**, même quand l'analyse échoue : quand une
+   dictée ne donne rien, la première question est « m'a-t-il entendu ? ».
+
+Deux écarts avec `devis_app`, tous deux assumés :
+
+- **L'analyse est faite dans ce dépôt**, pas dans n8n. Le résultat est le même,
+  et cela évite d'avoir une part du comportement de la page dans un workflow qui
+  vit ailleurs, qu'aucun `git log` ne montre et qu'aucun build ne vérifie.
+- **Le modèle est celui d'OpenAI**, parce que `OPENAI_API_KEY` est la seule clé
+  de modèle du `.env` de ce dépôt (Whisper l'utilise déjà). Basculer sur Claude
+  demanderait une clé Anthropic et le changement d'une fonction.
+
+## Le catalogue modifiable — `lib/portal/catalogStore.ts`
+
+Deux modules portent le mot « catalogue », et ils ne font pas la même chose :
+
+- **`catalog.ts`** dit ce que la **vitrine affiche**. Une vue, figée, qui suit la
+  page publique.
+- **`catalogStore.ts`** dit ce que l'**exploitant vend**. Il est **semé** depuis
+  la vitrine au premier accès, une fois ; ensuite il lui appartient. S'il
+  supprime une ligne, elle ne repousse pas au chargement suivant.
+
+Présenter un catalogue vide à quelqu'un dont les prix sont déjà publics serait
+absurde ; les lui réimposer à chaque chargement le serait tout autant.
+
+## Les réglages — `lib/portal/docSettings.ts`
+
+Des **surcharges**, pas un remplacement. L'identité reste dérivée de la vitrine ;
+les réglages ajoutent ce qu'une page vitrine n'a aucune raison de dire : SIRET,
+TVA intracommunautaire, IBAN, délai de paiement négocié, assurance décennale,
+mentions de pied de page.
+
+**Un champ vide retombe sur la vitrine**, et l'écran l'indique sous le champ
+(« Vitrine : Maison Brutus »). Quelqu'un qui efface son adresse veut revenir à
+celle de sa page, pas imprimer un document sans adresse.
+
+Les mentions légales dérivées — pénalités de retard, indemnité forfaitaire de
+40 € — **ne sont pas remplaçables** : elles portent le droit applicable. Celles
+qu'on saisit viennent en plus.
 
 ## L'impression
 
@@ -223,13 +315,34 @@ réellement via `DEMO_DB_SUPABASE_URL` — s'administre avec le jeton de
 | `lib/portal/quotesPage.ts` | chargeur de page, partagé par les deux adresses |
 | `app/api/portal/documents/route.ts` | l'API décrite ci-dessus |
 | `app/(portal)/[slug]/admin/quotes/page.tsx` · `admin/devis/page.tsx` | les deux portes |
-| `components/portal/DocumentsWorkspace.tsx` | liste, éditeur, feuille A4 |
+| `components/portal/quotes/QuotesApp.tsx` | la coquille à sept onglets et l'état partagé |
+| `components/portal/quotes/EditorTab.tsx` | l'éditeur, l'enregistrement automatique |
+| `components/portal/quotes/VoiceDictation.tsx` | le bouton de dictée et ses trois états |
+| `components/portal/quotes/DocumentSheet.tsx` | la feuille A4 imprimable |
+| `components/portal/quotes/{List,Clients,Catalog,Dashboard,Settings}Tab.tsx` | les six autres onglets |
+| `lib/portal/voice.ts` | transcription, analyse, synthèse vocale |
+| `lib/portal/catalogStore.ts` | le catalogue modifiable, et son semis |
+| `lib/portal/docSettings.ts` | les surcharges de l'émetteur |
+| `lib/portal/apiGuard.ts` | la garde de session commune aux quatre API |
 | `app/(portal)/documents.css` | l'écran coupé en deux, la feuille, l'impression |
-| `supabase/migrations/006_portal_documents.sql` | la table et le journal élargi |
+| `supabase/migrations/006_portal_documents.sql` | la table des documents et le journal élargi |
+| `supabase/migrations/007_portal_quotes_app.sql` | catalogue, réglages, sessions de dictée, adresse client |
 
 ## Ce que l'outil ne fait pas
 
 Il est **une démonstration intégrée à la vitrine**, pas un SaaS de facturation.
 N'ont donc **pas** été repris de `~/devis_app` : les comptes et organisations
-Supabase Auth, les plans et leurs quotas, le filigrane, Stripe, l'envoi
-d'e-mail, le lien public `/q/[token]`, la saisie vocale, `googleapis`, `jspdf`.
+Supabase Auth, les plans `free|start|premium|pro` et leurs quotas, le filigrane,
+Stripe, le parrainage et le réseau multi-niveaux, l'envoi d'e-mail, le lien
+public `/q/[token]`, `googleapis`.
+
+`jspdf` non plus, et c'est **le seul point du produit** où l'on s'écarte de
+`devis_app` : là-bas, 775 lignes de `PDFExport` pour dessiner un document ;
+ici, une feuille `@media print` qui le rend en mieux et ne pèse rien.
+
+Historique : le premier portage (2026-09-04, matin) avait arrêté une réécriture
+ciblée qui écartait « le SaaS ». La découpe était trop large — elle a écarté avec
+lui les onglets, le catalogue et le fichier client modifiables, les réglages, le
+tableau de bord et la dictée, qui ne sont pas du SaaS et qui font le produit.
+Le journal de bord de la reprise est
+[SUIVI_DEVIS_APP_INTEGRATION.md](./SUIVI_DEVIS_APP_INTEGRATION.md).

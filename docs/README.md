@@ -38,10 +38,11 @@ Quatre fonctions « backend » sont branchées :
 | [STRIPE.md](./STRIPE.md) | Intégration Stripe : flux de paiement, webhook, prix, env vars |
 | [VAPI_ASSISTANTS.md](./VAPI_ASSISTANTS.md) | Bulle Vapi hybride par métier, assistants inbound bilingues, function tools, CSP |
 | [ESPACE_CLIENT.md](./ESPACE_CLIENT.md) | **Espace client `/<slug>/admin`** : traçabilité des actions, fiche client, calendrier des réservations, suivi de consommation, vision admin |
-| [DEVIS_FACTURES.md](./DEVIS_FACTURES.md) | **Devis & factures `/<slug>/admin/quotes`** : un outil par vitrine, identité et catalogue natifs, TVA par métier et par pays, conversion devis → facture, document A4 imprimable |
+| [DEVIS_FACTURES.md](./DEVIS_FACTURES.md) | **Devis & factures `/<slug>/admin/quotes`** : application à sept onglets par vitrine — éditeur avec **dictée vocale**, listes, clients, catalogue modifiable, tableau de bord, réglages ; identité et prix natifs, TVA par métier et par pays, document A4 imprimable |
 | [SUIVI_ESPACE_CLIENT.md](./SUIVI_ESPACE_CLIENT.md) | Journal de bord du chantier de l'espace client (fichier de reprise) |
 | [SUIVI_DEVIS_FACTURES.md](./SUIVI_DEVIS_FACTURES.md) | Journal de bord du chantier des devis & factures (fichier de reprise) |
 | [SUIVI_ESPACE_MULTILINGUE.md](./SUIVI_ESPACE_MULTILINGUE.md) | Journal de bord du chantier bilingue et du nid `/<slug>/admin/*` (fichier de reprise) |
+| [SUIVI_DEVIS_APP_INTEGRATION.md](./SUIVI_DEVIS_APP_INTEGRATION.md) | Journal de bord du portage de `~/devis_app` : sept onglets, dictée vocale (fichier de reprise) |
 | [VAPI_FRONTEND_WIDGET.md](./VAPI_FRONTEND_WIDGET.md) | **Playbook réutilisable** : intégrer le widget Vapi en front-end (CSP, micro, montage, responsive mobile/tablette/desktop) — valable pour tout projet client |
 
 ## Conventions
