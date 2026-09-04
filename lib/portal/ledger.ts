@@ -1,11 +1,11 @@
 // ⚠️ MODULE SERVEUR UNIQUEMENT.
 
-import { select, insert, update, upsert, q } from "./supabase";
+import { select, insert, update, upsert, rest, q } from "./supabase";
 import { normalizePhone } from "./phone";
 import type {
   ActionName, Actor, PortalAction, PortalCustomer, PortalReservation, ReservationStatus,
 } from "./types";
-import type { DemoTenant } from "./registry";
+import { getTenantByAssistant, type DemoTenant } from "./registry";
 
 /* ════════════════════════════════════════════════════════════════════════════
    Lecture et écriture du journal d'actions.
@@ -29,7 +29,9 @@ const RESERVATION_COLS =
 
 const CUSTOMER_COLS =
   "id,assistant_id,demo_slug,phone,phone_raw,full_name,email,lang,first_seen_at,last_seen_at," +
-  "actions_count,bookings_count,cancels_count,notes";
+  "actions_count,bookings_count,cancels_count,notes," +
+  // 007 — l'adresse postale, indispensable à un devis.
+  "address,postal_code,city,company,siret,source";
 
 /* ── Lectures ─────────────────────────────────────────────────────────────── */
 
@@ -158,6 +160,105 @@ export async function upsertCustomer(
   return rows[0] ?? null;
 }
 
+/* ── Le fichier client, tenu à la main (007) ──────────────────────────────────
+   `upsertCustomer` ci-dessus sert la STANDARDISTE : elle apprend un nom et un
+   numéro au téléphone, et ne réécrit jamais une coordonnée par du vide. Les
+   trois fonctions qui suivent servent l'EXPLOITANT, depuis l'espace : lui a le
+   droit d'effacer un champ, parce qu'il le fait exprès.                       */
+
+export type ManualCustomerInput = {
+  name?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  postalCode?: string | null;
+  city?: string | null;
+  company?: string | null;
+  siret?: string | null;
+  notes?: string | null;
+};
+
+function manualBody(tenant: DemoTenant, input: ManualCustomerInput): Record<string, unknown> {
+  const body: Record<string, unknown> = {};
+  if (input.name !== undefined) body.full_name = input.name;
+  if (input.email !== undefined) body.email = input.email;
+  if (input.address !== undefined) body.address = input.address;
+  if (input.postalCode !== undefined) body.postal_code = input.postalCode;
+  if (input.city !== undefined) body.city = input.city;
+  if (input.company !== undefined) body.company = input.company;
+  if (input.siret !== undefined) body.siret = input.siret;
+  if (input.notes !== undefined) body.notes = input.notes;
+  if (input.phone !== undefined) {
+    // Le téléphone reste la clé de dédoublonnage : on le range au même format
+    // que celui posé par la standardiste, sinon la fiche saisie ici et celle du
+    // prochain appel feraient deux personnes.
+    const normalized = normalizePhone(input.phone ?? "", tenant.dialCode);
+    body.phone_raw = input.phone;
+    if (normalized) body.phone = normalized;
+  }
+  return body;
+}
+
+/**
+ * Crée une fiche depuis l'espace. Si le téléphone désigne déjà quelqu'un, on
+ * MET À JOUR cette fiche au lieu d'en créer une seconde : deux fiches pour la
+ * même personne, c'est un fichier client qui commence à mentir.
+ */
+export async function createCustomerManually(
+  tenant: DemoTenant, input: ManualCustomerInput,
+): Promise<PortalCustomer | null> {
+  const now = new Date().toISOString();
+  const phone = normalizePhone(input.phone ?? "", tenant.dialCode);
+
+  if (phone) {
+    const existing = await select<PortalCustomer>(
+      "demo_customers",
+      `select=${CUSTOMER_COLS}&assistant_id=eq.${q(tenant.assistantId)}&phone=eq.${q(phone)}&limit=1`,
+    );
+    if (existing[0]) return patchCustomer(tenant.assistantId, existing[0].id, input);
+  }
+
+  const rows = await insert<PortalCustomer>("demo_customers", [{
+    assistant_id: tenant.assistantId,
+    demo_slug: tenant.slug,
+    // Une fiche sans téléphone est légitime ici : on facture des sociétés qui
+    // n'appellent pas. La clé de dédoublonnage devient alors l'identifiant.
+    phone: phone ?? `manual:${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
+    first_seen_at: now,
+    last_seen_at: now,
+    source: "portal",
+    ...manualBody(tenant, input),
+  }]);
+  return rows[0] ?? null;
+}
+
+export async function patchCustomer(
+  assistantId: string, id: string, input: ManualCustomerInput,
+): Promise<PortalCustomer | null> {
+  const tenant = getTenantByAssistant(assistantId);
+  if (!tenant) return null;
+  const rows = await update<PortalCustomer>(
+    "demo_customers",
+    // Le tenant est DANS le filtre : un identifiant seul n'ouvre rien.
+    `id=eq.${q(id)}&assistant_id=eq.${q(assistantId)}&select=${CUSTOMER_COLS}`,
+    { ...manualBody(tenant, input), updated_at: new Date().toISOString() },
+  );
+  return rows[0] ?? null;
+}
+
+/**
+ * Supprime une fiche. Le JOURNAL n'est pas touché : ses lignes gardent le nom et
+ * le numéro tels qu'ils étaient au moment des faits, et `customer_id` retombe à
+ * NULL. Effacer une fiche ne réécrit pas l'histoire — c'est tout l'intérêt d'un
+ * journal immuable.
+ */
+export async function deleteCustomer(assistantId: string, id: string): Promise<void> {
+  await rest("demo_customers", {
+    method: "DELETE",
+    query: `id=eq.${q(id)}&assistant_id=eq.${q(assistantId)}`,
+  });
+}
+
 /** Recompte les compteurs de suivi d'une fiche à partir du journal (source de vérité). */
 export async function refreshCustomerCounters(customerId: string): Promise<void> {
   const actions = await select<{ action: ActionName }>(
@@ -186,6 +287,8 @@ export type ActionInput = {
   occurredAt?: string;
   reservationId?: string | null;
   customerId?: string | null;
+  /** Devis ou facture concerné (colonne ajoutée par la migration 006). */
+  documentId?: string | null;
   fromStartsAt?: string | null;
   toStartsAt?: string | null;
   fromStatus?: string | null;
@@ -211,6 +314,7 @@ export async function logAction(input: ActionInput): Promise<PortalAction | null
     demo_slug: input.tenant.slug,
     reservation_id: input.reservationId ?? null,
     customer_id: input.customerId ?? null,
+    document_id: input.documentId ?? null,
     action: input.action,
     actor: input.actor,
     actor_label: input.actorLabel ?? null,
@@ -338,17 +442,7 @@ export const STATUS_LABEL: Record<ReservationStatus, string> = {
   no_show: "Non venu",
 };
 
-export const ACTION_LABEL: Record<ActionName, string> = {
-  booking_created: "Réservation prise",
-  booking_rescheduled: "Créneau reporté",
-  booking_cancelled: "Réservation annulée",
-  booking_confirmed: "Réservation confirmée",
-  booking_completed: "Client honoré",
-  booking_no_show: "Client absent",
-  order_placed: "Commande passée",
-  intervention_requested: "Intervention demandée",
-  quote_requested: "Devis demandé",
-  customer_updated: "Fiche client mise à jour",
-  note_added: "Note ajoutée",
-  contacted: "Client recontacté",
-};
+/* `ACTION_LABEL` vivait ici, en français seulement. Elle n'était appelée nulle
+   part et doublait `portalStrings.feed.action`, qui est bilingue : deux listes
+   de libellés finissent toujours par diverger. Une seule reste, dans le
+   dictionnaire. */

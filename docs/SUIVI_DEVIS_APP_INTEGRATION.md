@@ -10,7 +10,7 @@ architecture arrêtée. Rien n'est encore écrit. La production tourne sur
 
 ## ⏯️ Reprendre ici
 
-Reprendre à l'**étape 2** (migration 007).
+Reprendre à l'**étape 6** (coquille à onglets).
 
 ## Demande
 
@@ -105,10 +105,10 @@ serveur, c'est un acquis) et **j'ajoute `unit`**.
 ## Étapes
 
 - [x] **1.** Audit de `~/devis_app`, architecture arrêtée, fichier de suivi ouvert
-- [ ] **2.** Migration `007` : catalogue, réglages, sessions vocales, `unit` sur les lignes
-- [ ] **3.** Socle serveur : catalogue (semis + CRUD), réglages, clients modifiables
-- [ ] **4.** API : `/api/portal/catalog`, `/api/portal/clients`, `/api/portal/doc-settings`
-- [ ] **5.** API vocale : transcription (Whisper), analyse en lignes, synthèse vocale
+- [x] **2.** Migration `007` : catalogue, réglages, sessions vocales, fiche client postale
+- [x] **3.** Socle serveur : catalogue (semis + CRUD), réglages, clients modifiables
+- [x] **4.** API : `/api/portal/catalog`, `/api/portal/clients`, `/api/portal/doc-settings`
+- [x] **5.** API vocale : transcription (Whisper), analyse en lignes, synthèse vocale
 - [ ] **6.** Coquille à onglets + barre basse mobile
 - [ ] **7.** Onglet Éditeur : enregistrement automatique, unités, bouton de dictée
 - [ ] **8.** Onglets Devis et Factures (listes, filtres, actions)
@@ -139,3 +139,83 @@ serveur, c'est un acquis) et **j'ajoute `unit`**.
   depuis ce matin rend le même document en mieux et ne pèse rien. Je ne
   reprends donc pas cette brique — c'est le seul point du produit où je ne suis
   pas `devis_app`, et il est noté ici pour qu'on puisse me contredire.
+- **2026-09-04 · étape 2, migration 007 appliquée sur les deux projets** puis
+  **vérifiée par lecture du schéma** : `demo_catalog_categories` 8 colonnes,
+  `demo_catalog_items` 14, `demo_doc_settings` 25, `demo_voice_sessions` 8, et
+  les six colonnes postales ajoutées à `demo_customers` (`address`, `city`,
+  `company`, `postal_code`, `siret`, `source`).
+  ⚠️ **Correction à la note de la 006** : le jeton d'administration du projet
+  GritUnited n'est pas `JWT_SUPABASE` de `~/grit-united/.env` (41 caractères,
+  `sb_se…` — c'est une clé de service, pas un jeton de gestion) mais
+  **`SUPABASE_ACCESS_TOKEN`** (44 caractères, `sbp_…`). Le pare-feu Cloudflare
+  exige toujours un `User-Agent` de navigateur.
+- **2026-09-04 · une ligne de devis portera une UNITÉ** — pas de changement de
+  schéma : les lignes vivent dans une colonne `jsonb`. `devis_app` propose
+  heure / jour / forfait / m² / unité ; on y ajoute le mètre linéaire et le kilo,
+  qui manquent à un traiteur et à un poseur.
+- **2026-09-04 · un point tranché dans la migration : on STOCKE le transcript
+  des dictées** (`demo_voice_sessions`), alors que le journal d'actions
+  s'interdit tout contenu de conversation. Ce n'est pas une contradiction :
+  `demo_actions` garde la parole d'un CLIENT au téléphone, `demo_voice_sessions`
+  garde la dictée de l'exploitant sur son propre devis. Il dicte précisément
+  pour que ce soit écrit.
+- **2026-09-04 · étape 3, trois modules serveur** —
+  `catalogStore.ts`, `docSettings.ts`, et le fichier client rendu modifiable
+  dans `ledger.ts`. Trois décisions valent d'être notées :
+
+  1. **`catalog.ts` et `catalogStore.ts` ne font pas la même chose**, et c'est
+     voulu. Le premier dit ce que la VITRINE affiche — une vue, figée, qui suit
+     la page publique. Le second dit ce que l'EXPLOITANT vend. Le catalogue est
+     semé depuis la vitrine au premier accès, une fois ; ensuite il lui
+     appartient : s'il supprime une ligne, elle ne repousse pas au chargement
+     suivant. Présenter un catalogue vide à quelqu'un dont les prix sont déjà
+     écrits sur sa page aurait été absurde ; les lui réimposer à chaque
+     chargement le serait tout autant.
+  2. **Les réglages sont des SURCHARGES.** Un champ vide retombe sur la vitrine :
+     quelqu'un qui efface son adresse veut revenir à celle de sa page, pas
+     imprimer un document sans adresse. Et les mentions légales dérivées
+     (pénalités de retard, indemnité de 40 €) ne sont **pas** remplaçables — un
+     exploitant ne devrait pas pouvoir les supprimer par inadvertance ; celles
+     qu'il saisit viennent en plus.
+  3. **Deux façons d'écrire une fiche client, pour deux auteurs.**
+     `upsertCustomer` sert la standardiste : elle n'efface jamais une coordonnée
+     par du vide, parce qu'un appel où le client ne redonne pas son e-mail ne
+     veut pas dire qu'il n'en a plus. `createCustomerManually` / `patchCustomer`
+     servent l'exploitant : lui a le droit d'effacer un champ, parce qu'il le
+     fait exprès. Une fiche créée à la main sans téléphone est acceptée — on
+     facture des sociétés qui n'appellent pas.
+- **2026-09-04 · étape 4, trois API et une garde commune** — `apiGuard.ts` sort
+  la garde de session et les bornes de saisie des quatre routes de l'outil.
+  Recopier douze lignes de contrôle d'accès quatre fois, c'est se donner quatre
+  occasions d'en oublier une — et un contrôle oublié ne se voit pas à
+  l'exécution, seulement le jour où quelqu'un le trouve.
+  Un détail tenu dans la suppression d'un rayon de catalogue : la clé étrangère
+  est en `on delete set null`, ses prestations retombent dans « sans rayon ».
+  **Effacer un classement ne doit pas effacer ce qui était classé.**
+- **2026-09-04 · étape 5, la chaîne vocale** — `lib/portal/voice.ts` +
+  trois routes. La chaîne est celle de `devis_app` : micro → Whisper → modèle →
+  lignes → confirmation parlée (Deepgram, repli ElevenLabs, repli
+  `SpeechSynthesis` du navigateur).
+  **Un écart assumé** : là-bas l'analyse passe par n8n ; ici elle est faite dans
+  ce dépôt. Le résultat est le même et cela évite d'avoir une part du
+  comportement de la page dans un workflow qui vit ailleurs, qu'aucun `git log`
+  ne montre et qu'aucun build ne vérifie.
+  **Sur le modèle** : OpenAI, parce que `OPENAI_API_KEY` est la seule clé de
+  modèle du `.env` de ce dépôt (Whisper l'utilise déjà). Basculer sur Claude
+  demanderait une clé Anthropic et le changement de `callModel` — rien d'autre.
+  Trois précautions :
+  1. **le catalogue est envoyé au modèle**, sinon « deux pad thaï » ne peut pas
+     devenir deux lignes à 12,50 € ; sans lui, le modèle inventerait un prix, et
+     un devis aux prix inventés est pire qu'un devis vide ;
+  2. **la dictée est une DONNÉE, pas une instruction** — elle voyage isolée dans
+     son propre champ JSON, et le prompt le dit explicitement ;
+  3. **le modèle propose, le serveur dispose** : chaque ligne renvoyée est
+     re-typée et bornée avant d'exister, comme tout ce qui vient du navigateur.
+- **2026-09-04 · deux dettes trouvées en chemin, réglées** :
+  1. la migration 006 avait ajouté six verbes de document à la contrainte de
+     `demo_actions` **sans les ajouter au type `ActionName`**. Le journal les
+     affichait donc tous sous « Fiche client mise à jour ». Verbes ajoutés au
+     type, aux deux dictionnaires et au jeu d'icônes ;
+  2. `ACTION_LABEL` traînait dans `ledger.ts`, en français seulement, appelée
+     nulle part, et doublait `portalStrings.feed.action` qui est bilingue. Deux
+     listes de libellés finissent toujours par diverger : une seule reste.

@@ -20,6 +20,15 @@ export type DocStatus = "draft" | "sent" | "accepted" | "refused" | "paid" | "ca
 
 export type DocLineKind = "item" | "discount";
 
+/* L'unité d'une ligne. Reprise de `devis_app` (heure / jour / forfait / m² /
+   unité), plus le mètre linéaire et le kilo — qui manquent respectivement à un
+   poseur et à un traiteur. Elle ne change RIEN au calcul : elle s'imprime à
+   côté de la quantité, pour que « 3 » veuille dire trois heures et pas trois
+   radiateurs. */
+export type DocUnit = "unite" | "heure" | "jour" | "forfait" | "m2" | "ml" | "kg";
+
+export const DOC_UNITS: DocUnit[] = ["unite", "heure", "jour", "forfait", "m2", "ml", "kg"];
+
 export type DocLine = {
   /** Identifiant local, stable le temps de l'édition (clé de rendu React). */
   id: string;
@@ -33,6 +42,8 @@ export type DocLine = {
   tax_rate: number;
   /** Remise : pourcentage appliqué au sous-total HT. */
   percent?: number;
+  /** Unité de la quantité. Purement descriptive : aucun effet sur les totaux. */
+  unit?: DocUnit;
 };
 
 export type DocClient = {

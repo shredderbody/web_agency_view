@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import {
-  Ban, Bot, CalendarPlus, CheckCircle2, ClipboardList, MessageSquare, Package,
-  RefreshCcw, ShieldCheck, UserCog, UserRound, Wrench,
+  Ban, Bot, CalendarPlus, CheckCircle2, ClipboardList, FileText, Mic,
+  MessageSquare, Package, Receipt, RefreshCcw, Send, ShieldCheck, UserCog,
+  UserRound, Wrench,
 } from "lucide-react";
 import type { ActionName, PortalAction } from "@/lib/portal/types";
 import { usePortalI18n } from "@/lib/portal/i18nClient";
@@ -40,6 +41,13 @@ const LOOK: Record<ActionName, Look> = {
   customer_updated: { icon: UserCog, tone: "off" },
   note_added: { icon: MessageSquare, tone: "off" },
   contacted: { icon: UserRound, tone: "off" },
+  quote_issued: { icon: FileText, tone: "wait" },
+  quote_sent: { icon: Send, tone: "wait" },
+  quote_accepted: { icon: CheckCircle2, tone: "ok" },
+  quote_refused: { icon: Ban, tone: "bad" },
+  invoice_issued: { icon: Receipt, tone: "wait" },
+  invoice_paid: { icon: CheckCircle2, tone: "ok" },
+  quote_dictated: { icon: Mic, tone: "off" },
 };
 
 const TONE_BG: Record<Look["tone"], string> = {

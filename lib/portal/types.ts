@@ -14,7 +14,19 @@ export type ActionName =
   | "quote_requested"
   | "customer_updated"
   | "note_added"
-  | "contacted";
+  | "contacted"
+  /* Cycle de vie d'un document (migration 006). Ces verbes étaient déjà dans la
+     contrainte de la base et écrits par `lib/portal/documents.ts` ; ils
+     manquaient ici, si bien que le journal les affichait tous sous
+     « Fiche client mise à jour ». */
+  | "quote_issued"
+  | "quote_sent"
+  | "quote_accepted"
+  | "quote_refused"
+  | "invoice_issued"
+  | "invoice_paid"
+  /* Dictée vocale (migration 007). */
+  | "quote_dictated";
 
 export type Actor = "assistant" | "portal" | "n8n" | "api" | "system";
 
@@ -88,6 +100,16 @@ export type PortalCustomer = {
   bookings_count: number;
   cancels_count: number;
   notes: string | null;
+  /* ── Ajouts 007 : ce qu'un devis exige et qu'un appel ne donne pas ──────────
+     La standardiste apprend un nom et un numéro. On ne facture personne sans
+     savoir où il habite : l'adresse se saisit ici, à la main. */
+  address: string | null;
+  postal_code: string | null;
+  city: string | null;
+  company: string | null;
+  siret: string | null;
+  /** 'voice' (remontée d'un appel) | 'portal' (saisie ici). */
+  source: string | null;
 };
 
 export type UsageDay = {

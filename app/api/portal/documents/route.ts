@@ -7,7 +7,8 @@ import {
   updateDocument,
 } from "@/lib/portal/documents";
 import {
-  statusesFor, type DocClient, type DocKind, type DocLine, type DocStatus,
+  DOC_UNITS, statusesFor, type DocClient, type DocKind, type DocLine, type DocStatus,
+  type DocUnit,
 } from "@/lib/portal/documents.shared";
 import { isLang } from "@/lib/i18n";
 
@@ -71,6 +72,9 @@ function cleanLines(raw: unknown): DocLine[] {
       unit_price: kind === "discount" ? 0 : num(l.unit_price, -1_000_000, 10_000_000),
       tax_rate: num(l.tax_rate, 0, 100),
       percent: kind === "discount" ? num(l.percent, 0, 100) : undefined,
+      unit: (DOC_UNITS as string[]).includes(str(l.unit, 20))
+        ? (str(l.unit, 20) as DocUnit)
+        : undefined,
     };
   });
 }
