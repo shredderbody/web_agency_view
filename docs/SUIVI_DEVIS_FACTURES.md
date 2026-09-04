@@ -4,15 +4,21 @@
 > bas : l'état de chaque étape est à jour. Reprendre à la première étape `[ ]`.
 > Mettre à jour ce fichier **après chaque étape**, jamais à la fin.
 
-Dernière mise à jour : 2026-09-04 — l'outil **est complet et compile**
-(`npx tsc --noEmit` : zéro erreur). Étapes 1 à 9 terminées : socle serveur, base
-de données, API, routes, interface et document imprimable. Rien n'est encore
-commité ni déployé — la production tourne toujours sur `4dca343`.
+Dernière mise à jour : 2026-09-04 — ✅ **CHANTIER TERMINÉ ET EN SERVICE.**
+Les quatorze étapes sont closes. Commit `9909ec1` poussé sur `main`, déployé, et
+vérifié en production sur https://receptionniste.zerocall.io.
 
-## ⏯️ Reprendre ici
+## ✅ En service
 
-Reprendre à l'étape **12** (commit). La documentation (14) a été écrite avant le
-commit, pour qu'elle y entre du même coup.
+L'outil est ouvert sur les **douze vitrines**, à deux adresses :
+`https://receptionniste.zerocall.io/<slug>/quotes` et `/<slug>/devis`. On y entre
+avec la session de l'espace de suivi — le même code d'accès, le même compte de
+démonstration. Deux liens y mènent : le bouton « Devis & factures » dans
+l'en-tête de `/<slug>/admin`, et le bouton « Devis » de chaque vitrine sur
+`/admin`.
+
+La documentation de référence est [DEVIS_FACTURES.md](./DEVIS_FACTURES.md).
+Ce fichier-ci reste le journal de bord du chantier.
 
 Les fichiers du chantier, tous non commités à ce jour :
 
@@ -114,8 +120,8 @@ Ces briques servent un produit vendu à des artisans ; ici l'outil est une
 - [x] **9.** Aperçu A4 imprimable (feuille `@media print`, accent de la vitrine)
 - [x] **10.** Lien depuis l'espace `/<slug>/admin` et depuis `/admin`
 - [x] **11.** Build + vérification locale sur plusieurs vitrines
-- [ ] **12.** Commit + push
-- [ ] **13.** Redéploiement Docker + vérification en production
+- [x] **12.** Commit + push
+- [x] **13.** Redéploiement Docker + vérification en production
 - [x] **14.** Documentation (`docs/README.md`, `docs/DEVIS_FACTURES.md`)
 
 ## Journal
@@ -289,3 +295,29 @@ Ces briques servent un produit vendu à des artisans ; ici l'outil est une
   Texas Plumbing Pros confirme la prévision de l'audit : sa grille dit « Free
   quote » de bout en bout, l'outil lui rend donc ses **13 prestations à
   chiffrer**, libellés conservés — ce qui est exactement son métier.
+- **2026-09-04 · étape 12, commit et push** — `9909ec1`, 19 fichiers,
+  3 469 insertions, poussé sur `main`. La documentation est entrée du même coup.
+- **2026-09-04 · étape 13, en production** — `bash update.sh` (mode caddy),
+  conteneur remplacé, boucle `portal-sync` relancée, Caddy rechargé, contrôle de
+  santé passé, URL publique en 200. Six vérifications sur le domaine public :
+
+  | Vérification | Résultat |
+  |---|---|
+  | slug inconnu | **404** |
+  | `/barbershop/quotes` et `/barbershop/devis` sans session | **307** vers la connexion |
+  | page avec session | **200**, « Maison Brutus » et l'état vide en place, par les deux portes |
+  | création depuis le conteneur | `DEV-2026-0001` — le chemin Supabase fonctionne en production |
+  | suppression | document retiré, liste vide (la base est rendue intacte) |
+  | lien depuis `/barbershop/admin` | présent |
+
+  La feuille d'impression a été retrouvée **dans la CSS servie**
+  (`5b33d0053926f119.css`) : `@page{size:A4;margin:14mm 13mm 15mm}` et le bloc
+  `@media print` ont survécu à la minification, `print-color-adjust` compris.
+
+## Bilan
+
+Les quatorze étapes sont closes. Ce qui a demandé le plus d'attention n'a pas
+été l'interface mais **trois points invisibles** : la répartition d'une remise au
+prorata des assiettes de taxe, la frontière serveur/navigateur du calcul des
+totaux, et la sortie de `money.ts` hors d'`issuer.ts` — sans quoi le contenu des
+douze vitrines aurait voyagé jusqu'au navigateur pour afficher « 28,00 € ».
