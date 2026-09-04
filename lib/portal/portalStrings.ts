@@ -1,0 +1,556 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   LE VOCABULAIRE DE L'ESPACE, dans les deux langues du site.
+
+   Même principe que `documentsStrings.ts`, et volontairement à part de
+   `lib/i18n.ts` : ce dictionnaire-là sert le SITE PUBLIC, chargé par chaque
+   vitrine. L'espace est protégé, ouvert par une poignée de gens ; son
+   vocabulaire n'a rien à faire dans le bundle d'une page vitrine.
+
+   ── Deux règles d'écriture ──────────────────────────────────────────────────
+
+   1. LE PLURIEL EST UNE FONCTION, jamais un `+ "s"` posé dans le composant.
+      « 1 réservation / 2 réservations » et « 1 booking / 2 bookings » ne se
+      forment pas au même endroit de la phrase selon la langue ; le composant
+      n'a pas à le savoir.
+
+   2. PAS DE `as const` sur le dictionnaire français. Il figerait chaque libellé
+      en type littéral, et la version anglaise ne pourrait plus être du même
+      type. On décrit la FORME une fois, sans figer le texte. (La leçon a déjà
+      été payée une fois sur `documentsStrings.ts`.)
+   ════════════════════════════════════════════════════════════════════════════ */
+
+import type { Lang } from "../i18n";
+import type { ActionName } from "./types";
+
+export type PortalStrings = typeof FR;
+
+const FR = {
+  /** Locale de formatage des dates et des nombres. */
+  locale: "fr-FR",
+
+  /* ── Barre d'application ─────────────────────────────────────────────── */
+  bar: {
+    demo: "La vitrine",
+    sync: "Synchroniser",
+    syncing: "Synchro…",
+    syncDone: (n: number) => `${n} action${n > 1 ? "s" : ""} intégrée${n > 1 ? "s" : ""}`,
+    syncFail: "Synchronisation impossible.",
+    logout: "Se déconnecter",
+    admin: "Admin",
+    langLabel: "Langue",
+  },
+
+  /* ── L'accueil d'une vitrine : les deux cartes ───────────────────────── */
+  home: {
+    title: "Votre espace",
+    lead: (trade: string) => `${trade} — deux outils, un seul code d'accès.`,
+    dashT: "Suivi",
+    dashD: "Ce que votre standardiste a fait, ce qu'elle a consommé, qui a appelé et ce qui est réservé.",
+    dashCta: "Ouvrir le suivi",
+    dashStat: (upcoming: number) =>
+      upcoming === 0 ? "aucune réservation à venir"
+        : `${upcoming} réservation${upcoming > 1 ? "s" : ""} à venir`,
+    quotesT: "Devis & factures",
+    quotesD: "Vos documents, à vos couleurs et à vos tarifs : votre carte est déjà chargée, il n'y a qu'à choisir.",
+    quotesCta: "Ouvrir les devis",
+    quotesStat: (quotes: number, invoices: number) =>
+      quotes + invoices === 0
+        ? "aucun document"
+        : `${quotes} devis · ${invoices} facture${invoices > 1 ? "s" : ""}`,
+    adminT: "Administration",
+    adminD: "La vision de l'agence sur les douze vitrines.",
+    adminCta: "Ouvrir l'administration",
+    protected: "Espace protégé — les deux outils s'ouvrent avec le même code d'accès.",
+  },
+
+  /* ── Tableau de bord d'une vitrine ───────────────────────────────────── */
+  dash: {
+    title: "Suivi de votre standardiste",
+    lead: (trade: string, from: string, to: string) => `${trade} · période du ${from} au ${to}.`,
+    quotesBtn: "Devis & factures",
+    home: "Votre espace",
+    periodAria: "Période",
+    period: (d: number) => `${d} j`,
+    tabUsage: "Consommation",
+    tabBookings: "Réservations",
+    tabJournal: "Journal",
+    tabCustomers: "Clients",
+    errT: "Les données n'ont pas pu être lues.",
+    errD: "Rien n'est perdu : l'affichage ci-dessous est vide, pas la base.",
+    dailyT: "Consommation jour par jour",
+    dailyD: (n: number) => `${n} échange${n > 1 ? "s" : ""} sur la période`,
+    detailT: "Détail chiffré",
+    detailD: "Les jours sans activité sont masqués.",
+    colDay: "Jour",
+    colCalls: "Appels",
+    colDuration: "Durée",
+    colChats: "Conversations écrites",
+    colMessages: "Messages",
+    colCost: "Coût",
+    noUsage: "Aucune consommation sur la période. La synchronisation remonte les appels des 14 derniers jours et les conversations écrites plus anciennes.",
+  },
+
+  /* ── Les quatre tuiles de chiffres ───────────────────────────────────── */
+  tiles: {
+    calls: "Appels vocaux",
+    callsSub: (dur: string) => `${dur} de conversation`,
+    callsNone: "aucune minute consommée",
+    messages: "Messages écrits",
+    messagesSub: (n: string, raw: number) => `sur ${n} conversation${raw > 1 ? "s" : ""}`,
+    messagesNone: "aucune conversation écrite",
+    actions: "Actions enregistrées",
+    bookings: (n: number) => `${n} prise${n > 1 ? "s" : ""}`,
+    reschedules: (n: number) => `${n} report${n > 1 ? "s" : ""}`,
+    cancels: (n: number) => `${n} annulation${n > 1 ? "s" : ""}`,
+    cost: "Coût de la période",
+    costNone: "rien à facturer",
+    yieldPct: (pct: number) => `${pct} % des échanges ont donné une prise`,
+    yieldRaw: (b: string, bRaw: number, c: string, cRaw: number) =>
+      `${b} prise${bRaw > 1 ? "s" : ""} pour ${c} échange${cRaw > 1 ? "s" : ""}`,
+  },
+
+  /* ── Le graphe ───────────────────────────────────────────────────────── */
+  chart: {
+    calls: "Appels vocaux",
+    chats: "Conversations écrites",
+    aria: (n: number) => `Consommation quotidienne sur ${n} jours. Détail chiffré dans le tableau qui suit.`,
+    tipCalls: "Appels",
+    tipChats: "Écrits",
+  },
+
+  /* ── Réservations ────────────────────────────────────────────────────── */
+  res: {
+    title: "Réservations",
+    total: (n: number) => `${n} au total`,
+    undated: (n: number) => `${n} sans créneau`,
+    calendar: "Calendrier",
+    cards: "Cartes",
+    prevMonth: "Mois précédent",
+    nextMonth: "Mois suivant",
+    today: "Aujourd'hui",
+    wholeMonth: "Tout le mois",
+    localHours: (city: string) => `Heures locales · ${city}`,
+    dow: ["lun", "mar", "mer", "jeu", "ven", "sam", "dim"],
+    cellAria: (day: number, n: number) => `${day} — ${n} réservation${n > 1 ? "s" : ""}`,
+    onDay: (n: number) => (n === 0 ? "aucune réservation" : `${n} réservation${n > 1 ? "s" : ""}`),
+    emptyT: "Aucune réservation pour l'instant",
+    emptyD: "Dès que l'assistant prend un rendez-vous au téléphone ou par écrit, il apparaît ici, avec les coordonnées du client et l'historique de ce qui a été fait.",
+    undatedHint: (n: number) =>
+      `${n} réservation${n > 1 ? "s" : ""} sans créneau exploitable : la date dictée n'a pas pu être interprétée. Ouvrez la carte pour la fixer.`,
+    client: "Client",
+    unnamed: "Client sans nom",
+    people: (n: number) => `${n} pers.`,
+    originally: (slot: string) => `initialement ${slot}`,
+    originalSlot: "Créneau d'origine",
+    note: (text: string) => `Note : ${text}`,
+    confirm: "Confirmer",
+    edit: "Modifier",
+    close: "Fermer",
+    cancel: "Annuler",
+    save: "Enregistrer",
+    reactivate: "Réactiver",
+    noShow: "Client absent",
+    slot: "Créneau",
+    slotHint: "(heure du commerce)",
+    internalNote: "Note interne",
+    notePlaceholder: "Visible par vous seul, jamais dite au client.",
+    saveError: "Enregistrement impossible.",
+    status: {
+      pending: "À confirmer", confirmed: "Confirmée", rescheduled: "Reportée",
+      cancelled: "Annulée", done: "Honorée", no_show: "Non venu",
+    },
+  },
+
+  /* ── Journal des actions ─────────────────────────────────────────────── */
+  feed: {
+    title: "Journal des actions",
+    count: (n: number) => `${n} enregistrée${n > 1 ? "s" : ""}`,
+    all: "Tout",
+    bookings: "Prises",
+    changes: "Reports & annulations",
+    portal: "Faites depuis l'espace",
+    emptyT: "Rien à tracer pour l'instant",
+    emptyD: "Chaque prise de rendez-vous, report ou annulation viendra s'inscrire ici, avec son auteur et son horodatage. Rien n'y sera jamais modifié.",
+    filteredT: "Aucune action de ce type",
+    filteredD: "Changez de filtre pour voir le reste du journal.",
+    becomes: "devient",
+    note: (text: string) => `Note : ${text}`,
+    space: "Espace",
+    assistant: "Assistant",
+    written: " · écrit",
+    voice: " · voix",
+    people: (n: number) => `${n} pers.`,
+    action: {
+      booking_created: "Réservation prise",
+      booking_rescheduled: "Créneau reporté",
+      booking_cancelled: "Réservation annulée",
+      booking_confirmed: "Réservation confirmée",
+      booking_completed: "Client honoré",
+      booking_no_show: "Client absent",
+      order_placed: "Commande passée",
+      intervention_requested: "Intervention demandée",
+      quote_requested: "Devis demandé",
+      customer_updated: "Fiche client mise à jour",
+      note_added: "Note ajoutée",
+      contacted: "Client recontacté",
+    } as Record<ActionName, string>,
+  },
+
+  /* ── Fichier client ──────────────────────────────────────────────────── */
+  cust: {
+    title: "Fichier client",
+    count: (n: number) => `${n} personne${n > 1 ? "s" : ""}`,
+    searchPlaceholder: "Nom, téléphone, e-mail",
+    searchAria: "Rechercher un client",
+    emptyT: "Aucun client enregistré",
+    emptyD: "Dès qu'un client laisse son numéro à l'assistant, sa fiche se crée ici et se complète toute seule au fil des appels.",
+    noResultT: "Aucun résultat",
+    noResultD: "Aucune fiche ne correspond à cette recherche.",
+    colClient: "Client",
+    colPhone: "Téléphone",
+    colEmail: "E-mail",
+    colActions: "Actions",
+    colBookings: "Prises",
+    colCancels: "Annulations",
+    colLastSeen: "Vu pour la dernière fois",
+    noName: "Sans nom",
+  },
+
+  /* ── Espace de l'agence ──────────────────────────────────────────────── */
+  admin: {
+    barTitle: "Administration",
+    barSub: (n: number) => `${n} vitrines`,
+    title: "Toutes les vitrines",
+    lead: (from: string, to: string, upcoming: number, customers: number) =>
+      `Consommation consolidée et journal complet, du ${from} au ${to}. ` +
+      `${upcoming} réservation${upcoming > 1 ? "s" : ""} à venir · ` +
+      `${customers} client${customers > 1 ? "s" : ""} au fichier.`,
+    errT: "Lecture Supabase impossible.",
+    consolidatedT: "Consommation consolidée",
+    consolidatedD: (n: number) => `Les ${n} vitrines cumulées`,
+    perT: "Par vitrine",
+    perD: "Classées par activité sur la période",
+    colVitrine: "Vitrine",
+    colCalls: "Appels",
+    colDuration: "Durée",
+    colMessages: "Messages",
+    colActions: "Actions",
+    colUpcoming: "À venir",
+    colCustomers: "Clients",
+    colCost: "Coût",
+    colLastSign: "Dernier signe",
+    colAccess: "Accès",
+    colSpace: "Espace",
+    open: "Ouvrir",
+    quotes: "Devis",
+    quotesTitle: "Devis & factures de cette vitrine",
+    never: "jamais",
+    real: "réel",
+    realTitle: "Bâtie sur les données réelles d'un commerce",
+    copyCode: "Copier le code d'accès",
+    copyAccount: "Copier l'e-mail et le mot de passe de démonstration",
+    noteT: "Deux façons d'entrer, une seule vitrine au bout.",
+    noteD1: "Le code est dérivé de",
+    noteD2: "(le changer les régénère tous et ferme toutes les sessions) ; le compte de démonstration ouvre",
+    noteD3: "cette vitrine et elle seule",
+    noteD4: "— le prospect à qui vous la montrez ne voit ni la consommation des autres, ni leurs codes. Surcharges dans le",
+    noteD5: "ferme tous ces comptes d'un coup. Les appels Vapi ne sont conservés que 14 jours côté fournisseur : la synchronisation doit tourner au moins une fois par semaine.",
+    andThe: "; et",
+  },
+
+  /* ── Connexion ───────────────────────────────────────────────────────── */
+  login: {
+    tagline: "Le suivi de votre standardiste.",
+    pitch: "Tout ce que l'assistant a fait pour vous depuis la mise en ligne de votre vitrine, et ce que cela vous a coûté.",
+    h1: "Consommation réelle",
+    h1d: "Appels et messages, jour par jour, coût compris.",
+    h2: "Réservations tenues",
+    h2d: "Calendrier, confirmation, report, annulation.",
+    h3: "Devis & factures",
+    h3d: "Vos documents à vos tarifs, prêts à imprimer.",
+    foot: "Espace réservé. Le code d'accès vous est remis par l'agence et reste valable douze heures après connexion.",
+    title: "Accéder à votre espace",
+    subCode: "Choisissez votre vitrine, puis saisissez le code fourni par l'agence.",
+    subCreds: "Chaque vitrine a son compte de démonstration ; il n'ouvre que la sienne.",
+    tabCode: "Code d'accès",
+    tabCreds: "Identifiants",
+    fieldVitrine: "Votre vitrine",
+    pick: "Sélectionner…",
+    adminOption: "Administration — toutes les vitrines",
+    fieldCode: "Code d'accès",
+    fieldEmail: "E-mail",
+    fieldPassword: "Mot de passe",
+    emailPlaceholder: "votre-vitrine@debug.com",
+    enter: "Entrer",
+    expired: "Votre session a expiré. Reconnectez-vous.",
+    failed: "Connexion impossible.",
+    devT: "PORTAL_SECRET n'est pas configuré.",
+    devD1: "Les codes d'accès sont ceux du secret de repli : posez",
+    devD2: "dans le",
+    devD3: "avant de communiquer un code à un client.",
+    lostCode: "Code perdu ? L'agence le retrouve dans son espace d'administration.",
+    lostCreds: "Identifiants perdus ? L'agence les retrouve dans son espace d'administration.",
+  },
+};
+
+const EN: PortalStrings = {
+  locale: "en-GB",
+
+  bar: {
+    demo: "The site",
+    sync: "Sync",
+    syncing: "Syncing…",
+    syncDone: (n: number) => `${n} action${n > 1 ? "s" : ""} imported`,
+    syncFail: "Sync failed.",
+    logout: "Sign out",
+    admin: "Admin",
+    langLabel: "Language",
+  },
+
+  home: {
+    title: "Your space",
+    lead: (trade: string) => `${trade} — two tools, one access code.`,
+    dashT: "Dashboard",
+    dashD: "What your receptionist has done, what it cost, who called and what is booked.",
+    dashCta: "Open the dashboard",
+    dashStat: (upcoming: number) =>
+      upcoming === 0 ? "no upcoming booking"
+        : `${upcoming} upcoming booking${upcoming > 1 ? "s" : ""}`,
+    quotesT: "Quotes & invoices",
+    quotesD: "Your documents, in your colours and at your prices: your price list is already loaded, you only have to pick.",
+    quotesCta: "Open quotes",
+    quotesStat: (quotes: number, invoices: number) =>
+      quotes + invoices === 0
+        ? "no documents yet"
+        : `${quotes} quote${quotes > 1 ? "s" : ""} · ${invoices} invoice${invoices > 1 ? "s" : ""}`,
+    adminT: "Administration",
+    adminD: "The agency's view across all twelve sites.",
+    adminCta: "Open administration",
+    protected: "Protected space — both tools open with the same access code.",
+  },
+
+  dash: {
+    title: "Your receptionist, tracked",
+    lead: (trade: string, from: string, to: string) => `${trade} · from ${from} to ${to}.`,
+    quotesBtn: "Quotes & invoices",
+    home: "Your space",
+    periodAria: "Period",
+    period: (d: number) => `${d} d`,
+    tabUsage: "Usage",
+    tabBookings: "Bookings",
+    tabJournal: "Journal",
+    tabCustomers: "Clients",
+    errT: "The data could not be read.",
+    errD: "Nothing is lost: the view below is empty, the database is not.",
+    dailyT: "Usage, day by day",
+    dailyD: (n: number) => `${n} exchange${n > 1 ? "s" : ""} over the period`,
+    detailT: "The figures",
+    detailD: "Days without activity are hidden.",
+    colDay: "Day",
+    colCalls: "Calls",
+    colDuration: "Duration",
+    colChats: "Written conversations",
+    colMessages: "Messages",
+    colCost: "Cost",
+    noUsage: "No usage over this period. The sync pulls calls from the last 14 days, and written conversations from further back.",
+  },
+
+  tiles: {
+    calls: "Voice calls",
+    callsSub: (dur: string) => `${dur} of conversation`,
+    callsNone: "no minutes used",
+    messages: "Written messages",
+    messagesSub: (n: string, raw: number) => `across ${n} conversation${raw > 1 ? "s" : ""}`,
+    messagesNone: "no written conversation",
+    actions: "Actions logged",
+    bookings: (n: number) => `${n} booking${n > 1 ? "s" : ""}`,
+    reschedules: (n: number) => `${n} reschedule${n > 1 ? "s" : ""}`,
+    cancels: (n: number) => `${n} cancellation${n > 1 ? "s" : ""}`,
+    cost: "Cost for the period",
+    costNone: "nothing to bill",
+    yieldPct: (pct: number) => `${pct}% of exchanges led to a booking`,
+    yieldRaw: (b: string, bRaw: number, c: string, cRaw: number) =>
+      `${b} booking${bRaw > 1 ? "s" : ""} out of ${c} exchange${cRaw > 1 ? "s" : ""}`,
+  },
+
+  chart: {
+    calls: "Voice calls",
+    chats: "Written conversations",
+    aria: (n: number) => `Daily usage over ${n} days. The figures follow in the table below.`,
+    tipCalls: "Calls",
+    tipChats: "Written",
+  },
+
+  res: {
+    title: "Bookings",
+    total: (n: number) => `${n} in total`,
+    undated: (n: number) => `${n} without a slot`,
+    calendar: "Calendar",
+    cards: "Cards",
+    prevMonth: "Previous month",
+    nextMonth: "Next month",
+    today: "Today",
+    wholeMonth: "Whole month",
+    localHours: (city: string) => `Local time · ${city}`,
+    dow: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    cellAria: (day: number, n: number) => `${day} — ${n} booking${n > 1 ? "s" : ""}`,
+    onDay: (n: number) => (n === 0 ? "no bookings" : `${n} booking${n > 1 ? "s" : ""}`),
+    emptyT: "No bookings yet",
+    emptyD: "As soon as the assistant takes an appointment, by phone or in writing, it appears here with the client's details and everything that has been done.",
+    undatedHint: (n: number) =>
+      `${n} booking${n > 1 ? "s" : ""} without a usable slot: the dictated date could not be interpreted. Open the card to set it.`,
+    client: "Client",
+    unnamed: "Client without a name",
+    people: (n: number) => `${n} people`,
+    originally: (slot: string) => `originally ${slot}`,
+    originalSlot: "Original slot",
+    note: (text: string) => `Note: ${text}`,
+    confirm: "Confirm",
+    edit: "Edit",
+    close: "Close",
+    cancel: "Cancel",
+    save: "Save",
+    reactivate: "Reinstate",
+    noShow: "No-show",
+    slot: "Slot",
+    slotHint: "(business local time)",
+    internalNote: "Internal note",
+    notePlaceholder: "Visible to you only, never said to the client.",
+    saveError: "Could not save.",
+    status: {
+      pending: "To confirm", confirmed: "Confirmed", rescheduled: "Rescheduled",
+      cancelled: "Cancelled", done: "Completed", no_show: "No-show",
+    },
+  },
+
+  feed: {
+    title: "Action journal",
+    count: (n: number) => `${n} logged`,
+    all: "Everything",
+    bookings: "Bookings",
+    changes: "Reschedules & cancellations",
+    portal: "Made from this space",
+    emptyT: "Nothing to trace yet",
+    emptyD: "Every booking, reschedule or cancellation will be written here, with its author and timestamp. Nothing here is ever modified.",
+    filteredT: "No action of this kind",
+    filteredD: "Change the filter to see the rest of the journal.",
+    becomes: "becomes",
+    note: (text: string) => `Note: ${text}`,
+    space: "Space",
+    assistant: "Assistant",
+    written: " · written",
+    voice: " · voice",
+    people: (n: number) => `${n} people`,
+    action: {
+      booking_created: "Booking taken",
+      booking_rescheduled: "Slot rescheduled",
+      booking_cancelled: "Booking cancelled",
+      booking_confirmed: "Booking confirmed",
+      booking_completed: "Client served",
+      booking_no_show: "Client no-show",
+      order_placed: "Order placed",
+      intervention_requested: "Call-out requested",
+      quote_requested: "Quote requested",
+      customer_updated: "Client record updated",
+      note_added: "Note added",
+      contacted: "Client contacted",
+    } as Record<ActionName, string>,
+  },
+
+  cust: {
+    title: "Client list",
+    count: (n: number) => `${n} ${n > 1 ? "people" : "person"}`,
+    searchPlaceholder: "Name, phone, email",
+    searchAria: "Search for a client",
+    emptyT: "No clients yet",
+    emptyD: "As soon as a client leaves their number with the assistant, their record is created here and fills itself in call after call.",
+    noResultT: "No results",
+    noResultD: "No record matches this search.",
+    colClient: "Client",
+    colPhone: "Phone",
+    colEmail: "Email",
+    colActions: "Actions",
+    colBookings: "Bookings",
+    colCancels: "Cancellations",
+    colLastSeen: "Last seen",
+    noName: "No name",
+  },
+
+  admin: {
+    barTitle: "Administration",
+    barSub: (n: number) => `${n} sites`,
+    title: "All sites",
+    lead: (from: string, to: string, upcoming: number, customers: number) =>
+      `Consolidated usage and the full journal, from ${from} to ${to}. ` +
+      `${upcoming} upcoming booking${upcoming > 1 ? "s" : ""} · ` +
+      `${customers} client${customers > 1 ? "s" : ""} on file.`,
+    errT: "Could not read from Supabase.",
+    consolidatedT: "Consolidated usage",
+    consolidatedD: (n: number) => `All ${n} sites combined`,
+    perT: "Per site",
+    perD: "Ranked by activity over the period",
+    colVitrine: "Site",
+    colCalls: "Calls",
+    colDuration: "Duration",
+    colMessages: "Messages",
+    colActions: "Actions",
+    colUpcoming: "Upcoming",
+    colCustomers: "Clients",
+    colCost: "Cost",
+    colLastSign: "Last sign of life",
+    colAccess: "Access",
+    colSpace: "Space",
+    open: "Open",
+    quotes: "Quotes",
+    quotesTitle: "Quotes & invoices for this site",
+    never: "never",
+    real: "real",
+    realTitle: "Built on a real business's data",
+    copyCode: "Copy the access code",
+    copyAccount: "Copy the demo email and password",
+    noteT: "Two ways in, one site at the end of both.",
+    noteD1: "The code is derived from",
+    noteD2: "(changing it regenerates them all and closes every session); the demo account opens",
+    noteD3: "this site and this site only",
+    noteD4: "— the prospect you are showing it to sees neither the others' usage nor their codes. Overrides in",
+    noteD5: "closes all those accounts at once. Vapi keeps calls for 14 days only on their side: the sync must run at least once a week.",
+    andThe: "; and",
+  },
+
+  login: {
+    tagline: "Your receptionist, tracked.",
+    pitch: "Everything the assistant has done for you since your site went live, and what it cost.",
+    h1: "Real usage",
+    h1d: "Calls and messages, day by day, cost included.",
+    h2: "Bookings kept",
+    h2d: "Calendar, confirmation, reschedule, cancellation.",
+    h3: "Quotes & invoices",
+    h3d: "Your documents at your prices, ready to print.",
+    foot: "Restricted space. The access code is given to you by the agency and stays valid for twelve hours after signing in.",
+    title: "Sign in to your space",
+    subCode: "Pick your site, then enter the code the agency gave you.",
+    subCreds: "Each site has its own demo account; it opens that site only.",
+    tabCode: "Access code",
+    tabCreds: "Credentials",
+    fieldVitrine: "Your site",
+    pick: "Select…",
+    adminOption: "Administration — every site",
+    fieldCode: "Access code",
+    fieldEmail: "Email",
+    fieldPassword: "Password",
+    emailPlaceholder: "your-site@debug.com",
+    enter: "Enter",
+    expired: "Your session has expired. Please sign in again.",
+    failed: "Could not sign in.",
+    devT: "PORTAL_SECRET is not configured.",
+    devD1: "Access codes come from the fallback secret: set",
+    devD2: "in",
+    devD3: "before giving a code to a client.",
+    lostCode: "Lost your code? The agency finds it again in its administration space.",
+    lostCreds: "Lost your credentials? The agency finds them again in its administration space.",
+  },
+};
+
+export function portalStrings(lang: Lang): PortalStrings {
+  return lang === "en" ? EN : FR;
+}
