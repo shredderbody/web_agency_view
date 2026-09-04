@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { AlertCircle, ArrowUpRight, AtSign, Check, ClipboardCopy, Gauge } from "lucide-react";
+import { AlertCircle, ArrowUpRight, AtSign, Check, ClipboardCopy, FileText, Gauge } from "lucide-react";
 import type { AdminDashboardData } from "@/lib/portal/dashboard";
-import { ADMIN_PATH, spaceHref } from "@/lib/portal/paths";
+import { ADMIN_PATH, quotesHref, spaceHref } from "@/lib/portal/paths";
 import PortalBar from "./PortalBar";
 import StatTiles from "./StatTiles";
 import UsageChart from "./UsageChart";
@@ -276,6 +276,12 @@ export default function AdminBoard({ data }: { data: AdminDashboardData }) {
                         {codeButton(r.tenant.slug, r.accessCode)}
                         <Link className="esp-btn esp-btn-sm" href={spaceHref(r.tenant.slug)}>
                           Ouvrir <ArrowUpRight size={12} aria-hidden />
+                        </Link>
+                        <Link
+                          className="esp-btn esp-btn-sm" href={quotesHref(r.tenant.slug)}
+                          title="Devis & factures de cette vitrine"
+                        >
+                          <FileText size={12} aria-hidden /> Devis
                         </Link>
                         {r.testAccount && accountButton(r.tenant.slug, r.testAccount)}
                       </div>

@@ -5,6 +5,8 @@
                      « votre site, puis /admin ». C'est la même forme que sur un
                      site client autonome (cf. website_expo/*), où la vitrine est
                      à la racine du domaine.
+     /<slug>/quotes  l'outil de devis et de factures de cette vitrine (et son
+                     alias français /<slug>/devis, cf. app/(portal)/[slug]/devis).
      /admin          l'espace de l'agence, vision sur toutes les vitrines.
      /admin/login    la connexion.
 
@@ -23,4 +25,9 @@ export function spaceHref(slug: string): string {
 /** La connexion, en pré-sélectionnant la vitrine quand on la connaît. */
 export function loginHref(slug?: string): string {
   return slug ? `${LOGIN_PATH}?demo=${encodeURIComponent(slug)}` : LOGIN_PATH;
+}
+
+/** L'outil de devis d'une vitrine. `/devis` mène au même endroit, en français. */
+export function quotesHref(slug: string): string {
+  return `/${slug}/quotes`;
 }

@@ -1,0 +1,317 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   DEVIS & FACTURES — la feuille propre à /<slug>/quotes et /<slug>/devis.
+
+   Elle s'ajoute à `espace.css` : mêmes tokens, mêmes boutons, mêmes tableaux.
+   Ce qu'elle apporte tient en deux choses que l'espace de suivi n'avait pas à
+   connaître :
+
+   1. UN ÉCRAN COUPÉ EN DEUX — la saisie à gauche, le document à droite. Pas de
+      bouton « aperçu » : ce qu'on modifie se voit pendant qu'on le modifie.
+
+   2. UNE FEUILLE DE PAPIER. `.esp-doc-sheet` n'emprunte rien aux tokens de
+      l'espace : un document comptable est blanc, encre noire, et ne change pas
+      d'apparence selon l'outil qui l'a produit. Seul l'accent de la vitrine y
+      entre, par `--doc-accent`.
+
+   ── Le parti pris d'impression ─────────────────────────────────────────────
+   Il n'y a PAS de second gabarit pour le PDF. `@media print` retire l'écran
+   autour de la feuille et laisse la feuille : ce que le client voit à l'écran
+   EST ce qui sort de l'imprimante. Deux gabarits finiraient par diverger, et
+   c'est toujours le document envoyé au client qui porterait l'erreur.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── L'écran coupé en deux ───────────────────────────────────────────────── */
+
+.doc-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* Le document reste en vue pendant qu'on descend dans les lignes : c'est là
+   tout l'intérêt de l'avoir à côté plutôt que derrière un bouton. */
+.doc-preview { position: sticky; top: 1rem; }
+
+.doc-pane { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+
+.doc-toolbar {
+  display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+  margin-bottom: 1.15rem;
+}
+.doc-toolbar-spacer { flex: 1 1 auto; }
+.doc-toolbar-title { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.doc-toolbar-num {
+  font-size: 1.0625rem; font-weight: 700; letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Le numéro de document EST le lien vers son éditeur : on clique ce qu'on
+   cherchait des yeux, pas un bouton « ouvrir » en bout de ligne. */
+.doc-open {
+  border: 0; background: none; padding: 0; font: inherit; text-align: left;
+  color: var(--esp-accent-deep); font-weight: 650; letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums; cursor: pointer;
+}
+.doc-open:hover { text-decoration: underline; }
+
+/* ── Le catalogue de la vitrine ──────────────────────────────────────────── */
+
+.doc-catalog { display: flex; flex-direction: column; gap: 0.9rem; max-height: 26rem; overflow-y: auto; }
+.doc-catalog-group { display: flex; flex-direction: column; gap: 0.35rem; }
+.doc-catalog-title {
+  font-size: 0.6875rem; font-weight: 650; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--esp-ink-3); position: sticky; top: 0; z-index: 1;
+  background: var(--esp-surface); padding: 0.25rem 0;
+}
+.doc-catalog-items { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+/* Une pastille cliquable = une ligne de devis. Le prix est dans la pastille :
+   on choisit une prestation ET son tarif d'un seul geste. */
+.doc-chip {
+  display: inline-flex; align-items: baseline; gap: 0.4rem;
+  max-width: 100%; padding: 0.3rem 0.6rem;
+  border: 1px solid var(--esp-line-2); border-radius: 999px;
+  background: var(--esp-surface); color: var(--esp-ink);
+  font: inherit; font-size: 0.75rem; font-weight: 550; text-align: left;
+  cursor: pointer; transition: background var(--esp-fast), border-color var(--esp-fast);
+}
+.doc-chip:hover { background: var(--esp-accent-soft); border-color: var(--esp-accent); }
+.doc-chip-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doc-chip-price {
+  flex: none; font-variant-numeric: tabular-nums; font-weight: 650; color: var(--esp-ink-2);
+}
+.doc-chip-price.is-toquote { font-weight: 550; font-style: italic; color: var(--esp-ink-3); }
+
+/* ── L'éditeur de lignes ─────────────────────────────────────────────────── */
+
+.doc-lines { display: flex; flex-direction: column; }
+.doc-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 3.5rem 6.5rem 5.5rem 1.85rem;
+  gap: 0.4rem; align-items: start;
+  padding: 0.55rem 0; border-bottom: 1px solid var(--esp-line);
+}
+.doc-line:last-child { border-bottom: 0; }
+.doc-line-head {
+  font-size: 0.6875rem; font-weight: 650; letter-spacing: 0.02em; text-transform: uppercase;
+  color: var(--esp-ink-3); padding-bottom: 0.4rem; border-bottom: 1px solid var(--esp-line-2);
+}
+.doc-line-head > :nth-child(n + 2) { text-align: right; }
+.doc-line-main { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+.doc-line .esp-input { padding: 0.35rem 0.5rem; min-height: 2rem; font-size: 0.8125rem; }
+.doc-line .esp-input.n { text-align: right; font-variant-numeric: tabular-nums; }
+.doc-line-desc { font-size: 0.75rem !important; color: var(--esp-ink-2); }
+.doc-line-x {
+  align-self: center; width: 1.85rem; height: 1.85rem; flex: none;
+  display: grid; place-items: center; border-radius: var(--esp-r);
+  border: 1px solid transparent; background: transparent; color: var(--esp-ink-3);
+  cursor: pointer; transition: color var(--esp-fast), background var(--esp-fast);
+}
+.doc-line-x:hover { color: var(--esp-bad); background: var(--esp-bad-bg); }
+/* Un nombre et son étiquette : l'étiquette ne sert que sur téléphone, où
+   l'en-tête de colonne a disparu. */
+.doc-line-cell { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.doc-line-cell .esp-input { width: 100%; }
+
+.doc-line.is-discount { background: var(--esp-accent-soft); border-radius: var(--esp-r); padding-inline: 0.4rem; }
+
+/* ── Le pied de calcul, côté saisie ──────────────────────────────────────── */
+
+.doc-totals { display: flex; flex-direction: column; gap: 0.3rem; margin-left: auto; min-width: 15rem; }
+.doc-total-row {
+  display: flex; justify-content: space-between; gap: 1.5rem;
+  font-size: 0.8125rem; color: var(--esp-ink-2);
+}
+.doc-total-row b { font-variant-numeric: tabular-nums; color: var(--esp-ink); font-weight: 600; }
+.doc-total-row.is-grand {
+  padding-top: 0.45rem; margin-top: 0.2rem; border-top: 1px solid var(--esp-line-2);
+  font-size: 1rem; font-weight: 700; color: var(--esp-ink);
+}
+.doc-total-row.is-grand b { font-size: 1.125rem; font-weight: 750; letter-spacing: -0.02em; }
+
+/* ── Le contact repris de l'espace ───────────────────────────────────────── */
+
+.doc-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
+.doc-grid-3 { display: grid; grid-template-columns: 6rem minmax(0, 1fr); gap: 0.7rem; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LA FEUILLE — à partir d'ici, plus aucun token `--esp-*`.
+
+   Un devis est un document, pas une vue d'application : il est blanc, il est
+   encre noire, il a des marges de papier. Les seules variables admises sont
+   `--doc-accent` (l'accent de la vitrine) et la devise du montant.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.esp-doc-sheet {
+  --doc-ink: #17171a;
+  --doc-ink-2: #55565c;
+  --doc-ink-3: #83848b;
+  --doc-line: #e2e2e6;
+  --doc-accent: #17171a;
+
+  width: 100%; max-width: 46rem; margin-inline: auto;
+  background: #fff; color: var(--doc-ink);
+  border: 1px solid var(--esp-line); border-radius: var(--esp-r);
+  box-shadow: var(--esp-shadow);
+  padding: clamp(1.5rem, 3.2vw, 2.75rem);
+  font-size: 0.8125rem; line-height: 1.55;
+  /* Le filet d'accent doit sortir de l'imprimante : sans ceci, le navigateur
+     retire les fonds « décoratifs » — or celui-là porte l'identité. */
+  print-color-adjust: exact; -webkit-print-color-adjust: exact;
+}
+.esp-doc-sheet p { margin: 0; }
+
+/* Un filet d'accent en tête : la seule couleur du document. */
+.doc-rule { height: 3px; background: var(--doc-accent); border-radius: 2px; margin-bottom: 1.5rem; }
+
+.doc-head { display: flex; gap: 1.5rem; align-items: flex-start; margin-bottom: 1.75rem; }
+.doc-head-id { flex: 1 1 auto; min-width: 0; }
+.doc-issuer-name {
+  font-size: 1.125rem; font-weight: 700; letter-spacing: -0.015em; line-height: 1.25;
+  color: var(--doc-accent);
+}
+.doc-issuer-trade { font-size: 0.75rem; font-weight: 600; color: var(--doc-ink-2); margin-top: 0.1rem !important; }
+.doc-issuer-meta { font-size: 0.75rem; color: var(--doc-ink-2); margin-top: 0.55rem !important; }
+.doc-issuer-reg { font-size: 0.6875rem; color: var(--doc-ink-3); margin-top: 0.3rem !important; }
+
+.doc-head-mark { flex: none; text-align: right; }
+.doc-kind {
+  font-size: 1.35rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase;
+  line-height: 1.1;
+}
+.doc-number {
+  font-size: 0.875rem; font-weight: 650; font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em; margin-top: 0.15rem !important;
+}
+.doc-dates { font-size: 0.75rem; color: var(--doc-ink-2); margin-top: 0.55rem !important; }
+.doc-dates span { display: block; }
+.doc-dates b { font-weight: 600; color: var(--doc-ink); }
+
+.doc-to {
+  border: 1px solid var(--doc-line); border-radius: 0.4rem;
+  padding: 0.75rem 0.9rem; margin-bottom: 1.5rem; max-width: 24rem; margin-left: auto;
+}
+.doc-to-k {
+  font-size: 0.625rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--doc-ink-3); margin-bottom: 0.3rem !important;
+}
+.doc-to-name { font-weight: 650; font-size: 0.875rem; }
+.doc-to-line { font-size: 0.75rem; color: var(--doc-ink-2); }
+.doc-to-empty { font-size: 0.8125rem; color: var(--doc-ink-3); font-style: italic; }
+
+.doc-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+.doc-table th {
+  text-align: left; font-size: 0.625rem; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: #fff; background: var(--doc-accent);
+  padding: 0.45rem 0.55rem;
+}
+.doc-table th.n, .doc-table td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.doc-table td { padding: 0.5rem 0.55rem; border-bottom: 1px solid var(--doc-line); vertical-align: top; }
+.doc-table tbody tr:last-child td { border-bottom: 1px solid var(--doc-ink-3); }
+.doc-table .doc-cell-label { font-weight: 600; }
+.doc-table .doc-cell-desc { font-size: 0.6875rem; color: var(--doc-ink-2); margin-top: 0.1rem !important; }
+.doc-table .doc-row-discount td { color: var(--doc-ink-2); font-style: italic; }
+.doc-table-empty { text-align: center; color: var(--doc-ink-3); font-style: italic; padding: 1.5rem 0 !important; }
+
+.doc-sums { display: flex; justify-content: flex-end; margin-top: 0.9rem; }
+.doc-sums-in { min-width: 15rem; display: flex; flex-direction: column; gap: 0.25rem; }
+.doc-sum { display: flex; justify-content: space-between; gap: 1.25rem; font-size: 0.75rem; color: var(--doc-ink-2); }
+.doc-sum b { font-variant-numeric: tabular-nums; color: var(--doc-ink); font-weight: 600; }
+.doc-sum-grand {
+  display: flex; justify-content: space-between; gap: 1.25rem; align-items: baseline;
+  margin-top: 0.4rem; padding: 0.5rem 0.6rem; border-radius: 0.3rem;
+  background: var(--doc-accent); color: #fff;
+  font-size: 0.8125rem; font-weight: 650; letter-spacing: 0.01em;
+}
+.doc-sum-grand b { font-size: 1rem; font-weight: 750; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+.doc-notes { margin-top: 1.5rem; }
+.doc-notes-k {
+  font-size: 0.625rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--doc-ink-3); margin-bottom: 0.25rem !important;
+}
+.doc-notes-p { font-size: 0.75rem; color: var(--doc-ink-2); white-space: pre-wrap; }
+
+.doc-sign {
+  margin-top: 1.75rem; margin-left: auto; width: 15rem;
+  border: 1px dashed var(--doc-line); border-radius: 0.4rem;
+  padding: 0.55rem 0.7rem 2.75rem;
+  font-size: 0.6875rem; color: var(--doc-ink-3);
+}
+
+.doc-legal {
+  margin-top: 1.75rem; padding-top: 0.8rem; border-top: 1px solid var(--doc-line);
+  font-size: 0.625rem; line-height: 1.6; color: var(--doc-ink-3);
+}
+.doc-legal-from { font-weight: 600; color: var(--doc-ink-2); margin-bottom: 0.2rem !important; }
+
+/* ── Impression ──────────────────────────────────────────────────────────────
+   Rien n'est redessiné : on retire l'application, et la feuille reste. Ce qui
+   disparaît est nommé un par un — une règle « tout sauf » laisserait des
+   fantômes de mise en page et des pages blanches en fin de document.         */
+
+@page { size: A4; margin: 14mm 13mm 15mm; }
+
+@media print {
+  html, body { background: #fff !important; }
+  .esp { background: #fff !important; }
+
+  .esp-bar, .esp-print-hide { display: none !important; }
+  .esp-main { padding: 0 !important; }
+  .esp-wrap { max-width: none !important; padding: 0 !important; margin: 0 !important; }
+  .doc-split { display: block !important; gap: 0 !important; }
+  .doc-preview { position: static !important; top: auto !important; }
+
+  .esp-doc-sheet {
+    max-width: none; margin: 0; padding: 0;
+    border: 0; border-radius: 0; box-shadow: none;
+    font-size: 10pt;
+  }
+  /* Une ligne de prestation ne se coupe pas entre deux pages, et le pied de
+     document ne part pas seul sur une page 2. */
+  .doc-table tr { break-inside: avoid; }
+  .doc-sums, .doc-sign, .doc-legal { break-inside: avoid; }
+  .doc-table thead { display: table-header-group; }
+}
+
+/* ── Adaptations ─────────────────────────────────────────────────────────── */
+
+/* Sous 1100 px la feuille passe SOUS la saisie : côte à côte, ni l'une ni
+   l'autre n'a la largeur qu'il lui faut. Elle reste visible, on descend. */
+@media (max-width: 1100px) {
+  .doc-split { grid-template-columns: minmax(0, 1fr); }
+  .doc-preview { position: static; }
+}
+
+/* Sur téléphone, la ligne de devis cesse d'être une rangée de tableau : les
+   trois nombres passent sur une seconde rangée, sous la désignation, qui prend
+   toute la largeur. Un champ de prix de 40 px de large n'est pas saisissable. */
+@media (max-width: 640px) {
+  .doc-line {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) 1.85rem;
+    gap: 0.4rem 0.5rem; padding: 0.7rem 0;
+  }
+  .doc-line-main { grid-column: 1 / -1; }
+  .doc-line-head { display: none; }
+  .doc-line .esp-input { min-height: 2.25rem; }
+  /* Les nombres perdent leur en-tête de colonne : ils portent leur propre
+     étiquette, sinon on saisit une quantité dans une case de taxe. */
+  .doc-line-cell { display: flex; flex-direction: column; gap: 0.15rem; }
+  .doc-line-cell-k {
+    font-size: 0.625rem; font-weight: 650; color: var(--esp-ink-3);
+    text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .doc-grid-2, .doc-grid-3 { grid-template-columns: minmax(0, 1fr); }
+  .doc-totals { min-width: 0; width: 100%; }
+  .doc-head { flex-direction: column; gap: 0.9rem; }
+  .doc-head-mark { text-align: left; }
+  .doc-to { margin-left: 0; }
+  .doc-sign { width: 100%; }
+}
+
+/* Au-dessus de 640 px, les étiquettes de champ des lignes n'ont pas lieu
+   d'être : l'en-tête du tableau les porte déjà. */
+@media (min-width: 641px) {
+  .doc-line-cell-k { display: none; }
+}

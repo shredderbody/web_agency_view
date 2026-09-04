@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, CalendarDays, ClipboardList, Gauge, UsersRound } from "lucide-react";
+import { AlertCircle, CalendarDays, ClipboardList, FileText, Gauge, UsersRound } from "lucide-react";
 import type { TenantDashboardData } from "@/lib/portal/dashboard";
-import { spaceHref } from "@/lib/portal/paths";
+import { quotesHref, spaceHref } from "@/lib/portal/paths";
 import PortalBar from "./PortalBar";
 import StatTiles from "./StatTiles";
 import UsageChart from "./UsageChart";
@@ -69,7 +69,16 @@ export default function TenantDashboard({
                 {tenant.trade} · période du {fmtDayLabel(usage.from)} au {fmtDayLabel(usage.to)}.
               </p>
             </div>
-            <div className="esp-seg" style={{ marginLeft: "auto" }} role="group" aria-label="Période">
+            {/* L'outil de devis vit à côté du suivi, pas dedans : un cinquième
+                onglet en aurait fait une sous-partie de la consommation. */}
+            <a
+              className="esp-btn esp-btn-sm"
+              style={{ marginLeft: "auto" }}
+              href={quotesHref(tenant.slug)}
+            >
+              <FileText size={13} aria-hidden /> Devis &amp; factures
+            </a>
+            <div className="esp-seg" role="group" aria-label="Période">
               {PERIODS.map((p) => (
                 <button
                   key={p.days} type="button" className="esp-seg-b"
