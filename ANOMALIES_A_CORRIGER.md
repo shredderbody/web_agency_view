@@ -42,4 +42,19 @@
   `docs/DEVELOPMENT.md` (qui listait encore la clé publiable parmi les variables
   *lues par le code*).
 
-_Dernière mise à jour : 2026-09-04 — registre clos._
+## Vérification en production (2026-09-04)
+
+Commit `5e246d1`, poussé, `bash update.sh` : image reconstruite, conteneur
+remplacé, Caddy rechargé, contrôle de santé passé.
+Sur https://receptionniste.zerocall.io :
+
+| Vérification | Résultat |
+|---|---|
+| « 499 » dans la page d'accueil | ✅ **0 occurrence** |
+| FAQ FR dans le bundle servi | ✅ « à partir de 490 € pour la vitrine… » |
+| FAQ EN dans le bundle servi | ✅ « From €490 for the essential… » |
+| connexion `barbershop@debug.com` | ✅ 200 — les lectures Supabase serveur ne dépendaient pas de la clé anon |
+| espace client, son propre slug | ✅ 200 ; cloisonnement intact (307 depuis un autre slug) |
+| outil de devis, ses sept onglets | ✅ rendus par le serveur |
+
+_Dernière mise à jour : 2026-09-04 — registre clos et vérifié en production._
