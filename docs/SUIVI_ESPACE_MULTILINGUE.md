@@ -4,14 +4,22 @@
 > bas : l'état de chaque étape est à jour. Reprendre à la première étape `[ ]`.
 > Mettre à jour ce fichier **après chaque étape**, jamais à la fin.
 
-Dernière mise à jour : 2026-09-04 — 🚧 Étapes 1 à 9b faites. L'espace est
-**entièrement bilingue**, les adresses sont en place, le build passe et la
-vérification locale est concluante dans les deux langues. Reste à commiter,
-pousser, redéployer et documenter.
+Dernière mise à jour : 2026-09-04 — ✅ **CHANTIER TERMINÉ ET EN SERVICE.**
+Les douze étapes sont closes. Commits `2fe0772` et `a6d45e4` poussés sur `main`,
+déployés et vérifiés sur https://receptionniste.zerocall.io.
 
-## ⏯️ Reprendre ici
+## ✅ En service
 
-Reprendre à l'**étape 10** (commit + push), puis 11 et 12.
+    https://receptionniste.zerocall.io/<slug>/admin            l'accueil, 2 cartes
+    https://receptionniste.zerocall.io/<slug>/admin/dashboard  le suivi
+    https://receptionniste.zerocall.io/<slug>/admin/quotes     les devis (alias /devis)
+
+Sur les douze vitrines, en **français et en anglais**, avec le même code d'accès
+qu'avant. Les deux anciennes adresses de devis redirigent en 308.
+
+La documentation de référence est [ESPACE_CLIENT.md](./ESPACE_CLIENT.md) et
+[DEVIS_FACTURES.md](./DEVIS_FACTURES.md). Ce fichier-ci reste le journal de bord
+du chantier.
 
 ## Demande
 
@@ -82,8 +90,8 @@ page d'accueil à deux cartes règle.
 - [x] **8.** Sélecteur de langue dans la barre d'application ET sur la connexion
 - [x] **9.** Passe responsive : téléphone et tablette, dans les deux langues
 - [x] **9b.** Build + vérification locale dans les deux langues
-- [ ] **10.** Commit + push
-- [ ] **11.** Redéploiement + vérification en production
+- [x] **10.** Commit + push
+- [x] **11.** Redéploiement + vérification en production
 - [x] **12.** Documentation (`docs/ESPACE_CLIENT.md`, `docs/DEVIS_FACTURES.md`, `docs/README.md`)
 
 ## Journal
@@ -206,3 +214,28 @@ page d'accueil à deux cartes règle.
   bilingue complète. `DEVIS_FACTURES.md` : toutes les URL reprises (l'outil a
   déménagé le jour même de sa mise en service) et les redirections 308 notées.
   `README.md` : les deux fichiers de suivi indexés.
+- **2026-09-04 · étapes 10 et 11, en production** — commit `a6d45e4` (30
+  fichiers), poussé, puis `bash update.sh` en mode caddy : conteneur remplacé,
+  `portal-sync` relancé, Caddy rechargé, contrôle de santé passé, URL publique
+  en 200. Onze vérifications sur le domaine public :
+
+  | Vérification | Résultat |
+  |---|---|
+  | `/pas-une-vitrine/admin` | **404** |
+  | les trois adresses sans session | **307** vers la connexion |
+  | `/barbershop/quotes` · `/devis` | **308** vers `/barbershop/admin/quotes` · `/admin/devis` |
+  | accueil · suivi · devis, **français** | 200 — « Votre espace », « Ouvrir le suivi », « Ouvrir les devis » |
+  | les trois mêmes, **anglais** | 200 — « Your space », « Open the dashboard », « Open quotes » |
+  | session `barbershop` sur `/ines-garden/admin/quotes` | **307** retour chez soi — répondu par la garde du layout |
+
+## Bilan
+
+Les douze étapes sont closes. Deux points méritent d'être retenus pour la suite :
+
+1. **Le nid d'URL ne protège rien par lui-même.** Ce qui protège, c'est le
+   `layout.tsx` que le nid fait partager. La demande était « forcer l'accès par
+   la page admin » ; c'est le layout qui l'exécute, pas le chemin.
+2. **La traduction a coûté plus cher hors des textes que dedans.** Les 180
+   chaînes se remplacent mécaniquement ; ce sont `fr-FR` écrit en dur dans sept
+   fonctions de formatage, les pluriels formés au milieu du JSX, et les tables
+   qui mêlaient libellé et couleur qui ont demandé de la réflexion.
