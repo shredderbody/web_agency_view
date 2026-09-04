@@ -4,13 +4,14 @@
 > bas : l'état de chaque étape est à jour. Reprendre à la première étape `[ ]`.
 > Mettre à jour ce fichier **après chaque étape**, jamais à la fin.
 
-Dernière mise à jour : 2026-09-04 — 🚧 **CHANTIER OUVERT.** Audit fait,
-architecture arrêtée. Rien n'est encore écrit. La production tourne sur
-`5937a8b` et n'est pas affectée.
+Dernière mise à jour : 2026-09-04 — 🚧 Étapes 1 à 14 faites. L'application à
+sept onglets est écrite, la dictée fonctionne de bout en bout, le build passe et
+la vérification locale est concluante. Reste à commiter, pousser, redéployer et
+documenter.
 
 ## ⏯️ Reprendre ici
 
-Reprendre à l'**étape 6** (coquille à onglets).
+Reprendre à l'**étape 15** (commit, push, redéploiement).
 
 ## Demande
 
@@ -109,15 +110,15 @@ serveur, c'est un acquis) et **j'ajoute `unit`**.
 - [x] **3.** Socle serveur : catalogue (semis + CRUD), réglages, clients modifiables
 - [x] **4.** API : `/api/portal/catalog`, `/api/portal/clients`, `/api/portal/doc-settings`
 - [x] **5.** API vocale : transcription (Whisper), analyse en lignes, synthèse vocale
-- [ ] **6.** Coquille à onglets + barre basse mobile
-- [ ] **7.** Onglet Éditeur : enregistrement automatique, unités, bouton de dictée
-- [ ] **8.** Onglets Devis et Factures (listes, filtres, actions)
-- [ ] **9.** Onglet Clients (CRUD)
-- [ ] **10.** Onglet Catalogue (CRUD, catégories)
-- [ ] **11.** Onglet Tableau de bord (chiffre d'affaires, conversion, encours)
-- [ ] **12.** Onglet Réglages (émetteur, paiement, mentions)
-- [ ] **13.** Bilingue + responsive de tout ce qui précède
-- [ ] **14.** Build + vérification locale
+- [x] **6.** Coquille à onglets + barre basse mobile
+- [x] **7.** Onglet Éditeur : enregistrement automatique, unités, bouton de dictée
+- [x] **8.** Onglets Devis et Factures (listes, filtres, actions)
+- [x] **9.** Onglet Clients (CRUD)
+- [x] **10.** Onglet Catalogue (CRUD, catégories)
+- [x] **11.** Onglet Tableau de bord (chiffre d'affaires, conversion, encours)
+- [x] **12.** Onglet Réglages (émetteur, paiement, mentions)
+- [x] **13.** Bilingue + responsive de tout ce qui précède
+- [x] **14.** Build + vérification locale
 - [ ] **15.** Commit + push + redéploiement
 - [ ] **16.** Documentation
 
@@ -219,3 +220,62 @@ serveur, c'est un acquis) et **j'ajoute `unit`**.
   2. `ACTION_LABEL` traînait dans `ledger.ts`, en français seulement, appelée
      nulle part, et doublait `portalStrings.feed.action` qui est bilingue. Deux
      listes de libellés finissent toujours par diverger : une seule reste.
+- **2026-09-04 · étapes 6 à 13, l'application** — dix composants dans
+  `components/portal/quotes/`, plus un contexte partagé.
+  `DocumentsWorkspace.tsx` (900 lignes, un seul écran) est supprimé.
+
+  | Onglet | Ce qu'il apporte |
+  |---|---|
+  | Devis en cours | éditeur, **enregistrement automatique**, unités par ligne, **dictée** |
+  | Mes devis · Factures | listes filtrables par statut, recherche, duplication |
+  | Clients | fiche complète avec adresse postale, origine (téléphone / saisie) |
+  | Catalogue | rayons colorés, édition en place, prix d'achat et **marge** |
+  | Tableau de bord | devis émis, acceptés, taux d'acceptation, facturé, encaissé, reste dû, douze mois glissants, « ce qui se vend » |
+  | Réglages | identité, paiement, mentions — en **surcharge** de la vitrine |
+
+  Quatre décisions de forme :
+  1. **Une seule page, sept onglets.** Les données arrivent en UN aller-retour :
+     changer d'onglet n'attend aucun réseau. C'est ce qu'on veut d'un outil
+     qu'on utilise le téléphone à l'oreille.
+  2. **On atterrit sur l'éditeur**, document le plus récent ouvert — comme dans
+     `devis_app`. Atterrir sur une liste obligerait à cliquer pour reprendre le
+     devis qu'on était en train d'écrire.
+  3. **Barre basse fixe sur téléphone** (quatre onglets au pouce), les trois
+     autres restant en haut. Sept onglets en défilement horizontal, c'est six
+     onglets qu'on ne voit pas.
+  4. **Le contexte porte aussi les écritures.** Quand l'onglet Clients crée une
+     fiche, l'éditeur peut la choisir dans la seconde. Une écriture qui ne
+     remonterait pas obligerait à recharger pour voir son propre travail.
+- **2026-09-04 · l'enregistrement automatique, en détail** — débounce de 1,5 s
+  après la dernière frappe, plus un enregistrement forcé au démontage de
+  l'éditeur, plus un `beforeunload` en dernier filet. **L'état est dit en
+  clair** — « Modifications en attente », « Enregistré à 14 h 32 » : un
+  enregistrement invisible ne rassure personne.
+  Un point qui se voit à l'usage : on marque propre **l'état envoyé**, pas
+  l'état courant. Ce qui a été tapé pendant l'aller-retour reste « à
+  enregistrer » et repart au tour suivant, au lieu d'être perdu.
+- **2026-09-04 · un vrai défaut trouvé à la vérification** — l'éditeur
+  construisait son brouillon dans un `useEffect`, donc **ne rendait rien côté
+  serveur** : la page affichait son état vide (« Aucun devis ») puis se
+  remplissait à l'hydratation. Un « aucun devis » qui clignote une demi-seconde
+  sur un devis qui existe fait douter de tout le reste. Le brouillon est
+  maintenant construit synchronement, au premier rendu ; l'effet ne sert plus
+  qu'au changement de document.
+- **2026-09-04 · étape 14, vérification locale** — build vert,
+  `/[slug]/admin/quotes` à 182 kB de premier chargement (contre 133 kB pour
+  l'écran unique : +49 kB pour sept onglets et la dictée). Serveur de production
+  sur le port 3099 :
+
+  | Vérification | Résultat |
+  |---|---|
+  | les sept onglets présents, FR et EN | ✅ aucun français résiduel en anglais |
+  | éditeur rendu **par le serveur** | ✅ numéro, destinataire, carte, feuille A4, « Bon pour accord » |
+  | catalogue semé depuis la vitrine | ✅ 5 prestations, 1 rayon, prix et TVA repris |
+  | **dictée de bout en bout** | ✅ « Deux coupes Brutus, plus une taille de barbe, et une remise de dix pour cent » → 2 × La coupe Brutus à 28 €, 1 × Taille de barbe à 19 €, remise 10 %. **Les prix viennent du catalogue** : ils n'étaient pas dictés |
+  | clients : créer / modifier / supprimer | ✅ téléphone normalisé en E.164, `source = portal` |
+  | catalogue : créer / modifier / supprimer | ✅ unité et prix d'achat conservés |
+  | réglages : enregistrer, relire l'émetteur effectif | ✅ SIRET et délai de 45 j répercutés sur l'émetteur |
+
+  Les données de vérification ont été **supprimées** : la base de démonstration
+  est rendue dans l'état où elle a été trouvée, au catalogue semé près — qui est
+  le comportement voulu, pas un résidu.

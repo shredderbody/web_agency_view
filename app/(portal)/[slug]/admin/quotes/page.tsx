@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { loadQuotesPage } from "@/lib/portal/quotesPage";
-import DocumentsWorkspace from "@/components/portal/DocumentsWorkspace";
+import QuotesApp from "@/components/portal/quotes/QuotesApp";
 import "../../../documents.css";
 
 /* `/<slug>/admin/quotes` — L'ADRESSE CANONIQUE de l'outil de devis.
@@ -30,5 +30,5 @@ export default async function QuotesPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  return <DocumentsWorkspace data={await loadQuotesPage(slug)} />;
+  return <QuotesApp data={await loadQuotesPage(slug)} />;
 }

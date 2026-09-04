@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { loadQuotesPage } from "@/lib/portal/quotesPage";
-import DocumentsWorkspace from "@/components/portal/DocumentsWorkspace";
+import QuotesApp from "@/components/portal/quotes/QuotesApp";
 import "../../../documents.css";
 
 /* `/<slug>/admin/devis` — la même pièce, par la porte française.
@@ -23,5 +23,5 @@ export default async function DevisPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  return <DocumentsWorkspace data={await loadQuotesPage(slug, "fr")} />;
+  return <QuotesApp data={await loadQuotesPage(slug, "fr")} />;
 }
