@@ -81,9 +81,10 @@ Checkout et les bannières de retour proviennent de `lib/i18n.ts` (`ui[lang].che
 | `NEXT_PUBLIC_APP_URL` | base des `success_url` / `cancel_url` |
 | `NEXT_PUBLIC_APP_URL_LOCAL` | base d'URL alternative (fallback) |
 
-> `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` est présente dans le `.env` mais **n'est pas
-> utilisée** par le code : le paiement se fait par **redirection serveur** vers la
-> page Checkout hébergée, sans Stripe.js côté client.
+> `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` **n'est pas utilisée** par le code : le
+> paiement se fait par **redirection serveur** vers la page Checkout hébergée,
+> sans Stripe.js côté client. Elle est **commentée dans le `.env`** depuis le
+> 2026-09-04 ; la décommenter le jour où Stripe.js sera monté côté navigateur.
 
 ## À configurer manuellement dans Stripe
 

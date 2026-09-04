@@ -294,7 +294,7 @@ export const ui: Record<Lang, UI> = {
         { q: "Est-ce que je pourrai modifier le site moi-même ?", a: "Oui. Vous recevez un accès simple pour changer horaires, prix, photos et actualités. Pour le reste, une retouche est incluse chaque mois dans la formule Atelier." },
         { q: "Les clients pourront-ils réserver ou commander en ligne ?", a: "Oui. Prise de rendez-vous, click & collect, formulaire de devis, carte commandable : on branche l'outil adapté à votre métier, sans commission cachée." },
         { q: "Et le référencement sur Google ?", a: "Chaque vitrine est optimisée pour la recherche locale (fiche, mots-clés de quartier, vitesse, mobile). L'objectif : qu'on vous trouve quand on cherche votre métier près de chez vous." },
-        { q: "Combien ça coûte vraiment ?", a: "À partir de 499 € pour la vitrine essentielle, puis un abonnement clair pour l'hébergement et le suivi. Pas de devis surprise : le prix est annoncé avant de commencer." },
+        { q: "Combien ça coûte vraiment ?", a: "À partir de 490 € pour la vitrine essentielle, puis un abonnement clair pour l'hébergement et le suivi. Pas de devis surprise : le prix est annoncé avant de commencer." },
       ],
     },
     cta: {
@@ -546,7 +546,7 @@ export const ui: Record<Lang, UI> = {
         { q: "Will I be able to edit the site myself?", a: "Yes. You get a simple login to change hours, prices, photos and news. For the rest, one edit is included every month in the Studio plan." },
         { q: "Can customers book or order online?", a: "Yes. Appointments, click & collect, quote forms, an orderable menu: we plug in the tool that fits your trade, with no hidden commission." },
         { q: "What about Google ranking?", a: "Every site is optimised for local search (listing, neighbourhood keywords, speed, mobile). The goal: that people find you when they search your trade nearby." },
-        { q: "What does it really cost?", a: "From €499 for the essential showcase, then a clear subscription for hosting and care. No surprise quote: the price is stated before we start." },
+        { q: "What does it really cost?", a: "From €490 for the essential showcase, then a clear subscription for hosting and care. No surprise quote: the price is stated before we start." },
       ],
     },
     cta: {

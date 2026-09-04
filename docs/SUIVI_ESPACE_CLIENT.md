@@ -108,7 +108,7 @@ vitrine » (onze colonnes) cède la place à **une carte par vitrine sous 1040 p
       première colonne des tableaux épinglée, `UsageChart` à la largeur réelle
       du conteneur + réponse au doigt — **vérifié 390 / 820 / 1280**
 - [x] **14b.** Commit `fb98add`, push, `bash update.sh`, vérifié en production
-- [ ] **15.** Lot A, reprise : **un compte par démo** (la vraie demande)
+- [x] **15.** Lot A, reprise : **un compte par démo** (la vraie demande)
   - [x] `lib/portal/auth.ts` — `testEmailFor` / `testPasswordFor` /
         `testAccountFor`, `verifyCredentials` renvoie `{ slug, role }`
   - [x] `POST /api/portal/login` — l'e-mail choisit l'espace ouvert
@@ -307,3 +307,8 @@ serait capté par `app/demo/ines-garden/[categorie]`, la route du catalogue.
   `scripts/portal-sync-loop.sh`, monté en lecture seule. Première exécution en
   production vérifiée : `{"ok":true, projection:{scanned:0}}` — la projection est
   bien idempotente, elle n'a rien retrouvé à faire.
+- **2026-09-04 · l'étape 15 était faite, pas cochée** — ses huit sous-points
+  étaient tous `[x]`, vérification en production comprise, mais la case parente
+  était restée ouverte. Corrigée. Un fichier de reprise dont une case ment fait
+  perdre plus de temps qu'il n'en fait gagner : le chantier suivant croit avoir
+  du travail là où il n'y en a plus.

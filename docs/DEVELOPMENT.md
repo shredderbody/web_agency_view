@@ -32,8 +32,7 @@ npm install        # ou: npm ci  (installe à partir du lockfile)
 Le code lit les variables suivantes (par leur **nom** ; valeurs jamais documentées) —
 voir [DEPLOY.md](./DEPLOY.md) pour la liste complète et les rôles :
 
-- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_ENABLED`,
-  `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_ENABLED`
 - `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
 - `GOOGLE_PLACES_API_KEY`
 - `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_APP_URL_LOCAL`

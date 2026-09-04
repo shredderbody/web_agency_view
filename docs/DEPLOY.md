@@ -169,10 +169,12 @@ Variables d'**infra** lues par compose / scripts (pas par le code applicatif) :
 | `TUNNEL_HOSTNAME` | (optionnel) hostname du tunnel nommé, pour l'affichage des scripts |
 | `DEPLOY_MODE` | `caddy` (défaut) ou `cloudflare` pour `deploy.sh` / `update.sh` |
 
-`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` et `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-existent dans le `.env` mais **ne sont pas référencées** par le code de cette app
-(le Checkout fonctionne par redirection serveur, sans Stripe.js côté client ; les
-écritures Supabase passent par le service_role serveur). Le `.env` partagé contient
+`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` et `NEXT_PUBLIC_SUPABASE_ANON_KEY` ne sont
+**pas référencées** par le code de cette app (le Checkout fonctionne par
+redirection serveur, sans Stripe.js côté client ; les écritures Supabase passent
+par le service_role serveur). Elles sont donc **commentées dans le `.env`** depuis
+le 2026-09-04 : la valeur reste sous la main, il suffit de retirer le `#` le jour
+où un client navigateur en aura besoin. Le `.env` partagé contient
 en outre de nombreuses autres clés (Deepgram, ElevenLabs, OpenAI, n8n, Google
 Calendar, etc.) **sans rapport** avec ce projet.
 
