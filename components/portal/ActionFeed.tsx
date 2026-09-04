@@ -6,7 +6,8 @@ import {
   RefreshCcw, ShieldCheck, UserCog, UserRound, Wrench,
 } from "lucide-react";
 import type { ActionName, PortalAction } from "@/lib/portal/types";
-import { fmtAgo, fmtSlot } from "./format";
+import { usePortalI18n } from "@/lib/portal/i18nClient";
+import { fmtAgo, fmtExact, fmtSlot } from "./format";
 
 /* ════════════════════════════════════════════════════════════════════════════
    JOURNAL DES ACTIONS — le cœur de la traçabilité.
@@ -22,21 +23,23 @@ import { fmtAgo, fmtSlot } from "./format";
    aucune.
    ════════════════════════════════════════════════════════════════════════════ */
 
-type Look = { label: string; icon: typeof CalendarPlus; tone: "ok" | "wait" | "off" | "bad" };
+/* L'icône et le TON d'une action restent ici : ce sont des choix de forme, ils
+   ne changent pas avec la langue. Le libellé, lui, vient du dictionnaire. */
+type Look = { icon: typeof CalendarPlus; tone: "ok" | "wait" | "off" | "bad" };
 
 const LOOK: Record<ActionName, Look> = {
-  booking_created: { label: "Réservation prise", icon: CalendarPlus, tone: "ok" },
-  booking_rescheduled: { label: "Créneau reporté", icon: RefreshCcw, tone: "wait" },
-  booking_cancelled: { label: "Réservation annulée", icon: Ban, tone: "bad" },
-  booking_confirmed: { label: "Réservation confirmée", icon: CheckCircle2, tone: "ok" },
-  booking_completed: { label: "Client honoré", icon: ShieldCheck, tone: "ok" },
-  booking_no_show: { label: "Client absent", icon: Ban, tone: "bad" },
-  order_placed: { label: "Commande passée", icon: Package, tone: "ok" },
-  intervention_requested: { label: "Intervention demandée", icon: Wrench, tone: "wait" },
-  quote_requested: { label: "Devis demandé", icon: ClipboardList, tone: "wait" },
-  customer_updated: { label: "Fiche client mise à jour", icon: UserCog, tone: "off" },
-  note_added: { label: "Note ajoutée", icon: MessageSquare, tone: "off" },
-  contacted: { label: "Client recontacté", icon: UserRound, tone: "off" },
+  booking_created: { icon: CalendarPlus, tone: "ok" },
+  booking_rescheduled: { icon: RefreshCcw, tone: "wait" },
+  booking_cancelled: { icon: Ban, tone: "bad" },
+  booking_confirmed: { icon: CheckCircle2, tone: "ok" },
+  booking_completed: { icon: ShieldCheck, tone: "ok" },
+  booking_no_show: { icon: Ban, tone: "bad" },
+  order_placed: { icon: Package, tone: "ok" },
+  intervention_requested: { icon: Wrench, tone: "wait" },
+  quote_requested: { icon: ClipboardList, tone: "wait" },
+  customer_updated: { icon: UserCog, tone: "off" },
+  note_added: { icon: MessageSquare, tone: "off" },
+  contacted: { icon: UserRound, tone: "off" },
 };
 
 const TONE_BG: Record<Look["tone"], string> = {
@@ -50,13 +53,6 @@ const TONE_FG: Record<Look["tone"], string> = {
 
 type Filter = "all" | "bookings" | "changes" | "portal";
 
-const FILTERS: { id: Filter; label: string }[] = [
-  { id: "all", label: "Tout" },
-  { id: "bookings", label: "Prises" },
-  { id: "changes", label: "Reports & annulations" },
-  { id: "portal", label: "Faites depuis l'espace" },
-];
-
 export default function ActionFeed({
   actions, timezone, showTenant = false, slugLabel,
 }: {
@@ -65,7 +61,15 @@ export default function ActionFeed({
   showTenant?: boolean;
   slugLabel?: (slug: string | null) => string;
 }) {
+  const { lang, t } = usePortalI18n();
   const [filter, setFilter] = useState<Filter>("all");
+
+  const filters: { id: Filter; label: string }[] = [
+    { id: "all", label: t.feed.all },
+    { id: "bookings", label: t.feed.bookings },
+    { id: "changes", label: t.feed.changes },
+    { id: "portal", label: t.feed.portal },
+  ];
 
   const rows = useMemo(() => actions.filter((a) => {
     if (filter === "bookings") {
@@ -83,10 +87,10 @@ export default function ActionFeed({
   return (
     <section className="esp-panel">
       <header className="esp-panel-head">
-        <h2 className="esp-h2">Journal des actions</h2>
-        <span className="esp-small">{actions.length} enregistrées</span>
+        <h2 className="esp-h2">{t.feed.title}</h2>
+        <span className="esp-small">{t.feed.count(actions.length)}</span>
         <div className="esp-seg">
-          {FILTERS.map((f) => (
+          {filters.map((f) => (
             <button
               key={f.id} type="button" className="esp-seg-b"
               aria-pressed={filter === f.id} onClick={() => setFilter(f.id)}
@@ -101,12 +105,12 @@ export default function ActionFeed({
         <div className="esp-empty">
           <ClipboardList size={22} aria-hidden style={{ color: "var(--esp-ink-3)" }} />
           <p className="esp-empty-t">
-            {actions.length === 0 ? "Rien à tracer pour l'instant" : "Aucune action de ce type"}
+            {actions.length === 0 ? t.feed.emptyT : t.feed.filteredT}
           </p>
           <p className="esp-empty-d">
             {actions.length === 0
-              ? "Chaque prise de rendez-vous, report ou annulation viendra s'inscrire ici, avec son auteur et son horodatage. Rien n'y sera jamais modifié."
-              : "Changez de filtre pour voir le reste du journal."}
+              ? t.feed.emptyD
+              : t.feed.filteredD}
           </p>
         </div>
       ) : (
@@ -116,8 +120,8 @@ export default function ActionFeed({
             const Icon = look.icon;
             return (
               <div key={a.id} className="esp-feed-row">
-                <time className="esp-feed-when" dateTime={a.occurred_at} title={new Date(a.occurred_at).toLocaleString("fr-FR")}>
-                  {fmtAgo(a.occurred_at)}
+                <time className="esp-feed-when" dateTime={a.occurred_at} title={fmtExact(a.occurred_at, lang)}>
+                  {fmtAgo(a.occurred_at, lang)}
                 </time>
                 <span
                   className="esp-feed-mark"
@@ -127,7 +131,7 @@ export default function ActionFeed({
                   <Icon />
                 </span>
                 <p className="esp-feed-what">
-                  <b>{look.label}</b>
+                  <b>{t.feed.action[a.action] ?? t.feed.action.customer_updated}</b>
                   {showTenant && slugLabel && (
                     <span style={{ color: "var(--esp-ink-3)" }}> · {slugLabel(a.demo_slug)}</span>
                   )}
@@ -137,27 +141,27 @@ export default function ActionFeed({
                     <>
                       <br />
                       <span className="esp-small">
-                        {fmtSlot(a.from_starts_at, timezone)}
-                        <span className="esp-arrow" aria-label="devient">→</span>
-                        {fmtSlot(a.to_starts_at, timezone)}
+                        {fmtSlot(a.from_starts_at, timezone, lang)}
+                        <span className="esp-arrow" aria-label={t.feed.becomes}>→</span>
+                        {fmtSlot(a.to_starts_at, timezone, lang)}
                       </span>
                     </>
                   )}
                   {a.action !== "booking_rescheduled" && a.to_starts_at && (
                     <>
                       <br />
-                      <span className="esp-small">{fmtSlot(a.to_starts_at, timezone)}</span>
-                      {a.party_size != null && <span className="esp-small"> · {a.party_size} pers.</span>}
+                      <span className="esp-small">{fmtSlot(a.to_starts_at, timezone, lang)}</span>
+                      {a.party_size != null && <span className="esp-small"> · {t.feed.people(a.party_size)}</span>}
                       {a.service && <span className="esp-small"> · {a.service}</span>}
                     </>
                   )}
-                  {a.note && <><br /><span className="esp-micro">Note : {a.note}</span></>}
+                  {a.note && <><br /><span className="esp-micro">{t.feed.note(a.note)}</span></>}
                 </p>
                 <span className="esp-feed-who" title={a.actor_label ?? undefined}>
                   {a.actor === "portal" ? (
-                    <><UserRound size={11} aria-hidden style={{ verticalAlign: "-1px" }} /> {a.actor_label ?? "Espace"}</>
+                    <><UserRound size={11} aria-hidden style={{ verticalAlign: "-1px" }} /> {a.actor_label ?? t.feed.space}</>
                   ) : (
-                    <><Bot size={11} aria-hidden style={{ verticalAlign: "-1px" }} /> Assistant{a.channel === "chat" ? " · écrit" : a.channel === "voice" ? " · voix" : ""}</>
+                    <><Bot size={11} aria-hidden style={{ verticalAlign: "-1px" }} /> {t.feed.assistant}{a.channel === "chat" ? t.feed.written : a.channel === "voice" ? t.feed.voice : ""}</>
                   )}
                 </span>
               </div>

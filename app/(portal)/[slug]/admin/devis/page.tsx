@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { loadQuotesPage } from "@/lib/portal/quotesPage";
 import DocumentsWorkspace from "@/components/portal/DocumentsWorkspace";
-import "../../documents.css";
+import "../../../documents.css";
 
-/* `/<slug>/devis` — la même pièce, par la porte française.
+/* `/<slug>/admin/devis` — la même pièce, par la porte française.
 
-   Ce n'est pas une redirection vers `/quotes` : une adresse qu'on donne à un
-   artisan français doit rester dans sa langue dans sa barre d'adresse, et
+   Ce n'est pas une redirection vers `/admin/quotes` : une adresse qu'on donne à
+   un artisan français doit rester dans sa langue dans sa barre d'adresse, et
    arriver en français sans dépendre d'un cookie. La langue est donc FORCÉE ici,
-   là où `/quotes` suit la préférence du visiteur. */
+   là où `/admin/quotes` suit la préférence du visiteur. */
 
 export const dynamic = "force-dynamic";
 

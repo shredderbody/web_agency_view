@@ -1,7 +1,6 @@
 // ⚠️ MODULE SERVEUR UNIQUEMENT.
 
 import { notFound, redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import { canAccess, currentSession } from "./auth";
 import { getTenant, type DemoTenant } from "./registry";
 import { loginHref, spaceHref } from "./paths";
@@ -10,7 +9,8 @@ import { catalogFor, type CatalogGroup } from "./catalog";
 import { listDocuments } from "./documents";
 import { listCustomers } from "./ledger";
 import type { PortalDocument } from "./documents.shared";
-import { DEFAULT_LANG, isLang, LANG_COOKIE, type Lang } from "../i18n";
+import type { Lang } from "../i18n";
+import { portalLang } from "./lang";
 
 /* ════════════════════════════════════════════════════════════════════════════
    Le chargement de l'outil de devis, partagé par ses DEUX adresses.
@@ -35,13 +35,6 @@ export type QuotesPageData = {
   loadError: string | null;
 };
 
-/** Langue du visiteur, telle que le reste du site la lit (cookie `av_lang`). */
-async function visitorLang(): Promise<Lang> {
-  const jar = await cookies();
-  const raw = jar.get(LANG_COOKIE)?.value;
-  return isLang(raw) ? raw : DEFAULT_LANG;
-}
-
 /**
  * Prépare la page. `forcedLang` vient de l'adresse (`/devis` ⇒ français) ;
  * sans elle, c'est la préférence du visiteur qui décide.
@@ -62,7 +55,7 @@ export async function loadQuotesPage(
   if (!session) redirect(loginHref(slug));
   if (!canAccess(session, slug)) redirect(spaceHref(session.slug));
 
-  const lang = forcedLang ?? (await visitorLang());
+  const lang = forcedLang ?? (await portalLang());
   const issuer = issuerFor(slug, lang);
   // Une vitrine du registre sans identité émettrice serait une incohérence de
   // configuration, pas une page manquante : on le dit franchement.

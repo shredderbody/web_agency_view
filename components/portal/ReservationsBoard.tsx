@@ -7,7 +7,10 @@ import {
 } from "lucide-react";
 import type { PortalReservation, ReservationStatus } from "@/lib/portal/types";
 import type { DemoTenant } from "@/lib/portal/registry";
-import { fmtSlot, fmtTimeOnly, fromLocalInput, toLocalInput } from "./format";
+import { usePortalI18n } from "@/lib/portal/i18nClient";
+import type { PortalStrings } from "@/lib/portal/portalStrings";
+import type { Lang } from "@/lib/i18n";
+import { fmtFullDay, fmtMonth, fmtSlot, fmtTimeOnly, fromLocalInput, toLocalInput } from "./format";
 
 /* ════════════════════════════════════════════════════════════════════════════
    Réservations — deux lectures du même jeu de données, au choix de
@@ -22,16 +25,12 @@ import { fmtSlot, fmtTimeOnly, fromLocalInput, toLocalInput } from "./format";
    ET une ligne dans le journal d'actions. Rien ne change ici sans laisser de trace.
    ════════════════════════════════════════════════════════════════════════════ */
 
-const STATUS: Record<ReservationStatus, { label: string; cls: string }> = {
-  pending: { label: "À confirmer", cls: "esp-badge-wait" },
-  confirmed: { label: "Confirmée", cls: "esp-badge-ok" },
-  rescheduled: { label: "Reportée", cls: "esp-badge-wait" },
-  cancelled: { label: "Annulée", cls: "esp-badge-bad" },
-  done: { label: "Honorée", cls: "esp-badge-off" },
-  no_show: { label: "Non venu", cls: "esp-badge-bad" },
+/* Seule la CLASSE de couleur vit ici : c'est un choix de forme, il ne change
+   pas avec la langue. Le libellé vient du dictionnaire. */
+const STATUS_CLASS: Record<ReservationStatus, string> = {
+  pending: "esp-badge-wait", confirmed: "esp-badge-ok", rescheduled: "esp-badge-wait",
+  cancelled: "esp-badge-bad", done: "esp-badge-off", no_show: "esp-badge-bad",
 };
-
-const DOW = ["lun", "mar", "mer", "jeu", "ven", "sam", "dim"];
 
 /** Clé AAAA-MM-JJ d'un instant, dans le fuseau du commerce. */
 function dayKey(iso: string, tz: string): string {
@@ -51,6 +50,7 @@ export default function ReservationsBoard({
   reservations: PortalReservation[];
   canEdit: boolean;
 }) {
+  const { lang, t } = usePortalI18n();
   const [rows, setRows] = useState(initial);
   const [view, setView] = useState<"calendar" | "cards">("calendar");
   const [openId, setOpenId] = useState<string | null>(null);
@@ -95,9 +95,7 @@ export default function ReservationsBoard({
     });
   }, [cursor]);
 
-  const monthLabel = new Intl.DateTimeFormat("fr-FR", {
-    month: "long", year: "numeric", timeZone: "UTC",
-  }).format(new Date(`${cursor}-01T12:00:00Z`));
+  const monthLabel = fmtMonth(cursor, lang);
 
   const shiftMonth = (delta: number) => {
     const [y, m] = cursor.split("-").map(Number);
@@ -116,13 +114,13 @@ export default function ReservationsBoard({
         body: JSON.stringify({ id, ...patch }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Enregistrement impossible.");
+      if (!res.ok) throw new Error(data.error ?? t.res.saveError);
       if (data.reservation) {
         setRows((prev) => prev.map((r) => (r.id === id ? data.reservation : r)));
       }
       setOpenId(null);
     } catch (err) {
-      setFailure(err instanceof Error ? err.message : "Enregistrement impossible.");
+      setFailure(err instanceof Error ? err.message : t.res.saveError);
     } finally {
       setBusyId(null);
     }
@@ -135,10 +133,10 @@ export default function ReservationsBoard({
   return (
     <section className="esp-panel">
       <header className="esp-panel-head">
-        <h2 className="esp-h2">Réservations</h2>
+        <h2 className="esp-h2">{t.res.title}</h2>
         <span className="esp-small">
-          {rows.length} au total
-          {undated.length > 0 && ` · ${undated.length} sans créneau`}
+          {t.res.total(rows.length)}
+          {undated.length > 0 && ` · ${t.res.undated(undated.length)}`}
         </span>
         <div className="esp-seg">
           <button
@@ -146,14 +144,14 @@ export default function ReservationsBoard({
             onClick={() => setView("calendar")}
           >
             <CalendarDays size={13} aria-hidden style={{ verticalAlign: "-2px", marginRight: "0.3rem" }} />
-            Calendrier
+            {t.res.calendar}
           </button>
           <button
             type="button" className="esp-seg-b" aria-pressed={view === "cards"}
             onClick={() => { setView("cards"); setSelected(null); }}
           >
             <LayoutGrid size={13} aria-hidden style={{ verticalAlign: "-2px", marginRight: "0.3rem" }} />
-            Cartes
+            {t.res.cards}
           </button>
         </div>
       </header>
@@ -169,14 +167,14 @@ export default function ReservationsBoard({
           <div className="esp-cal-head">
             <button
               type="button" className="esp-btn esp-btn-quiet esp-btn-sm"
-              onClick={() => shiftMonth(-1)} aria-label="Mois précédent"
+              onClick={() => shiftMonth(-1)} aria-label={t.res.prevMonth}
             >
               <ChevronLeft size={15} aria-hidden />
             </button>
             <span className="esp-cal-month">{monthLabel}</span>
             <button
               type="button" className="esp-btn esp-btn-quiet esp-btn-sm"
-              onClick={() => shiftMonth(1)} aria-label="Mois suivant"
+              onClick={() => shiftMonth(1)} aria-label={t.res.nextMonth}
             >
               <ChevronRight size={15} aria-hidden />
             </button>
@@ -184,23 +182,23 @@ export default function ReservationsBoard({
               type="button" className="esp-btn esp-btn-sm" style={{ marginLeft: "0.25rem" }}
               onClick={() => { setCursor(today.slice(0, 7)); setSelected(today); }}
             >
-              Aujourd&apos;hui
+              {t.res.today}
             </button>
             {selected && (
               <button
                 type="button" className="esp-btn esp-btn-quiet esp-btn-sm"
                 style={{ marginLeft: "auto" }} onClick={() => setSelected(null)}
               >
-                <X size={13} aria-hidden /> Tout le mois
+                <X size={13} aria-hidden /> {t.res.wholeMonth}
               </button>
             )}
             <span className="esp-micro" style={{ marginLeft: selected ? "0.5rem" : "auto" }}>
-              Heures locales · {tenant.timezone.split("/")[1]?.replace("_", " ")}
+              {t.res.localHours(tenant.timezone.split("/")[1]?.replace("_", " ") ?? tenant.timezone)}
             </span>
           </div>
 
           <div className="esp-cal-grid" role="grid">
-            {DOW.map((d) => (
+            {t.res.dow.map((d) => (
               <div key={d} className="esp-cal-dow" role="columnheader">{d}</div>
             ))}
             {cells.map((c) => {
@@ -216,7 +214,7 @@ export default function ReservationsBoard({
                     selected === c.key ? "is-sel" : "",
                   ].filter(Boolean).join(" ")}
                   onClick={() => setSelected(selected === c.key ? null : c.key)}
-                  aria-label={`${c.day} — ${items.length} réservation${items.length > 1 ? "s" : ""}`}
+                  aria-label={t.res.cellAria(c.day, items.length)}
                 >
                   <span className="esp-cal-n">
                     {c.key === today ? <span className="esp-cal-today">{c.day}</span> : c.day}
@@ -231,7 +229,7 @@ export default function ReservationsBoard({
                         textDecoration: r.status === "cancelled" ? "line-through" : "none",
                       }}
                     >
-                      {fmtTimeOnly(r.starts_at, tenant.timezone)} {r.customer_name ?? "Client"}
+                      {fmtTimeOnly(r.starts_at, tenant.timezone, lang)} {r.customer_name ?? t.res.client}
                     </span>
                   ))}
                   {items.length > 3 && <span className="esp-cal-more">+{items.length - 3}</span>}
@@ -245,11 +243,9 @@ export default function ReservationsBoard({
       <div className="esp-panel-body" style={{ paddingTop: view === "calendar" ? "1.1rem" : "0.25rem" }}>
         {selected && (
           <h3 className="esp-h3" style={{ marginBottom: "0.7rem" }}>
-            {new Intl.DateTimeFormat("fr-FR", {
-              weekday: "long", day: "numeric", month: "long", timeZone: "UTC",
-            }).format(new Date(`${selected}T12:00:00Z`))}
+            {fmtFullDay(selected, lang)}
             <span className="esp-small" style={{ fontWeight: 400, marginLeft: "0.5rem" }}>
-              {visible.length === 0 ? "aucune réservation" : `${visible.length} réservation${visible.length > 1 ? "s" : ""}`}
+              {t.res.onDay(visible.length)}
             </span>
           </h3>
         )}
@@ -257,12 +253,8 @@ export default function ReservationsBoard({
         {visible.length === 0 && !selected && (
           <div className="esp-empty">
             <CalendarDays size={22} aria-hidden style={{ color: "var(--esp-ink-3)" }} />
-            <p className="esp-empty-t">Aucune réservation pour l&apos;instant</p>
-            <p className="esp-empty-d">
-              Dès que l&apos;assistant prend un rendez-vous au téléphone ou par écrit, il
-              apparaît ici, avec les coordonnées du client et l&apos;historique de ce
-              qui a été fait.
-            </p>
+            <p className="esp-empty-t">{t.res.emptyT}</p>
+            <p className="esp-empty-d">{t.res.emptyD}</p>
           </div>
         )}
 
@@ -278,6 +270,8 @@ export default function ReservationsBoard({
                 busy={busyId === r.id}
                 onToggle={() => setOpenId(openId === r.id ? null : r.id)}
                 onApply={(patch) => apply(r.id, patch)}
+                lang={lang}
+                t={t}
               />
             ))}
           </div>
@@ -285,8 +279,7 @@ export default function ReservationsBoard({
 
         {undated.length > 0 && !selected && (
           <p className="esp-micro" style={{ marginTop: "0.9rem" }}>
-            {undated.length} réservation{undated.length > 1 ? "s" : ""} sans créneau exploitable :
-            la date dictée n&apos;a pas pu être interprétée. Ouvrez la carte pour la fixer.
+            {t.res.undatedHint(undated.length)}
           </p>
         )}
       </div>
@@ -295,7 +288,7 @@ export default function ReservationsBoard({
 }
 
 function Card({
-  r, tenant, canEdit, open, busy, onToggle, onApply,
+  r, tenant, canEdit, open, busy, onToggle, onApply, lang, t,
 }: {
   r: PortalReservation;
   tenant: DemoTenant;
@@ -304,20 +297,22 @@ function Card({
   busy: boolean;
   onToggle: () => void;
   onApply: (patch: Record<string, unknown>) => void;
+  lang: Lang;
+  t: PortalStrings;
 }) {
   const [slot, setSlot] = useState(() => toLocalInput(r.starts_at, tenant.timezone));
   const [note, setNote] = useState(r.notes ?? "");
-  const st = STATUS[r.status];
+  const statusClass = STATUS_CLASS[r.status];
   const moved = r.original_starts_at && r.starts_at && r.original_starts_at !== r.starts_at;
 
   return (
     <article className={`esp-card${open ? " is-open" : ""}${r.status === "cancelled" ? " is-cancelled" : ""}`}>
       <div className="esp-card-top">
         <div style={{ minWidth: 0 }}>
-          <p className="esp-card-when">{fmtSlot(r.starts_at, tenant.timezone)}</p>
-          <p className="esp-card-who">{r.customer_name ?? "Client sans nom"}</p>
+          <p className="esp-card-when">{fmtSlot(r.starts_at, tenant.timezone, lang)}</p>
+          <p className="esp-card-who">{r.customer_name ?? t.res.unnamed}</p>
         </div>
-        <span className={`esp-badge ${st.cls}`} style={{ marginLeft: "auto", flex: "none" }}>{st.label}</span>
+        <span className={`esp-badge ${statusClass}`} style={{ marginLeft: "auto", flex: "none" }}>{t.res.status[r.status]}</span>
       </div>
 
       <div className="esp-card-meta">
@@ -328,33 +323,33 @@ function Card({
             </a>
           </span>
         )}
-        {r.party_size != null && <span><Users size={12} aria-hidden />{r.party_size} pers.</span>}
+        {r.party_size != null && <span><Users size={12} aria-hidden />{t.res.people(r.party_size)}</span>}
         {moved && (
-          <span title="Créneau d'origine">
+          <span title={t.res.originalSlot}>
             <RotateCcw size={12} aria-hidden />
-            initialement {fmtSlot(r.original_starts_at, tenant.timezone)}
+            {t.res.originally(fmtSlot(r.original_starts_at, tenant.timezone, lang))}
           </span>
         )}
       </div>
 
       {r.service && <p className="esp-small" style={{ margin: 0 }}>{r.service}</p>}
-      {r.notes && !open && <p className="esp-micro" style={{ margin: 0 }}>Note : {r.notes}</p>}
+      {r.notes && !open && <p className="esp-micro" style={{ margin: 0 }}>{t.res.note(r.notes)}</p>}
 
       {canEdit && (
         <div className="esp-card-actions">
           {r.status !== "confirmed" && r.status !== "cancelled" && (
             <button type="button" className="esp-btn esp-btn-sm" disabled={busy}
               onClick={() => onApply({ status: "confirmed" })}>
-              <Check size={13} aria-hidden /> Confirmer
+              <Check size={13} aria-hidden /> {t.res.confirm}
             </button>
           )}
           <button type="button" className="esp-btn esp-btn-sm" onClick={onToggle} aria-expanded={open}>
-            <Clock size={13} aria-hidden /> {open ? "Fermer" : "Modifier"}
+            <Clock size={13} aria-hidden /> {open ? t.res.close : t.res.edit}
           </button>
           {r.status !== "cancelled" && (
             <button type="button" className="esp-btn esp-btn-sm esp-btn-danger" disabled={busy}
               onClick={() => onApply({ status: "cancelled" })}>
-              <X size={13} aria-hidden /> Annuler
+              <X size={13} aria-hidden /> {t.res.cancel}
             </button>
           )}
           {busy && <Loader2 size={14} className="esp-spin" aria-hidden style={{ alignSelf: "center", color: "var(--esp-ink-3)" }} />}
@@ -365,7 +360,7 @@ function Card({
         <div className="esp-card-edit">
           <div className="esp-field">
             <label className="esp-label" htmlFor={`slot-${r.id}`}>
-              Créneau <span style={{ fontWeight: 400, color: "var(--esp-ink-3)" }}>(heure du commerce)</span>
+              {t.res.slot} <span style={{ fontWeight: 400, color: "var(--esp-ink-3)" }}>{t.res.slotHint}</span>
             </label>
             <input
               id={`slot-${r.id}`} className="esp-input" type="datetime-local"
@@ -373,11 +368,11 @@ function Card({
             />
           </div>
           <div className="esp-field">
-            <label className="esp-label" htmlFor={`note-${r.id}`}>Note interne</label>
+            <label className="esp-label" htmlFor={`note-${r.id}`}>{t.res.internalNote}</label>
             <textarea
               id={`note-${r.id}`} className="esp-textarea" value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Visible par vous seul, jamais dite au client."
+              placeholder={t.res.notePlaceholder}
             />
           </div>
           <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
@@ -391,17 +386,17 @@ function Card({
                 });
               }}
             >
-              {busy ? <Loader2 size={13} className="esp-spin" aria-hidden /> : "Enregistrer"}
+              {busy ? <Loader2 size={13} className="esp-spin" aria-hidden /> : t.res.save}
             </button>
             {r.status === "cancelled" && (
               <button type="button" className="esp-btn esp-btn-sm" disabled={busy}
                 onClick={() => onApply({ status: "confirmed" })}>
-                Réactiver
+                {t.res.reactivate}
               </button>
             )}
             <button type="button" className="esp-btn esp-btn-sm esp-btn-quiet" disabled={busy}
               onClick={() => onApply({ status: "no_show" })}>
-              Client absent
+              {t.res.noShow}
             </button>
             <span className="esp-card-ref" style={{ marginLeft: "auto", alignSelf: "center" }}>
               {r.reference}

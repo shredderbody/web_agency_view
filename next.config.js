@@ -23,6 +23,14 @@ const nextConfig = {
       { source: "/espace/login", destination: "/admin/login", permanent: true },
       { source: "/espace/admin", destination: "/admin", permanent: true },
       { source: "/espace/:slug", destination: "/:slug/admin", permanent: true },
+
+      /* Les devis sont passés SOUS l'accueil (`/<slug>/admin/quotes`) pour que
+         la garde de session du layout les couvre. Les deux adresses de départ
+         ont vécu en production : elles redirigent, elles ne cassent pas.
+         Le `(?!admin$)` écarte l'espace de l'agence — sans lui, `/admin/quotes`
+         se redirigerait vers `/admin/admin/quotes`. */
+      { source: "/:slug((?!admin$)[^/]+)/quotes", destination: "/:slug/admin/quotes", permanent: true },
+      { source: "/:slug((?!admin$)[^/]+)/devis", destination: "/:slug/admin/devis", permanent: true },
     ];
   },
 

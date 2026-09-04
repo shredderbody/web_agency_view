@@ -1,4 +1,4 @@
-# Devis & factures — `/<slug>/quotes`
+# Devis & factures — `/<slug>/admin/quotes`
 
 Chaque vitrine de démonstration dispose de **son propre outil de devis et de
 factures**, pré-rempli avec les informations natives du commerce affiché sur la
@@ -13,22 +13,32 @@ le devis. Le jour où il change sur la vitrine, il change dans l'outil.
 
 | URL | Langue |
 |---|---|
-| `/<slug>/quotes` | **canonique** — suit la préférence du visiteur (cookie `av_lang`) |
-| `/<slug>/devis` | forcée en **français** |
+| `/<slug>/admin/quotes` | **canonique** — suit la préférence du visiteur (cookie `av_lang`) |
+| `/<slug>/admin/devis` | forcée en **français** |
 
 `/devis` n'est **pas** une redirection vers `/quotes` : une adresse donnée à un
 artisan français doit rester française dans sa barre d'adresse, et s'ouvrir en
 français sans dépendre d'un cookie. Deux portes, une pièce — les deux pages
 appellent le même chargeur, `lib/portal/quotesPage.ts`.
 
-C'est la même forme d'URL que `/<slug>/admin`, l'espace de suivi, et pour la
-même raison : « votre site, puis `/quotes` » se retient.
+L'outil est niché **sous l'accueil** `/<slug>/admin`, avec le suivi. Le client
+retient donc une seule adresse — « votre site, puis `/admin` » — et choisit son
+outil en arrivant. Les deux adresses de départ, `/<slug>/quotes` et
+`/<slug>/devis`, ont vécu quelques heures en production : elles **redirigent en
+308**, elles ne cassent pas.
 
 ## Accès et cloisonnement
 
 Aucun compte à créer : **la session de l'espace client** ouvre l'outil (cookie
 HMAC `av_espace`, `canAccess`, cf. [ESPACE_CLIENT.md](./ESPACE_CLIENT.md)). Qui
-peut ouvrir `/<slug>/admin` peut ouvrir `/<slug>/quotes`.
+peut ouvrir `/<slug>/admin` peut ouvrir `/<slug>/admin/quotes`.
+
+La garde est posée dans **`app/(portal)/[slug]/admin/layout.tsx`**, partagée par
+tout ce qui vit sous ce segment : une page ajoutée demain y est protégée avant
+même d'avoir été écrite. Les pages gardent par-dessus leur propre vérification —
+leurs chargeurs ont de toute façon besoin de la session pour savoir quelle
+vitrine lire, et un contrôle d'accès qui ne tient qu'à un seul endroit tient
+mal.
 
 La clé de tenant est l'**`assistant_id`** du registre (`lib/portal/registry.ts`),
 comme partout ailleurs dans l'espace : Maison Brutus ne voit pas les devis
@@ -212,7 +222,7 @@ réellement via `DEMO_DB_SUPABASE_URL` — s'administre avec le jeton de
 | `lib/portal/documentsStrings.ts` | libellés FR/EN de l'interface **et** du document |
 | `lib/portal/quotesPage.ts` | chargeur de page, partagé par les deux adresses |
 | `app/api/portal/documents/route.ts` | l'API décrite ci-dessus |
-| `app/(portal)/[slug]/quotes/page.tsx` · `devis/page.tsx` | les deux portes |
+| `app/(portal)/[slug]/admin/quotes/page.tsx` · `admin/devis/page.tsx` | les deux portes |
 | `components/portal/DocumentsWorkspace.tsx` | liste, éditeur, feuille A4 |
 | `app/(portal)/documents.css` | l'écran coupé en deux, la feuille, l'impression |
 | `supabase/migrations/006_portal_documents.sql` | la table et le journal élargi |

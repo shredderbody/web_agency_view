@@ -351,6 +351,82 @@
    trente caractères ne tient pas à côté d'un code et d'un bouton. */
 .esp-vitrine-foot > .esp-account { flex-basis: 100%; justify-content: flex-start; }
 
+/* ── Accueil d'une vitrine : les cartes d'aiguillage ─────────────────────── */
+
+/* Deux colonnes tant qu'elles tiennent, une seule ensuite. `auto-fit` avec un
+   minimum large : une carte d'aiguillage à 200 px de large ne se lit pas, elle
+   se devine. */
+.esp-home {
+  display: grid; gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+}
+
+/* La carte entière est le lien : sur une page qui ne sert qu'à choisir, viser
+   un petit bouton au pouce n'a pas de sens. */
+.esp-home-card {
+  display: flex; flex-direction: column; gap: 0.35rem;
+  padding: 1.35rem 1.35rem 1.15rem;
+  background: var(--esp-surface); border: 1px solid var(--esp-line);
+  border-radius: var(--esp-r-lg); box-shadow: var(--esp-shadow-sm);
+  color: inherit; text-decoration: none;
+  transition: border-color var(--esp-med), box-shadow var(--esp-med), transform var(--esp-med);
+}
+.esp-home-card:hover {
+  border-color: var(--esp-line-2); box-shadow: var(--esp-shadow); transform: translateY(-2px);
+}
+.esp-home-card:active { transform: translateY(0); }
+
+.esp-home-ic {
+  width: 2.75rem; height: 2.75rem; border-radius: var(--esp-r);
+  display: grid; place-items: center; margin-bottom: 0.5rem;
+}
+.esp-home-t { font-size: 1.125rem; font-weight: 700; letter-spacing: -0.02em; }
+.esp-home-d { font-size: 0.8125rem; color: var(--esp-ink-2); line-height: 1.55; text-wrap: pretty; }
+.esp-home-s {
+  font-size: 0.75rem; font-weight: 600; color: var(--esp-ink-3);
+  font-variant-numeric: tabular-nums; margin-top: 0.15rem;
+}
+.esp-home-cta {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px solid var(--esp-line);
+  font-size: 0.8125rem; font-weight: 650; color: var(--esp-accent-deep);
+}
+.esp-home-cta svg { transition: transform var(--esp-med); }
+.esp-home-card:hover .esp-home-cta svg { transform: translateX(3px); }
+
+/* Les deux voisins du suivi (accueil, devis) : côte à côte, ils passent à la
+   ligne ensemble plutôt qu'un chacun de son côté. */
+.esp-dash-links { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-left: auto; }
+
+/* Le choix de la langue sur l'écran de connexion. Il porte le NOM des langues
+   en toutes lettres, pas leur code : quelqu'un qui cherche sa langue la
+   reconnaît mieux écrite qu'abrégée, et la place ne manque pas ici. */
+.esp-login-lang { display: flex; gap: 0.3rem; }
+.esp-login-lang button {
+  border: 1px solid var(--esp-line); background: var(--esp-surface);
+  color: var(--esp-ink-2); font: inherit; font-size: 0.75rem; font-weight: 600;
+  padding: 0.3rem 0.7rem; border-radius: 999px; cursor: pointer;
+  transition: border-color var(--esp-fast), background var(--esp-fast), color var(--esp-fast);
+}
+.esp-login-lang button:hover { border-color: var(--esp-ink-3); color: var(--esp-ink); }
+.esp-login-lang button[aria-pressed="true"] {
+  background: var(--esp-accent-soft); border-color: var(--esp-accent); color: var(--esp-accent-deep);
+}
+.esp-login-lang button:disabled { cursor: progress; }
+
+/* ── Sélecteur de langue de la barre ─────────────────────────────────────── */
+
+.esp-bar-lang { display: inline-flex; gap: 0.1rem; padding: 0.12rem; border-radius: var(--esp-r); background: oklch(1 0 0 / 0.1); }
+.esp-bar-lang button {
+  border: 0; background: none; color: oklch(0.93 0.012 84 / 0.6);
+  font: inherit; font-size: 0.6875rem; font-weight: 650; letter-spacing: 0.04em;
+  padding: 0.2rem 0.45rem; border-radius: calc(var(--esp-r) - 0.12rem); cursor: pointer;
+  transition: background var(--esp-fast), color var(--esp-fast);
+}
+.esp-bar-lang button:hover { color: var(--esp-bar-ink); }
+.esp-bar-lang button[aria-pressed="true"] { background: oklch(1 0 0 / 0.16); color: var(--esp-bar-ink); }
+.esp-bar-lang button:disabled { cursor: progress; }
+
 /* ── Calendrier ──────────────────────────────────────────────────────────── */
 
 .esp-cal-head { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; padding: 0 1.15rem 0.9rem; }
@@ -574,6 +650,63 @@
 
   .esp-h1 { font-size: 1.375rem; }
   .esp-note { font-size: 0.75rem; }
+}
+
+/* ── Responsive des pièces bilingues ─────────────────────────────────────────
+   Trois choses ont changé de nature avec la traduction, et chacune demande son
+   seuil :
+
+   1. LA BARRE porte une commande de plus (le sélecteur de langue). Sous 680 px
+      elle perdait déjà le logotype et les libellés ; le sélecteur, lui, RESTE —
+      c'est la commande qu'on cherche quand on ne comprend pas l'écran. Ce sont
+      les autres qui se resserrent autour.
+
+   2. LES LIBELLÉS ANGLAIS sont souvent plus longs (« Reschedules &
+      cancellations » contre « Reports & annulations »). Les segments de filtre
+      débordaient : ils passent en grille sur téléphone plutôt qu'en ligne.
+
+   3. LES CARTES D'ACCUEIL sont la première chose qu'on voit après connexion, y
+      compris sur un téléphone tenu d'une main. Elles gardent leur hauteur de
+      frappe et perdent seulement du rembourrage.                              */
+
+/* Tablette : les cartes d'accueil restent à deux colonnes tant qu'elles ont
+   20 rem chacune, sinon elles s'empilent (règle `auto-fit` plus haut). Ce qui
+   se resserre ici, c'est l'intérieur. */
+@media (max-width: 900px) {
+  .esp-home-card { padding: 1.15rem 1.15rem 1rem; }
+  .esp-home-ic { width: 2.4rem; height: 2.4rem; margin-bottom: 0.35rem; }
+  .esp-home-t { font-size: 1.0625rem; }
+}
+
+/* La barre, avec sa commande de langue en plus. */
+@media (max-width: 680px) {
+  .esp-bar-in { gap: 0.35rem; }
+  .esp-bar-lang { flex: none; }
+  .esp-bar-lang button { padding: 0.2rem 0.35rem; font-size: 0.625rem; }
+}
+
+/* Téléphone. */
+@media (max-width: 560px) {
+  /* Les filtres du journal et les vues des réservations : une ligne de quatre
+     libellés anglais ne tient pas. En grille de deux, chacun garde son texte. */
+  .esp-feed .esp-seg, .esp-panel-head .esp-seg {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%;
+  }
+  .esp-panel-head .esp-seg .esp-seg-b { text-align: center; }
+
+  /* Les deux voisins du suivi passent pleine largeur, comme la commande de
+     période juste en dessous : trois rangées de commandes alignées valent mieux
+     qu'une bouillie de boutons de tailles différentes. */
+  .esp-dash-links { margin-left: 0; width: 100%; }
+  .esp-dash-links > .esp-btn { flex: 1 1 0; justify-content: center; }
+
+  .esp-home-card { padding: 1rem 1rem 0.9rem; }
+  .esp-home-d { font-size: 0.78125rem; }
+  .esp-home-cta { margin-top: 0.55rem; padding-top: 0.55rem; }
+
+  /* L'écran de connexion : le choix de la langue reste en haut et à portée. */
+  .esp-login-lang { justify-content: center; }
+  .esp-login-lang button { flex: 1 1 0; min-height: 2.25rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

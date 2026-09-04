@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Search, UsersRound } from "lucide-react";
 import type { PortalCustomer } from "@/lib/portal/types";
+import { usePortalI18n } from "@/lib/portal/i18nClient";
 import { fmtAgo } from "./format";
 
 /* Fichier client : les coordonnées pour le suivi, et ce que chaque personne a
@@ -10,6 +11,7 @@ import { fmtAgo } from "./format";
    donc une ligne = une personne, pas une réservation. */
 
 export default function CustomerTable({ customers }: { customers: PortalCustomer[] }) {
+  const { lang, t } = usePortalI18n();
   const [query, setQuery] = useState("");
 
   const rows = useMemo(() => {
@@ -24,8 +26,8 @@ export default function CustomerTable({ customers }: { customers: PortalCustomer
   return (
     <section className="esp-panel">
       <header className="esp-panel-head">
-        <h2 className="esp-h2">Fichier client</h2>
-        <span className="esp-small">{customers.length} personne{customers.length > 1 ? "s" : ""}</span>
+        <h2 className="esp-h2">{t.cust.title}</h2>
+        <span className="esp-small">{t.cust.count(customers.length)}</span>
         {customers.length > 6 && (
           <div style={{ position: "relative", maxWidth: "15rem", width: "100%" }}>
             <Search size={14} aria-hidden style={{
@@ -35,7 +37,7 @@ export default function CustomerTable({ customers }: { customers: PortalCustomer
             <input
               className="esp-input" style={{ paddingLeft: "1.9rem", minHeight: "2.1rem" }}
               value={query} onChange={(e) => setQuery(e.target.value)}
-              placeholder="Nom, téléphone, e-mail" aria-label="Rechercher un client"
+              placeholder={t.cust.searchPlaceholder} aria-label={t.cust.searchAria}
             />
           </div>
         )}
@@ -45,12 +47,12 @@ export default function CustomerTable({ customers }: { customers: PortalCustomer
         <div className="esp-empty">
           <UsersRound size={22} aria-hidden style={{ color: "var(--esp-ink-3)" }} />
           <p className="esp-empty-t">
-            {customers.length === 0 ? "Aucun client enregistré" : "Aucun résultat"}
+            {customers.length === 0 ? t.cust.emptyT : t.cust.noResultT}
           </p>
           <p className="esp-empty-d">
             {customers.length === 0
-              ? "Dès qu'un client laisse son numéro à l'assistant, sa fiche se crée ici et se complète toute seule au fil des appels."
-              : "Aucune fiche ne correspond à cette recherche."}
+              ? t.cust.emptyD
+              : t.cust.noResultD}
           </p>
         </div>
       ) : (
@@ -58,19 +60,19 @@ export default function CustomerTable({ customers }: { customers: PortalCustomer
           <table className="esp-table">
             <thead>
               <tr>
-                <th scope="col">Client</th>
-                <th scope="col">Téléphone</th>
-                <th scope="col">E-mail</th>
-                <th scope="col" className="n">Actions</th>
-                <th scope="col" className="n">Prises</th>
-                <th scope="col" className="n">Annulations</th>
-                <th scope="col">Vu pour la dernière fois</th>
+                <th scope="col">{t.cust.colClient}</th>
+                <th scope="col">{t.cust.colPhone}</th>
+                <th scope="col">{t.cust.colEmail}</th>
+                <th scope="col" className="n">{t.cust.colActions}</th>
+                <th scope="col" className="n">{t.cust.colBookings}</th>
+                <th scope="col" className="n">{t.cust.colCancels}</th>
+                <th scope="col">{t.cust.colLastSeen}</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((c) => (
                 <tr key={c.id}>
-                  <td style={{ fontWeight: 600 }}>{c.full_name ?? "Sans nom"}</td>
+                  <td style={{ fontWeight: 600 }}>{c.full_name ?? t.cust.noName}</td>
                   <td>
                     <a href={`tel:${c.phone}`} style={{ textDecoration: "underline", textUnderlineOffset: "2px" }}>
                       {c.phone}
@@ -82,7 +84,7 @@ export default function CustomerTable({ customers }: { customers: PortalCustomer
                   <td className="n" style={{ color: c.cancels_count > 0 ? "var(--esp-bad)" : "var(--esp-ink-3)" }}>
                     {c.cancels_count}
                   </td>
-                  <td className="esp-small">{fmtAgo(c.last_seen_at)}</td>
+                  <td className="esp-small">{fmtAgo(c.last_seen_at, lang)}</td>
                 </tr>
               ))}
             </tbody>

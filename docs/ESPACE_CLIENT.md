@@ -1,14 +1,20 @@
 # Espace client des démos — `/<slug>/admin`
 
+> Bilingue FR / EN. Accueil à deux cartes, suivi sous `/admin/dashboard`,
+> devis sous `/admin/quotes`.
+
 Suivi de consommation et **traçabilité complète des actions** pour les douze
 vitrines de démonstration. Un espace par démo, plus une vision administrateur.
 
 | | |
 |---|---|
 | Connexion | `/admin/login` |
-| Espace d'une démo | `/<slug>/admin` (les 12 slugs de `lib/portal/registry.ts`) |
+| Accueil d'une démo | `/<slug>/admin` (les 12 slugs de `lib/portal/registry.ts`) |
+| Suivi d'une démo | `/<slug>/admin/dashboard` |
+| Devis & factures | `/<slug>/admin/quotes` — cf. [DEVIS_FACTURES.md](./DEVIS_FACTURES.md) |
 | Vision administrateur | `/admin` |
-| Suivi du chantier | [SUIVI_ESPACE_CLIENT.md](./SUIVI_ESPACE_CLIENT.md) |
+| Langues | **FR / EN**, cookie `av_lang` (le même que le site public) |
+| Suivi des chantiers | [SUIVI_ESPACE_CLIENT.md](./SUIVI_ESPACE_CLIENT.md) · [SUIVI_ESPACE_MULTILINGUE.md](./SUIVI_ESPACE_MULTILINGUE.md) |
 
 ## Adresses
 
@@ -16,7 +22,9 @@ L'espace de suivi vit **à la racine**, pas sous un préfixe à lui :
 
 | Adresse | Quoi |
 |---|---|
-| `/<slug>/admin` | l'espace d'UNE vitrine — l'adresse qu'on donne au client : « votre site, puis `/admin` ». Même forme que sur un site client autonome, où la vitrine est à la racine du domaine. |
+| `/<slug>/admin` | l'**ACCUEIL** d'UNE vitrine — l'adresse qu'on donne au client : « votre site, puis `/admin` ». Même forme que sur un site client autonome, où la vitrine est à la racine du domaine. Après connexion, elle présente **deux cartes** : le suivi et les devis. |
+| `/<slug>/admin/dashboard` | le **SUIVI** : consommation, réservations, journal, fichier client |
+| `/<slug>/admin/quotes` | les **DEVIS & FACTURES** (alias français `.../devis`) |
 | `/admin` | l'espace de l'agence, vision sur les 12 vitrines |
 | `/admin/login` | la connexion |
 
@@ -24,6 +32,24 @@ L'espace de suivi vit **à la racine**, pas sous un préfixe à lui :
 quel `/<mot>/admin`. Un mot qui n'est pas une vitrine connue rend un **404 franc**
 — répondre autre chose ferait de cette page un annuaire des démos. Les segments
 statiques restent prioritaires : `/demo/...` et `/api/...` ne sont pas touchés.
+
+### Pourquoi tous les outils sont nichés sous `/<slug>/admin`
+
+Parce que la garde de session est posée **une seule fois**, dans
+`app/(portal)/[slug]/admin/layout.tsx`, et couvre tout le segment : une page
+ajoutée demain là-dessous est protégée avant même d'avoir été écrite. Le chemin
+seul ne protège rien ; le layout qu'il fait partager, si.
+
+Les pages gardent par-dessus leur propre vérification. Ce n'est pas une redite
+inutile : leurs chargeurs ont de toute façon besoin de la session pour savoir
+QUELLE vitrine lire, et un contrôle d'accès qui ne tient qu'à un seul endroit
+tient mal.
+
+L'accueil, lui, a gardé l'adresse `/admin` plutôt que de la céder au tableau de
+bord : c'est celle qui a déjà été communiquée aux clients, imprimée dans des
+messages et retenue de tête. Elle reste valide et devient le hall d'entrée —
+personne ne tombe sur une 404, et celui qui arrive découvre qu'il y a **deux**
+outils derrière son code, pas un.
 
 Les anciennes adresses `/espace/*` **redirigent en 308** (`next.config.js`) :
 des liens et des codes ont déjà été transmis avec, elles ne meurent pas.
@@ -33,8 +59,48 @@ des liens et des codes ont déjà été transmis avec, elles ne meurent pas.
     /espace/admin    → /admin
     /espace/<slug>   → /<slug>/admin
 
-Les URL vivent dans `lib/portal/paths.ts` (`spaceHref`, `loginHref`,
-`ADMIN_PATH`, `LOGIN_PATH`) — un seul endroit à changer.
+Les deux adresses de départ de l'outil de devis redirigent également, pour la
+même raison :
+
+    /<slug>/quotes   → /<slug>/admin/quotes
+    /<slug>/devis    → /<slug>/admin/devis
+
+Les URL vivent dans `lib/portal/paths.ts` (`spaceHref`, `dashboardHref`,
+`quotesHref`, `loginHref`, `ADMIN_PATH`, `LOGIN_PATH`) — un seul endroit à
+changer.
+
+## Bilingue FR / EN
+
+Tout l'espace est traduit : connexion, accueil, suivi, journal, fichier client,
+espace de l'agence, et l'outil de devis (jusqu'au document imprimé).
+
+| Sujet | Où |
+|---|---|
+| Vocabulaire de l'espace | `lib/portal/portalStrings.ts` |
+| Vocabulaire des devis | `lib/portal/documentsStrings.ts` |
+| Lecture de la langue (serveur) | `lib/portal/lang.ts` → cookie `av_lang` |
+| Distribution (client) | `lib/portal/i18nClient.tsx` → `usePortalI18n()` |
+| Dates, durées, nombres | `components/portal/format.ts`, **locale en argument** |
+
+Quatre points qui expliquent la forme :
+
+1. **C'est le cookie du site public.** Un visiteur qui a mis la vitrine en
+   anglais retrouve son espace en anglais, sans second réglage. Un espace
+   protégé n'est pas un autre site, c'est l'envers du même.
+2. **La langue voyage par contexte, pas par prop.** Dix composants sur trois
+   niveaux : une prop traversante s'oublie quelque part, et l'oubli ne se voit
+   pas — le composant continue d'afficher du français au milieu d'une page
+   anglaise.
+3. **Changer de langue écrit le cookie PUIS rafraîchit.** Les pages sont
+   `force-dynamic` : un simple état React ne retraduirait pas ce qui vient du
+   serveur.
+4. **Ce qui est une décision de forme reste dans le composant.** L'icône et la
+   couleur d'un statut ne changent pas avec la langue ; seul le libellé part au
+   dictionnaire. Une pastille verte reste verte en anglais.
+
+Le sélecteur est dans la barre d'application — et **aussi en tête de l'écran de
+connexion**, où il n'y a pas encore de barre : quelqu'un qui ne lit pas le
+français doit pouvoir basculer avant de chercher à comprendre les champs.
 
 ## Ce qu'on stocke, et ce qu'on ne stocke pas
 

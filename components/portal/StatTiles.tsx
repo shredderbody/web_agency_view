@@ -1,4 +1,7 @@
+"use client";
+
 import type { UsageSummary } from "@/lib/portal/types";
+import { usePortalI18n } from "@/lib/portal/i18nClient";
 import { fmtCost, fmtDuration, fmtNumber } from "./format";
 
 /* Les quatre chiffres qui répondent à « qu'ai-je consommé, et pour quel
@@ -6,7 +9,8 @@ import { fmtCost, fmtDuration, fmtNumber } from "./format";
    graphe : l'œil relie la tuile à la couleur sans légende supplémentaire. */
 
 export default function StatTiles({ usage }: { usage: UsageSummary }) {
-  const dur = fmtDuration(usage.callSeconds);
+  const { lang, t } = usePortalI18n();
+  const dur = fmtDuration(usage.callSeconds, lang);
   const cost = usage.callCost + usage.chatCost;
   const conv = usage.calls + usage.chats;
   /* Rendement : part des échanges qui ont abouti à une prise. Volontairement
@@ -18,53 +22,59 @@ export default function StatTiles({ usage }: { usage: UsageSummary }) {
     ? Math.round((usage.bookings / conv) * 100)
     : null;
 
+  const extras = [
+    usage.reschedules > 0 ? t.tiles.reschedules(usage.reschedules) : null,
+    usage.cancels > 0 ? t.tiles.cancels(usage.cancels) : null,
+  ].filter(Boolean);
+
   return (
     <div className="esp-tiles">
       <div className="esp-tile">
         <span className="esp-tile-k">
           <span className="esp-tile-dot" style={{ background: "var(--esp-voice)" }} aria-hidden />
-          Appels vocaux
+          {t.tiles.calls}
         </span>
-        <span className="esp-tile-v esp-num">{fmtNumber(usage.calls)}</span>
+        <span className="esp-tile-v esp-num">{fmtNumber(usage.calls, lang)}</span>
         <span className="esp-tile-s">
-          {usage.callSeconds > 0 ? `${dur.value}${dur.unit} de conversation` : "aucune minute consommée"}
+          {usage.callSeconds > 0 ? t.tiles.callsSub(`${dur.value}${dur.unit}`) : t.tiles.callsNone}
         </span>
       </div>
 
       <div className="esp-tile">
         <span className="esp-tile-k">
           <span className="esp-tile-dot" style={{ background: "var(--esp-text)" }} aria-hidden />
-          Messages écrits
+          {t.tiles.messages}
         </span>
-        <span className="esp-tile-v esp-num">{fmtNumber(usage.chatMessages)}</span>
+        <span className="esp-tile-v esp-num">{fmtNumber(usage.chatMessages, lang)}</span>
         <span className="esp-tile-s">
           {usage.chats > 0
-            ? `sur ${fmtNumber(usage.chats)} conversation${usage.chats > 1 ? "s" : ""}`
-            : "aucune conversation écrite"}
+            ? t.tiles.messagesSub(fmtNumber(usage.chats, lang), usage.chats)
+            : t.tiles.messagesNone}
         </span>
       </div>
 
       <div className="esp-tile">
-        <span className="esp-tile-k">Actions enregistrées</span>
-        <span className="esp-tile-v esp-num">{fmtNumber(usage.actions)}</span>
+        <span className="esp-tile-k">{t.tiles.actions}</span>
+        <span className="esp-tile-v esp-num">{fmtNumber(usage.actions, lang)}</span>
         <span className="esp-tile-s">
-          {usage.bookings} prise{usage.bookings > 1 ? "s" : ""}
-          {usage.reschedules > 0 && ` · ${usage.reschedules} report${usage.reschedules > 1 ? "s" : ""}`}
-          {usage.cancels > 0 && ` · ${usage.cancels} annulation${usage.cancels > 1 ? "s" : ""}`}
+          {[t.tiles.bookings(usage.bookings), ...extras].join(" · ")}
         </span>
       </div>
 
       <div className="esp-tile">
-        <span className="esp-tile-k">Coût de la période</span>
+        <span className="esp-tile-k">{t.tiles.cost}</span>
         <span className="esp-tile-v esp-num">
-          {fmtCost(cost)}<span className="esp-tile-u">$</span>
+          {fmtCost(cost, lang)}<span className="esp-tile-u">$</span>
         </span>
         <span className="esp-tile-s">
           {cost === 0 && conv === 0
-            ? "rien à facturer"
+            ? t.tiles.costNone
             : yieldPct !== null
-              ? `${yieldPct} % des échanges ont donné une prise`
-              : `${fmtNumber(usage.bookings)} prise${usage.bookings > 1 ? "s" : ""} pour ${fmtNumber(conv)} échange${conv > 1 ? "s" : ""}`}
+              ? t.tiles.yieldPct(yieldPct)
+              : t.tiles.yieldRaw(
+                  fmtNumber(usage.bookings, lang), usage.bookings,
+                  fmtNumber(conv, lang), conv,
+                )}
         </span>
       </div>
     </div>

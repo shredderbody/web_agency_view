@@ -1,46 +1,27 @@
-import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { canAccess, currentSession } from "@/lib/portal/auth";
-import { getTenant } from "@/lib/portal/registry";
-import { loadTenantDashboard, type PeriodDays } from "@/lib/portal/dashboard";
-import { loginHref, spaceHref } from "@/lib/portal/paths";
-import TenantDashboard from "@/components/portal/TenantDashboard";
+import { loadSpaceHome } from "@/lib/portal/spaceHome";
+import SpaceHome from "@/components/portal/SpaceHome";
 
-/* `/<slug>/admin` — l'espace d'UNE vitrine. L'agence, elle, a `/admin`.
+/* `/<slug>/admin` — L'ACCUEIL d'une vitrine, après connexion.
 
-   Ce segment dynamique est à la racine : il attrape n'importe quel
-   `/<mot>/admin`. Un mot qui n'est pas une vitrine connue est donc un 404 franc,
-   pas une redirection — répondre autre chose ferait de cette page un annuaire
-   des démos existantes. */
+   C'est l'adresse qu'on donne au client — « votre site, puis /admin » — et
+   c'est celle qu'il a déjà. Elle ne mène plus directement au tableau de bord
+   mais à un choix entre les deux outils que son code d'accès ouvre : le SUIVI
+   (`/<slug>/dashboard`) et les DEVIS (`/<slug>/quotes`).
+
+   Ce détour d'un clic est le point de la page : tant qu'on atterrissait sur le
+   tableau de bord, rien ne disait que l'outil de devis existait derrière le
+   même code. */
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
-function periodOf(raw: string | undefined): PeriodDays {
-  const n = Number(raw);
-  return n === 7 || n === 90 ? n : 30;
-}
-
-export default async function TenantSpacePage({
-  params, searchParams,
+export default async function TenantHomePage({
+  params,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ p?: string }>;
 }) {
   const { slug } = await params;
-  const { p } = await searchParams;
-
-  const tenant = getTenant(slug);
-  if (!tenant) notFound();
-
-  const session = await currentSession();
-  // Pas de session ou session expirée : retour au login avec la vitrine
-  // pré-sélectionnée, pour ne pas rejouer le choix.
-  if (!session) redirect(loginHref(slug));
-  // L'espace d'un autre client : chacun chez soi (l'administrateur voit tout).
-  if (!canAccess(session, slug)) redirect(spaceHref(session.slug));
-
-  const data = await loadTenantDashboard(tenant, periodOf(p));
-  return <TenantDashboard data={data} isAdmin={session.role === "admin"} />;
+  return <SpaceHome data={await loadSpaceHome(slug)} />;
 }

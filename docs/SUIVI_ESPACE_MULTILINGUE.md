@@ -4,19 +4,14 @@
 > bas : l'état de chaque étape est à jour. Reprendre à la première étape `[ ]`.
 > Mettre à jour ce fichier **après chaque étape**, jamais à la fin.
 
-Dernière mise à jour : 2026-09-04 — 🚧 **CHANTIER EN COURS.** Étape 1 faite
-(dictionnaire bilingue). L'arbre **compile** (`npx tsc --noEmit` : zéro erreur)
-et la production n'est **pas** affectée : à ce stade rien n'est encore branché,
-le dictionnaire est un module additif que personne n'importe.
+Dernière mise à jour : 2026-09-04 — 🚧 Étapes 1 à 9b faites. L'espace est
+**entièrement bilingue**, les adresses sont en place, le build passe et la
+vérification locale est concluante dans les deux langues. Reste à commiter,
+pousser, redéployer et documenter.
 
 ## ⏯️ Reprendre ici
 
-Reprendre à l'**étape 2**. Voir la liste des étapes plus bas.
-
-⚠️ **NE PAS DÉPLOYER entre les étapes 3 et 6.** Le déplacement de
-`/<slug>/admin` vers `/<slug>/dashboard` et la création de la nouvelle page
-d'accueil forment un tout : déployer au milieu casse l'adresse que les clients
-ont déjà en main.
+Reprendre à l'**étape 10** (commit + push), puis 11 et 12.
 
 ## Demande
 
@@ -63,29 +58,33 @@ page d'accueil à deux cartes règle.
 
 | Sujet | Décision | Pourquoi |
 |---|---|---|
-| Adresses | `/<slug>/admin` = **accueil** (2 cartes) · `/<slug>/dashboard` = le suivi · `/<slug>/quotes` = les devis | l'adresse déjà donnée aux clients (`/admin`) **reste valide** et devient le hall d'entrée ; personne ne se retrouve devant une 404 |
+| Adresses | `/<slug>/admin` = **accueil** (2 cartes) · `/<slug>/admin/dashboard` = le suivi · `/<slug>/admin/quotes` = les devis (alias `/admin/devis`) | l'adresse déjà donnée aux clients (`/admin`) **reste valide** et devient le hall d'entrée ; tout ce qui est protégé vit **sous** elle |
+| Garde d'accès | posée dans `app/(portal)/[slug]/admin/layout.tsx`, **partagée par tout le segment** | c'est ce que le nid apporte de concret : une page ajoutée demain sous `/admin/` est protégée avant d'être écrite. Le chemin seul ne protège rien |
+| Anciennes adresses | `/<slug>/quotes` et `/<slug>/devis` redirigent en **308** | elles ont vécu en production quelques heures ; elles ne cassent pas |
 | Langue | cookie `av_lang`, **le même que le site public** | un visiteur qui a mis le site en anglais retrouve son espace en anglais, sans second réglage |
 | Transport de la langue | lue au serveur dans le `layout` de l'espace, distribuée par un **contexte client** | sinon il faut passer `lang` en prop à travers dix composants, et un oubli passe inaperçu |
 | Changement de langue | bouton FR/EN dans la barre → écrit le cookie puis `router.refresh()` | l'espace est `force-dynamic` : la page doit être **re-rendue par le serveur**, un simple état React ne retraduirait pas ce qui vient du serveur |
 | Dictionnaire | `lib/portal/portalStrings.ts`, à part de `lib/i18n.ts` | `lib/i18n.ts` sert le site PUBLIC et part dans le bundle de chaque vitrine ; le vocabulaire d'un espace protégé n'a rien à y faire |
 | Pluriels | **des fonctions**, jamais un `+ "s"` dans le composant | « 1 réservation / 2 réservations » et « 1 booking / 2 bookings » ne se forment pas au même endroit de la phrase selon la langue |
 | Dates et nombres | `format.ts` prend la **locale** en argument | `fr-FR` était écrit en dur dans sept fonctions ; un espace anglais qui affiche « 4 septembre » n'est pas bilingue |
+| Responsive | la barre bilingue, l'accueil et les tableaux repris **à 3 seuils** (560 / 780 / 1040 px), comme le reste de `espace.css` | demande explicite du client ; et un sélecteur de langue de plus dans une barre déjà dense casserait la barre sur téléphone si on ne s'en occupait pas |
 | Authentification des devis | **inchangée** — la session existante | voir le constat ci-dessus : la protection est déjà là, en bâtir une seconde serait un second endroit où se tromper |
 
 ## Étapes
 
 - [x] **1.** `lib/portal/portalStrings.ts` — le dictionnaire FR/EN de tout l'espace
-- [ ] **2.** `format.ts` bilingue (locale en argument) + contexte de langue client
-- [ ] **3.** `paths.ts` : `dashboardHref`, et ce que `spaceHref` désigne désormais
-- [ ] **4.** Déplacer le tableau de bord vers `/<slug>/dashboard`
-- [ ] **5.** Nouvelle page d'accueil `/<slug>/admin` à deux cartes (+ chargeur)
-- [ ] **6.** Bilinguer les composants : barre, tuiles, graphe, réservations, journal, fichier client
-- [ ] **7.** Bilinguer l'espace de l'agence et l'écran de connexion
-- [ ] **8.** Sélecteur de langue dans la barre d'application
-- [ ] **9.** Build + vérification locale dans les deux langues
+- [x] **2.** `format.ts` bilingue (locale en argument) + contexte de langue client
+- [x] **3.** `paths.ts` : `dashboardHref`, et ce que `spaceHref` désigne désormais
+- [x] **4.** Déplacer les outils SOUS `/<slug>/admin/` + garde de layout partagée
+- [x] **5.** Nouvelle page d'accueil `/<slug>/admin` à deux cartes (+ chargeur)
+- [x] **6.** Bilinguer les composants : barre, tuiles, graphe, réservations, journal, fichier client
+- [x] **7.** Bilinguer l'espace de l'agence et l'écran de connexion
+- [x] **8.** Sélecteur de langue dans la barre d'application ET sur la connexion
+- [x] **9.** Passe responsive : téléphone et tablette, dans les deux langues
+- [x] **9b.** Build + vérification locale dans les deux langues
 - [ ] **10.** Commit + push
 - [ ] **11.** Redéploiement + vérification en production
-- [ ] **12.** Documentation (`docs/ESPACE_CLIENT.md`, `docs/README.md`)
+- [x] **12.** Documentation (`docs/ESPACE_CLIENT.md`, `docs/DEVIS_FACTURES.md`, `docs/README.md`)
 
 ## Journal
 
@@ -105,3 +104,105 @@ page d'accueil à deux cartes règle.
   la version anglaise ne pourrait plus être du même type (la leçon avait déjà
   été payée sur `documentsStrings.ts`).
   `npx tsc --noEmit` : zéro erreur. Module additif, rien n'est encore branché.
+- **2026-09-04 · étape 2, le formatage** — `format.ts` prend maintenant la
+  LANGUE en argument, partout. `fr-FR` y était écrit en dur dans sept fonctions,
+  et c'est ce qui empêchait l'espace d'être réellement bilingue : un tableau de
+  bord anglais qui annonce « 4 septembre » et « il y a 3 j » n'est pas traduit,
+  il est **à moitié** traduit — ce qui se remarque davantage.
+  Trois fonctions ajoutées pour les `Intl.DateTimeFormat` qui traînaient en dur
+  dans les composants : `fmtMonth` (en-tête du calendrier), `fmtFullDay` (titre
+  d'une journée sélectionnée), `fmtExact` (infobulle du journal).
+  `toLocalInput` et `fromLocalInput` restent, elles, indépendantes de la langue :
+  un `<input type="datetime-local">` parle toujours `AAAA-MM-JJTHH:MM`.
+- **2026-09-04 · étape 2, la langue voyage par CONTEXTE, pas par prop** —
+  `lib/portal/lang.ts` la lit au serveur (le même cookie `av_lang` que le site
+  public), `app/(portal)/layout.tsx` la lit **une seule fois** et
+  `lib/portal/i18nClient.tsx` la distribue. Une prop `lang` traversante à
+  travers dix composants sur trois niveaux s'oublie quelque part, et l'oubli ne
+  se voit pas : le composant continue d'afficher du français au milieu d'une
+  page anglaise.
+  Le changement de langue écrit le cookie **puis appelle `router.refresh()`** :
+  les pages sont `force-dynamic`, un simple état React ne retraduirait pas ce
+  qui vient du serveur. `useTransition` garde l'écran en place pendant l'aller
+  et retour au lieu de le vider.
+- **2026-09-04 · ⚠️ changement de structure demandé en cours de route** — les
+  outils passent de `/<slug>/dashboard` et `/<slug>/quotes` à
+  **`/<slug>/admin/dashboard`** et **`/<slug>/admin/quotes`**, « pour forcer
+  l'accès par la page admin ».
+  Le nid, seul, ne force rien : c'est la session qui protège, et elle protégeait
+  déjà les deux adresses. Pour que le changement porte VRAIMENT ce qu'on lui
+  demande, la garde a été posée dans `app/(portal)/[slug]/admin/layout.tsx`,
+  **partagée par tout le segment** : slug inconnu ⇒ 404, pas de session ⇒
+  connexion, mauvaise vitrine ⇒ retour chez soi. Une page ajoutée demain sous
+  `/admin/` est protégée avant même d'avoir été écrite.
+  Les pages gardent leur propre vérification par-dessus : leurs chargeurs ont de
+  toute façon besoin de la session pour savoir quelle vitrine lire, et un
+  contrôle d'accès qui ne tient qu'à un seul endroit tient mal.
+  Les deux anciennes adresses redirigent en **308** (`next.config.js`). Le
+  `(?!admin$)` de la règle écarte l'espace de l'agence — sans lui,
+  `/admin/quotes` se redirigerait vers `/admin/admin/quotes`.
+- **2026-09-04 · étape 5, l'accueil** — `lib/portal/spaceHome.ts` +
+  `components/portal/SpaceHome.tsx`. Deux cartes, et **un seul chiffre par
+  carte** (« 3 réservations à venir », « 2 devis · 1 facture ») : y remettre des
+  tuiles de consommation aurait refait le tableau de bord en moins bien, et créé
+  deux endroits où lire la même chose. La carte ENTIÈRE est le lien — viser un
+  petit bouton au pouce, sur une page qui ne sert qu'à choisir, n'a pas de sens.
+  Si Supabase ne répond pas, le chiffre disparaît et la carte reste : on
+  n'empêche personne d'atteindre son outil de devis parce qu'on n'a pas su
+  compter ses réservations.
+- **2026-09-04 · demande ajoutée en cours de route : « multiresponsive, mobile
+  tablette »** — inscrite comme étape 9. Trois pièces neuves à reprendre : le
+  sélecteur de langue (une commande de plus dans une barre déjà dense), les
+  cartes d'accueil, et les libellés anglais, plus longs que les français dans
+  la plupart des cas — un bouton qui tient en français peut déborder en anglais.
+- **2026-09-04 · étapes 6 et 7, les dix composants** — barre, tuiles, graphe,
+  réservations, journal, fichier client, tableau de bord, espace de l'agence,
+  écran de connexion. Un principe suivi partout : **ce qui est une décision de
+  FORME reste dans le composant, ce qui est du TEXTE part au dictionnaire.**
+  Concrètement, `LOOK` du journal ne porte plus que l'icône et le ton, `STATUS`
+  des réservations plus que la classe de couleur : une pastille verte reste
+  verte en anglais, seul son libellé change. Mélanger les deux dans une même
+  table obligeait à traduire des noms de variables CSS.
+- **2026-09-04 · étape 8, DEUX sélecteurs de langue, pas un** — dans la barre
+  (FR/EN abrégé, la place y est comptée) et **en tête de l'écran de connexion**
+  (les langues en toutes lettres). Le second n'est pas une redite : quelqu'un
+  qui ne lit pas le français doit pouvoir basculer AVANT de chercher à
+  comprendre les champs. Sur la connexion, il n'y a pas encore de barre.
+- **2026-09-04 · étape 9, responsive** — trois choses ont changé de nature avec
+  la traduction, et chacune a son seuil :
+  1. **la barre porte une commande de plus.** Sous 680 px elle perdait déjà le
+     logotype et les libellés ; le sélecteur de langue, lui, **reste** — c'est
+     précisément la commande qu'on cherche quand on ne comprend pas l'écran. Ce
+     sont les autres qui se resserrent autour ;
+  2. **les libellés anglais sont plus longs** (« Reschedules & cancellations »
+     contre « Reports & annulations »). Les segments de filtre débordaient : ils
+     passent en grille de deux sur téléphone plutôt qu'en ligne de quatre ;
+  3. **les cartes d'accueil** sont la première chose qu'on voit après connexion,
+     souvent sur un téléphone tenu d'une main : elles gardent leur hauteur de
+     frappe et ne perdent que du rembourrage (900 px puis 560 px).
+- **2026-09-04 · étape 9b, build et vérification locale** — `npm run build`
+  passe. Les quatre routes sont là :
+  `/[slug]/admin` (3,3 kB) · `/[slug]/admin/dashboard` (5,96 kB) ·
+  `/[slug]/admin/quotes` et `/admin/devis` (138 B) · `/admin` (2,79 kB).
+  Serveur de production sur le port 3099, **quinze vérifications passées** :
+
+  | Vérification | Résultat |
+  |---|---|
+  | `/pas-une-vitrine/admin` | **404** |
+  | les quatre adresses sans session | **307** vers `/admin/login?demo=barbershop` |
+  | `/barbershop/quotes` et `/devis` (anciennes) | **308** vers `/barbershop/admin/quotes` et `/admin/devis` |
+  | accueil · suivi · devis, session ouverte, **en français** | 200 — « Votre espace », « Ouvrir le suivi », « Ouvrir les devis », « Suivi de votre standardiste » |
+  | les trois mêmes, **en anglais** (`av_lang=en`) | 200 — « Your space », « Open the dashboard », « Open quotes », « receptionist, tracked » |
+  | connexion FR et EN | 200 — « Accéder à votre espace » / « Sign in to your space », les deux langues offertes dans les deux cas |
+  | espace agence FR et EN | 200 — « Toutes les vitrines » / « All sites », « Dernier signe » / « Last sign of life » |
+  | français résiduel dans la page anglaise | **aucun** |
+  | session `barbershop` sur `/ines-garden/admin` et `/admin/quotes` | **307** retour chez soi, dans les deux cas |
+
+  Le dernier point mérite d'être noté : c'est la **garde du layout** qui répond
+  pour `/ines-garden/admin/quotes`, avant même que la page ne s'exécute.
+- **2026-09-04 · étape 12, documentation** — écrite AVANT le commit pour y
+  entrer du même coup. `ESPACE_CLIENT.md` : les nouvelles adresses, la section
+  « pourquoi tous les outils sont nichés sous `/<slug>/admin` », et une section
+  bilingue complète. `DEVIS_FACTURES.md` : toutes les URL reprises (l'outil a
+  déménagé le jour même de sa mise en service) et les redirections 308 notées.
+  `README.md` : les deux fichiers de suivi indexés.

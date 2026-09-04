@@ -28,6 +28,18 @@ const FR = {
   /** Locale de formatage des dates et des nombres. */
   locale: "fr-FR",
 
+  /* ── Dates, durées, temps relatif ────────────────────────────────────── */
+  fmt: {
+    now: "à l'instant",
+    minsAgo: (n: number) => `il y a ${n} min`,
+    hoursAgo: (n: number) => `il y a ${n} h`,
+    daysAgo: (n: number) => `il y a ${n} j`,
+    unitS: "\u202fs",
+    unitMin: "\u202fmin",
+    hoursMins: (h: number, m: string) => `${h} h ${m}`,
+    noSlot: "Créneau à préciser",
+  },
+
   /* ── Barre d'application ─────────────────────────────────────────────── */
   bar: {
     demo: "La vitrine",
@@ -116,6 +128,8 @@ const FR = {
     aria: (n: number) => `Consommation quotidienne sur ${n} jours. Détail chiffré dans le tableau qui suit.`,
     tipCalls: "Appels",
     tipChats: "Écrits",
+    tipDuration: "Durée",
+    noneRecorded: "Aucune consommation enregistrée sur la période.",
   },
 
   /* ── Réservations ────────────────────────────────────────────────────── */
@@ -296,6 +310,17 @@ const FR = {
 const EN: PortalStrings = {
   locale: "en-GB",
 
+  fmt: {
+    now: "just now",
+    minsAgo: (n: number) => `${n} min ago`,
+    hoursAgo: (n: number) => `${n} h ago`,
+    daysAgo: (n: number) => `${n} d ago`,
+    unitS: "\u202fs",
+    unitMin: "\u202fmin",
+    hoursMins: (h: number, m: string) => `${h}h ${m}`,
+    noSlot: "Slot to be set",
+  },
+
   bar: {
     demo: "The site",
     sync: "Sync",
@@ -379,6 +404,8 @@ const EN: PortalStrings = {
     aria: (n: number) => `Daily usage over ${n} days. The figures follow in the table below.`,
     tipCalls: "Calls",
     tipChats: "Written",
+    tipDuration: "Duration",
+    noneRecorded: "No usage recorded over this period.",
   },
 
   res: {

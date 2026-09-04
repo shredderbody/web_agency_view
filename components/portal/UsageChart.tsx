@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { UsageDay } from "@/lib/portal/types";
+import { usePortalI18n } from "@/lib/portal/i18nClient";
 import { fmtDayLabel, fmtDuration, fmtNumber } from "./format";
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -34,6 +35,7 @@ const TIP_HALF = 88;
 type Props = { days: UsageDay[]; timezone: string };
 
 export default function UsageChart({ days }: Props) {
+  const { lang, t } = usePortalI18n();
   const [hover, setHover] = useState<number | null>(null);
   const plotRef = useRef<HTMLDivElement>(null);
   const [W, setW] = useState(W_FALLBACK);
@@ -75,11 +77,11 @@ export default function UsageChart({ days }: Props) {
       <div className="esp-legend" style={{ marginBottom: "0.7rem" }}>
         <span className="esp-legend-i">
           <span className="esp-legend-s" style={{ background: "var(--esp-voice)" }} />
-          Appels vocaux
+          {t.chart.calls}
         </span>
         <span className="esp-legend-i">
           <span className="esp-legend-s" style={{ background: "var(--esp-text)" }} />
-          Conversations écrites
+          {t.chart.chats}
         </span>
       </div>
 
@@ -89,7 +91,7 @@ export default function UsageChart({ days }: Props) {
         style={{ width: "100%", height: `${H}px`, touchAction: "pan-y" }}
         onPointerLeave={() => setHover(null)}
         role="img"
-        aria-label={`Consommation quotidienne sur ${days.length} jours. Détail chiffré dans le tableau qui suit.`}
+        aria-label={t.chart.aria(days.length)}
       >
         {ticks.map((v) => (
           <g key={v}>
@@ -170,18 +172,18 @@ export default function UsageChart({ days }: Props) {
             top: `${(y(days[hover].calls + days[hover].chats) / H) * 100}%`,
           }}
         >
-          <div className="esp-tip-d">{fmtDayLabel(days[hover].day)}</div>
+          <div className="esp-tip-d">{fmtDayLabel(days[hover].day, lang)}</div>
           <div className="esp-tip-r">
             <span className="esp-legend-s" style={{ background: "var(--esp-voice)" }} />
-            Appels <b>{fmtNumber(days[hover].calls)}</b>
+            {t.chart.tipCalls} <b>{fmtNumber(days[hover].calls, lang)}</b>
           </div>
           <div className="esp-tip-r">
             <span className="esp-legend-s" style={{ background: "var(--esp-text)" }} />
-            Écrits <b>{fmtNumber(days[hover].chats)}</b>
+            {t.chart.tipChats} <b>{fmtNumber(days[hover].chats, lang)}</b>
           </div>
           {days[hover].call_seconds > 0 && (
             <div className="esp-tip-r" style={{ opacity: 0.75 }}>
-              Durée <b>{fmtDuration(days[hover].call_seconds).value}{fmtDuration(days[hover].call_seconds).unit}</b>
+              {t.chart.tipDuration} <b>{fmtDuration(days[hover].call_seconds, lang).value}{fmtDuration(days[hover].call_seconds, lang).unit}</b>
             </div>
           )}
         </div>
@@ -190,7 +192,7 @@ export default function UsageChart({ days }: Props) {
 
       {!hasData && (
         <p className="esp-micro" style={{ textAlign: "center", marginTop: "0.5rem" }}>
-          Aucune consommation enregistrée sur la période.
+          {t.chart.noneRecorded}
         </p>
       )}
     </div>

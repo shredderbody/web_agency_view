@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, CalendarDays, ClipboardList, FileText, Gauge, UsersRound } from "lucide-react";
+import { AlertCircle, CalendarDays, ClipboardList, FileText, Gauge, Home, UsersRound } from "lucide-react";
 import type { TenantDashboardData } from "@/lib/portal/dashboard";
-import { quotesHref, spaceHref } from "@/lib/portal/paths";
+import { dashboardHref, quotesHref, spaceHref } from "@/lib/portal/paths";
+import { usePortalI18n } from "@/lib/portal/i18nClient";
 import PortalBar from "./PortalBar";
 import StatTiles from "./StatTiles";
 import UsageChart from "./UsageChart";
@@ -19,19 +20,15 @@ import { fmtCost, fmtDayLabel, fmtDuration, fmtNumber } from "./format";
    n'attend aucun réseau. */
 
 const TABS = [
-  { id: "usage", label: "Consommation", icon: Gauge },
-  { id: "bookings", label: "Réservations", icon: CalendarDays },
-  { id: "journal", label: "Journal", icon: ClipboardList },
-  { id: "customers", label: "Clients", icon: UsersRound },
+  { id: "usage", icon: Gauge },
+  { id: "bookings", icon: CalendarDays },
+  { id: "journal", icon: ClipboardList },
+  { id: "customers", icon: UsersRound },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
 
-const PERIODS = [
-  { days: 7, label: "7 j" },
-  { days: 30, label: "30 j" },
-  { days: 90, label: "90 j" },
-] as const;
+const PERIODS = [7, 30, 90] as const;
 
 export default function TenantDashboard({
   data, isAdmin,
@@ -40,8 +37,14 @@ export default function TenantDashboard({
   isAdmin: boolean;
 }) {
   const router = useRouter();
+  const { lang, t } = usePortalI18n();
   const [tab, setTab] = useState<TabId>("usage");
   const { tenant, usage } = data;
+
+  const tabLabel: Record<TabId, string> = {
+    usage: t.dash.tabUsage, bookings: t.dash.tabBookings,
+    journal: t.dash.tabJournal, customers: t.dash.tabCustomers,
+  };
 
   const counts: Record<TabId, number | null> = {
     usage: null,
@@ -64,28 +67,31 @@ export default function TenantDashboard({
         <div className="esp-wrap">
           <div style={{ display: "flex", alignItems: "flex-end", gap: "1rem", flexWrap: "wrap", marginBottom: "1.25rem" }}>
             <div>
-              <h1 className="esp-h1">Suivi de votre standardiste</h1>
+              <h1 className="esp-h1">{t.dash.title}</h1>
               <p className="esp-lead" style={{ marginTop: "0.3rem" }}>
-                {tenant.trade} · période du {fmtDayLabel(usage.from)} au {fmtDayLabel(usage.to)}.
+                {t.dash.lead(tenant.trade, fmtDayLabel(usage.from, lang), fmtDayLabel(usage.to, lang))}
               </p>
             </div>
-            {/* L'outil de devis vit à côté du suivi, pas dedans : un cinquième
-                onglet en aurait fait une sous-partie de la consommation. */}
-            <a
-              className="esp-btn esp-btn-sm"
-              style={{ marginLeft: "auto" }}
-              href={quotesHref(tenant.slug)}
-            >
-              <FileText size={13} aria-hidden /> Devis &amp; factures
-            </a>
-            <div className="esp-seg" role="group" aria-label="Période">
-              {PERIODS.map((p) => (
+            {/* Les deux voisins du suivi : l'accueil dont on vient, et l'outil
+                de devis. Ce dernier n'est PAS un cinquième onglet — il en aurait
+                fait une sous-partie de la consommation, alors que c'est un autre
+                métier : on suit sa standardiste, on FACTURE ses clients. */}
+            <div className="esp-dash-links">
+              <a className="esp-btn esp-btn-sm" href={spaceHref(tenant.slug)}>
+                <Home size={13} aria-hidden /> {t.dash.home}
+              </a>
+              <a className="esp-btn esp-btn-sm" href={quotesHref(tenant.slug)}>
+                <FileText size={13} aria-hidden /> {t.dash.quotesBtn}
+              </a>
+            </div>
+            <div className="esp-seg" role="group" aria-label={t.dash.periodAria}>
+              {PERIODS.map((d) => (
                 <button
-                  key={p.days} type="button" className="esp-seg-b"
-                  aria-pressed={data.period === p.days}
-                  onClick={() => router.push(`${spaceHref(tenant.slug)}?p=${p.days}`)}
+                  key={d} type="button" className="esp-seg-b"
+                  aria-pressed={data.period === d}
+                  onClick={() => router.push(`${dashboardHref(tenant.slug)}?p=${d}`)}
                 >
-                  {p.label}
+                  {t.dash.period(d)}
                 </button>
               ))}
             </div>
@@ -95,21 +101,21 @@ export default function TenantDashboard({
             <p className="esp-note esp-note-bad" role="alert" style={{ marginBottom: "1.25rem" }}>
               <AlertCircle size={15} aria-hidden />
               <span>
-                <b>Les données n&apos;ont pas pu être lues.</b> {data.error}
+                <b>{t.dash.errT}</b> {data.error}
                 <br />
-                Rien n&apos;est perdu : l&apos;affichage ci-dessous est vide, pas la base.
+                {t.dash.errD}
               </span>
             </p>
           )}
 
           <div className="esp-tabs" role="tablist">
-            {TABS.map(({ id, label, icon: Icon }) => (
+            {TABS.map(({ id, icon: Icon }) => (
               <button
                 key={id} type="button" role="tab" className="esp-tab"
                 aria-selected={tab === id} onClick={() => setTab(id)}
               >
                 <Icon size={13} aria-hidden style={{ verticalAlign: "-2px", marginRight: "0.35rem" }} />
-                {label}
+                {tabLabel[id]}
                 {counts[id] !== null && <span className="esp-tab-count">{counts[id]}</span>}
               </button>
             ))}
@@ -121,10 +127,8 @@ export default function TenantDashboard({
 
               <section className="esp-panel">
                 <header className="esp-panel-head">
-                  <h2 className="esp-h2">Consommation jour par jour</h2>
-                  <span className="esp-small">
-                    {fmtNumber(usage.calls + usage.chats)} échange{usage.calls + usage.chats > 1 ? "s" : ""} sur la période
-                  </span>
+                  <h2 className="esp-h2">{t.dash.dailyT}</h2>
+                  <span className="esp-small">{t.dash.dailyD(usage.calls + usage.chats)}</span>
                 </header>
                 <div className="esp-panel-body">
                   <UsageChart days={usage.days} timezone={tenant.timezone} />
@@ -133,40 +137,39 @@ export default function TenantDashboard({
 
               <section className="esp-panel">
                 <header className="esp-panel-head">
-                  <h2 className="esp-h2">Détail chiffré</h2>
-                  <span className="esp-small">Les jours sans activité sont masqués.</span>
+                  <h2 className="esp-h2">{t.dash.detailT}</h2>
+                  <span className="esp-small">{t.dash.detailD}</span>
                 </header>
                 <div className="esp-tablewrap">
                   <table className="esp-table">
                     <thead>
                       <tr>
-                        <th scope="col">Jour</th>
-                        <th scope="col" className="n">Appels</th>
-                        <th scope="col" className="n">Durée</th>
-                        <th scope="col" className="n">Conversations écrites</th>
-                        <th scope="col" className="n">Messages</th>
-                        <th scope="col" className="n">Coût</th>
+                        <th scope="col">{t.dash.colDay}</th>
+                        <th scope="col" className="n">{t.dash.colCalls}</th>
+                        <th scope="col" className="n">{t.dash.colDuration}</th>
+                        <th scope="col" className="n">{t.dash.colChats}</th>
+                        <th scope="col" className="n">{t.dash.colMessages}</th>
+                        <th scope="col" className="n">{t.dash.colCost}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {usage.days.filter((d) => d.calls + d.chats > 0).reverse().map((d) => {
-                        const dur = fmtDuration(d.call_seconds);
+                        const dur = fmtDuration(d.call_seconds, lang);
                         return (
                           <tr key={d.day}>
-                            <td>{fmtDayLabel(d.day)}</td>
+                            <td>{fmtDayLabel(d.day, lang)}</td>
                             <td className="n">{d.calls || "—"}</td>
                             <td className="n">{d.call_seconds ? `${dur.value}${dur.unit}` : "—"}</td>
                             <td className="n">{d.chats || "—"}</td>
                             <td className="n">{d.chat_messages || "—"}</td>
-                            <td className="n">{fmtCost(d.call_cost + d.chat_cost)} $</td>
+                            <td className="n">{fmtCost(d.call_cost + d.chat_cost, lang)} $</td>
                           </tr>
                         );
                       })}
                       {usage.days.every((d) => d.calls + d.chats === 0) && (
                         <tr>
                           <td colSpan={6} style={{ color: "var(--esp-ink-3)", textAlign: "center", padding: "1.5rem" }}>
-                            Aucune consommation sur la période. La synchronisation remonte
-                            les appels des 14 derniers jours et les conversations écrites plus anciennes.
+                            {t.dash.noUsage}
                           </td>
                         </tr>
                       )}
