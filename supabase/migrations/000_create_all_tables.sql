@@ -712,11 +712,11 @@ notify pgrst, 'reload schema';
 -- 2. DEVISE DÉDUITE DU PAYS, EURO PAR DÉFAUT
 -- `currency` valait 'eur' chez devis_app et 'usd' chez grit-united. La devise
 -- suit désormais le pays : 'usd' si le pays est les États-Unis, 'eur' sinon —
--- et 'eur' quand aucun pays n'est renseigné. Le pays par défaut est la France.
+-- et 'eur' quand aucun pays n'est renseigné. Le pays par défaut est l'Europe.
 --
 -- Les colonnes `country` d'OBSERVATION (analytics_sessions, business_leads,
 -- assessment_sessions : pays constaté, renvoyé par Google ou déduit de l'IP) ne
--- reçoivent aucun défaut — y écrire 'France' inventerait une donnée. Seules les
+-- reçoivent aucun défaut — y écrire 'Europe' inventerait une donnée. Seules les
 -- colonnes d'ADRESSE saisie (company_settings, clients, demo_doc_settings) en
 -- reçoivent un.
 --
@@ -757,7 +757,7 @@ END $$;
 
 -- ── 2. Devise déduite du pays ────────────────────────────────────────────────
 -- 'usd' pour les États-Unis sous toutes leurs graphies, 'eur' partout ailleurs,
--- 'eur' aussi quand le pays est inconnu — c'est le défaut France/euro.
+-- 'eur' aussi quand le pays est inconnu — c'est le défaut Europe/euro.
 -- Volontairement sans `unaccent` : cette extension n'est installée que par
 -- grit-united, et le corps d'une fonction SQL est validé à la création — la
 -- fonction serait donc impossible à créer dans les autres projets. Les graphies
@@ -765,7 +765,11 @@ END $$;
 CREATE OR REPLACE FUNCTION public.currency_for_country(p_country text)
 RETURNS text LANGUAGE sql IMMUTABLE AS $$
   SELECT CASE
-    WHEN p_country IS NULL THEN 'eur'
+    -- Rien de saisi : on retombe sur le défaut, l'Europe et donc l'euro.
+    WHEN p_country IS NULL OR btrim(p_country) = '' THEN 'eur'
+    WHEN lower(btrim(p_country)) IN
+         ('europe', 'eu', 'union europeenne', 'union européenne')
+      THEN 'eur'
     WHEN lower(btrim(p_country)) IN
          ('us', 'usa', 'u.s.', 'u.s.a.', 'united states',
           'united states of america', 'etats-unis', 'etats unis',
@@ -776,7 +780,7 @@ RETURNS text LANGUAGE sql IMMUTABLE AS $$
 $$;
 
 COMMENT ON FUNCTION public.currency_for_country(text) IS
-  'Devise ISO minuscule attendue pour un pays : usd pour les États-Unis, eur sinon (et eur si le pays est inconnu).';
+  'Devise ISO minuscule attendue pour un pays : usd pour les États-Unis, eur sinon — Europe/euro étant le défaut, y compris quand le pays est inconnu.';
 
 -- Pays par défaut sur les colonnes d'ADRESSE saisie, jamais sur un pays constaté.
 DO $$
@@ -790,7 +794,7 @@ BEGIN
        AND EXISTS (SELECT 1 FROM information_schema.columns
                    WHERE table_schema='public' AND table_name=t AND column_name='country')
     THEN
-      EXECUTE format('ALTER TABLE public.%I ALTER COLUMN country SET DEFAULT %L;', t, 'France');
+      EXECUTE format('ALTER TABLE public.%I ALTER COLUMN country SET DEFAULT %L;', t, 'Europe');
     END IF;
   END LOOP;
 END $$;
