@@ -40,9 +40,6 @@ create table if not exists public.demo_customers (
   full_name     text,
   email         text,
   lang          text,
-
-  first_seen_at timestamptz not null default now(),
-  last_seen_at  timestamptz not null default now(),
   actions_count integer not null default 0,
   bookings_count integer not null default 0,
   cancels_count integer not null default 0,
@@ -52,7 +49,10 @@ create table if not exists public.demo_customers (
   environment   text not null default 'prod',
   domain_name   text,
   created_at    timestamptz not null default now(),
-  updated_at    timestamptz not null default now()
+  updated_at    timestamptz not null default now(),
+
+  first_seen_at timestamptz not null default now(),
+  last_seen_at  timestamptz not null default now()
 );
 
 -- Un client = un téléphone, PAR tenant. Deux commerces distincts peuvent avoir
@@ -84,11 +84,6 @@ create table if not exists public.demo_reservations (
 
   -- Référence courte lisible à l'oral (« votre réservation ABC-123 »).
   reference     text,
-
-  -- Le créneau qui FAIT FOI aujourd'hui. Reflète le dernier reschedule.
-  starts_at     timestamptz,
-  -- Créneau d'origine, jamais réécrit : permet de voir la dérive d'un bout à l'autre.
-  original_starts_at timestamptz,
   duration_min  integer,
   party_size    integer,
   service       text,
@@ -110,6 +105,11 @@ create table if not exists public.demo_reservations (
   domain_name   text,
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now(),
+
+  -- Le créneau qui FAIT FOI aujourd'hui. Reflète le dernier reschedule.
+  starts_at     timestamptz,
+  -- Créneau d'origine, jamais réécrit : permet de voir la dérive d'un bout à l'autre.
+  original_starts_at timestamptz,
   cancelled_at  timestamptz
 );
 
@@ -157,7 +157,6 @@ comment on column public.demo_reservations.origin is
 
 create table if not exists public.demo_actions (
   id             uuid primary key default gen_random_uuid(),
-  occurred_at    timestamptz not null default now(),
 
   assistant_id   text not null,
   demo_slug      text,
@@ -170,10 +169,6 @@ create table if not exists public.demo_actions (
   actor          text not null default 'assistant',
   actor_label    text,
   channel        text,
-
-  -- AVANT → APRÈS (renseigné pour un report, un changement de statut, etc.).
-  from_starts_at timestamptz,
-  to_starts_at   timestamptz,
   from_status    text,
   to_status      text,
 
@@ -193,7 +188,12 @@ create table if not exists public.demo_actions (
   tool_call_id   text,
   source_row_id  uuid,
   environment    text not null default 'prod',
-  domain_name    text
+  domain_name    text,
+  occurred_at    timestamptz not null default now(),
+
+  -- AVANT → APRÈS (renseigné pour un report, un changement de statut, etc.).
+  from_starts_at timestamptz,
+  to_starts_at   timestamptz
 );
 
 do $$

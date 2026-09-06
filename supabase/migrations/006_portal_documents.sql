@@ -26,6 +26,10 @@ create table if not exists public.demo_documents (
   -- CLÉ DE TENANT : l'assistant Vapi de la vitrine, comme partout ailleurs.
   assistant_id  text not null,
   demo_slug     text,
+  customer_id   uuid references public.demo_customers (id) on delete set null,
+
+  -- Traçabilité de la conversion : la facture pointe vers son devis d'origine.
+  source_id     uuid references public.demo_documents (id) on delete set null,
 
   kind          text not null,          -- 'quote' | 'invoice'
   -- Numéro humain : DEV-2026-0001 / FAC-2026-0001. Unique par tenant.
@@ -46,7 +50,6 @@ create table if not exists public.demo_documents (
   -- Destinataire, figé lui aussi. Un lien vers la fiche client existe à côté
   -- (`customer_id`), mais le document garde l'identité du jour de l'émission.
   client        jsonb not null default '{}'::jsonb,
-  customer_id   uuid references public.demo_customers (id) on delete set null,
 
   -- Les lignes : [{ id, kind: 'item'|'discount', label, desc, qty, unit_price,
   --                 tax_rate, percent }]
@@ -60,14 +63,11 @@ create table if not exists public.demo_documents (
   total_ttc     numeric(12, 2) not null default 0,
 
   notes         text,
-
-  -- Traçabilité de la conversion : la facture pointe vers son devis d'origine.
-  source_id     uuid references public.demo_documents (id) on delete set null,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now(),
 
   sent_at       timestamptz,
-  paid_at       timestamptz,
-  created_at    timestamptz not null default now(),
-  updated_at    timestamptz not null default now()
+  paid_at       timestamptz
 );
 
 do $$

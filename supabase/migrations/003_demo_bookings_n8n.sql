@@ -41,11 +41,11 @@
 
 create table if not exists public.demo_bookings (
   id            uuid primary key default gen_random_uuid(),
-  created_at    timestamptz not null default now(),
   tool          text,
   payload       jsonb,
   meta          jsonb,
-  domain_name   text
+  domain_name   text,
+  created_at    timestamptz not null default now()
 );
 
 alter table public.demo_bookings add column if not exists assistant_id   text;

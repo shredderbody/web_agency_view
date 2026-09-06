@@ -4,12 +4,11 @@
 
 create table if not exists public.business_leads (
   id                    uuid primary key default gen_random_uuid(),
-  created_at            timestamptz not null default now(),
-  source                text not null default 'google',   -- 'google' | 'manual'
-  lang                  text,
 
   -- Identité
   place_id              text,
+  source                text not null default 'google',   -- 'google' | 'manual'
+  lang                  text,
   name                  text not null,
 
   -- Métier
@@ -53,7 +52,8 @@ create table if not exists public.business_leads (
   business_status       text,
 
   -- Traçabilité du domaine/projet d'origine
-  domain_name           text
+  domain_name           text,
+  created_at            timestamptz not null default now()
 );
 
 -- Index utiles pour le suivi des leads.

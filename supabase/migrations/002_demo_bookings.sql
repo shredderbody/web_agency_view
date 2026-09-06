@@ -6,7 +6,6 @@
 
 create table if not exists public.demo_bookings (
   id            uuid primary key default gen_random_uuid(),
-  created_at    timestamptz not null default now(),
 
   -- Function tool appelé : enregistrer_rendezvous | enregistrer_reservation |
   -- enregistrer_commande | enregistrer_intervention.
@@ -20,7 +19,8 @@ create table if not exists public.demo_bookings (
   meta          jsonb,
 
   -- Traçabilité du domaine/projet d'origine (convention migration 001).
-  domain_name   text
+  domain_name   text,
+  created_at    timestamptz not null default now()
 );
 
 -- Index utiles pour le suivi des démos.
