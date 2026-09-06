@@ -51,6 +51,35 @@ declare
   r         record;
   pre_merge boolean;
   has_date  boolean;
+  -- Tables portant le même nom dans plusieurs projets. Une base fusionnée se
+  -- reconstruit d'un bloc : le premier projet rejoué voit alors un registre à
+  -- une seule ligne — la sienne — et poserait son nom en défaut partout. Sur
+  -- une table partagée aucune valeur n'est juste pour tout le monde : on n'y
+  -- pose donc jamais de défaut, c'est à l'applicatif d'envoyer project_name.
+  partagees text[] := ARRAY[
+    'agents',
+    'analytics_pageviews',
+    'analytics_sessions',
+    'business_leads',
+    'calls',
+    'commissions',
+    'company_settings',
+    'documents',
+    'kie_assets',
+    'leads',
+    'newsletter_subscribers',
+    'organizations',
+    'profiles',
+    'referral_codes',
+    'referral_notifications',
+    'referral_relationships',
+    'referrals',
+    'stripe_events',
+    'stripe_subscriptions',
+    'user_roles',
+    'users_extended',
+    'webhook_events'
+  ];
 begin
   select count(*) = 1 into pre_merge from public.project_registry;
 
@@ -95,7 +124,7 @@ begin
 
     -- 3. Base encore mono-projet : tout ce qui s'y trouve vient d'ici, et tout
     --    ce qui s'y écrira aussi tant qu'aucun autre projet ne s'est inscrit.
-    if pre_merge then
+    if pre_merge and not (r.table_name = any(partagees)) then
       execute format(
         'alter table public.%I alter column project_name set default %L;',
         r.table_name, 'web_agency_view');

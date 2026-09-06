@@ -381,7 +381,7 @@ create table if not exists public.demo_actions (
   reservation_id uuid references public.demo_reservations (id) on delete set null,
   customer_id    uuid references public.demo_customers (id) on delete set null,
   document_id    uuid references public.demo_documents (id) on delete set null,
-  source_id      uuid,                    -- id de la ligne demo_bookings projetée
+  source_row_id  uuid,                    -- id de la ligne demo_bookings projetée
   demo_slug      text,
 
   action         text not null,
@@ -647,6 +647,35 @@ declare
   r         record;
   pre_merge boolean;
   has_date  boolean;
+  -- Tables portant le même nom dans plusieurs projets. Une base fusionnée se
+  -- reconstruit d'un bloc : le premier projet rejoué voit alors un registre à
+  -- une seule ligne — la sienne — et poserait son nom en défaut partout. Sur
+  -- une table partagée aucune valeur n'est juste pour tout le monde : on n'y
+  -- pose donc jamais de défaut, c'est à l'applicatif d'envoyer project_name.
+  partagees text[] := ARRAY[
+    'agents',
+    'analytics_pageviews',
+    'analytics_sessions',
+    'business_leads',
+    'calls',
+    'commissions',
+    'company_settings',
+    'documents',
+    'kie_assets',
+    'leads',
+    'newsletter_subscribers',
+    'organizations',
+    'profiles',
+    'referral_codes',
+    'referral_notifications',
+    'referral_relationships',
+    'referrals',
+    'stripe_events',
+    'stripe_subscriptions',
+    'user_roles',
+    'users_extended',
+    'webhook_events'
+  ];
 begin
   select count(*) = 1 into pre_merge from public.project_registry;
 
@@ -676,7 +705,7 @@ begin
                      r.table_name || '_created_at_idx', r.table_name);
     end if;
 
-    if pre_merge then
+    if pre_merge and not (r.table_name = any(partagees)) then
       execute format('alter table public.%I alter column project_name set default %L;',
                      r.table_name, 'web_agency_view');
       execute format('update public.%I set project_name = %L where project_name is null;',
