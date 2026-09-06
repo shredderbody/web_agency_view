@@ -12,17 +12,21 @@
    `issuer.ts` ré-exporte ces trois-là : rien à changer côté serveur.
    ════════════════════════════════════════════════════════════════════════════ */
 
+/* Codes en minuscules, comme partout ailleurs dans la base (`commissions`,
+   `stripe_subscriptions`, `currency_for_country`) et comme chez Stripe.
+   `Intl.NumberFormat` attend la casse ISO : on la remet au moment du formatage,
+   c'est le seul endroit qui en a besoin. */
 /** Trois devises seulement, parce que douze vitrines n'en utilisent que trois. */
-export type CurrencyCode = "EUR" | "USD" | "IDR";
+export type CurrencyCode = "eur" | "usd" | "idr";
 
 type CurrencySpec = { code: CurrencyCode; locale: string; fractionDigits: number };
 
 /* Le `fractionDigits` compte : afficher « Rp 95 000,00 » est un contresens
    local, la roupie ne se découpe pas. */
 const CURRENCIES: Record<CurrencyCode, CurrencySpec> = {
-  EUR: { code: "EUR", locale: "fr-FR", fractionDigits: 2 },
-  USD: { code: "USD", locale: "en-US", fractionDigits: 2 },
-  IDR: { code: "IDR", locale: "id-ID", fractionDigits: 0 },
+  eur: { code: "eur", locale: "fr-FR", fractionDigits: 2 },
+  usd: { code: "usd", locale: "en-US", fractionDigits: 2 },
+  idr: { code: "idr", locale: "id-ID", fractionDigits: 0 },
 };
 
 /** Montant → chaîne affichable, dans la devise du commerce. */
@@ -30,7 +34,7 @@ export function formatMoney(amount: number, currency: CurrencyCode): string {
   const spec = CURRENCIES[currency];
   return new Intl.NumberFormat(spec.locale, {
     style: "currency",
-    currency: spec.code,
+    currency: spec.code.toUpperCase(),
     minimumFractionDigits: spec.fractionDigits,
     maximumFractionDigits: spec.fractionDigits,
   }).format(amount);

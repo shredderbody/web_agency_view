@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
   try {
     const result = await parseDictation({
       transcript, lang, defaultTax,
-      currency: issuer?.currency ?? "EUR",
+      currency: issuer?.currency ?? "eur",
       catalog, existing,
     });
 

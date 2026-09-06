@@ -39,7 +39,7 @@ create table if not exists public.demo_documents (
 
   -- Devise et libellé de taxe FIGÉS à l'émission : un document réédité six mois
   -- plus tard doit se relire à l'identique, même si le régime a changé depuis.
-  currency      text not null default 'EUR',
+  currency      text not null default 'eur',
   tax_label     text not null default 'TVA',
 
   issued_on     date not null default current_date,
@@ -92,7 +92,7 @@ $$;
 do $$
 begin
   alter table public.demo_documents
-    add constraint demo_documents_currency_chk check (currency in ('EUR', 'USD', 'IDR'));
+    add constraint demo_documents_currency_chk check (currency in ('eur', 'usd', 'idr'));
 exception when duplicate_object then null;
 end
 $$;

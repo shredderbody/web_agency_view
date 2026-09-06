@@ -75,11 +75,11 @@ export type Issuer = {
 /** Régime fiscal d'une vitrine — arrêté métier par métier, pas au hasard. */
 type TaxSpec = { currency: CurrencyCode; rate: number; label: { fr: string; en: string } };
 
-const TVA_SERVICE: TaxSpec = { currency: "EUR", rate: 20, label: { fr: "TVA", en: "VAT" } };
-const TVA_RESTAURATION: TaxSpec = { currency: "EUR", rate: 10, label: { fr: "TVA", en: "VAT" } };
-const SALES_TAX_NY: TaxSpec = { currency: "USD", rate: 8.875, label: { fr: "Sales tax (NY)", en: "Sales tax (NY)" } };
-const SALES_TAX_TX: TaxSpec = { currency: "USD", rate: 8.25, label: { fr: "Sales tax (TX)", en: "Sales tax (TX)" } };
-const PB1_BALI: TaxSpec = { currency: "IDR", rate: 10, label: { fr: "PB1 (taxe)", en: "PB1 (tax)" } };
+const TVA_SERVICE: TaxSpec = { currency: "eur", rate: 20, label: { fr: "TVA", en: "VAT" } };
+const TVA_RESTAURATION: TaxSpec = { currency: "eur", rate: 10, label: { fr: "TVA", en: "VAT" } };
+const SALES_TAX_NY: TaxSpec = { currency: "usd", rate: 8.875, label: { fr: "Sales tax (NY)", en: "Sales tax (NY)" } };
+const SALES_TAX_TX: TaxSpec = { currency: "usd", rate: 8.25, label: { fr: "Sales tax (TX)", en: "Sales tax (TX)" } };
+const PB1_BALI: TaxSpec = { currency: "idr", rate: 10, label: { fr: "PB1 (taxe)", en: "PB1 (tax)" } };
 
 const TAX_BY_SLUG: Record<string, TaxSpec> = {
   // France — prestation de service : 20 %.
@@ -175,7 +175,7 @@ const IDENTITIES: Record<string, Identity | null> = {
    on ne leur colle pas un texte français traduit.                             */
 
 function legalNotesFor(currency: CurrencyCode, lang: Lang, paymentDays: number): string[] {
-  if (currency === "EUR") {
+  if (currency === "eur") {
     return lang === "fr"
       ? [
           `Paiement à ${paymentDays} jours à réception de facture.`,
@@ -188,7 +188,7 @@ function legalNotesFor(currency: CurrencyCode, lang: Lang, paymentDays: number):
           "No discount for early settlement.",
         ];
   }
-  if (currency === "USD") {
+  if (currency === "usd") {
     return lang === "fr"
       ? [
           `Paiement à ${paymentDays} jours à réception de facture.`,
