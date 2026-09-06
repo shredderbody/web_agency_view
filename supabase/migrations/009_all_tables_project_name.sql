@@ -60,6 +60,16 @@ begin
       and table_type   = 'BASE TABLE'
       and table_name  <> 'project_registry'
   loop
+    -- 0. Domaine d'origine. La boucle de `*_all_tables_domain_name.sql` tourne
+    --    tôt dans la séquence et ne voit donc pas les tables créées après elle.
+    --    On repasse ici, en fin de course, pour que la colonne et son index
+    --    existent sur chaque table sans exception.
+    execute format(
+      'alter table public.%I add column if not exists domain_name text;', r.table_name);
+    execute format(
+      'create index if not exists %I on public.%I (domain_name);',
+      r.table_name || '_domain_name_idx', r.table_name);
+
     -- 1. Provenance.
     execute format(
       'alter table public.%I add column if not exists project_name text;', r.table_name);
